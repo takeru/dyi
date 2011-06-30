@@ -1,0 +1,924 @@
+<?xml version="1.0" encoding="utf8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta content="text/html; charset=utf8" http-equiv="Content-Type" />
+
+  <title>Class: DYI::Formatter::XamlFormatter</title>
+
+  <link rel="stylesheet" href="../../rdoc.css" type="text/css" media="screen" />
+
+  <script src="../../js/jquery.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../../js/thickbox-compressed.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../../js/quicksearch.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../../js/darkfish.js" type="text/javascript" charset="utf-8"></script>
+
+</head>
+<body id="top" class="class">
+
+  <div id="metadata">
+    <div id="home-metadata">
+      <div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#classes">Classes</a>
+          <a href="../../index.html#methods">Methods</a>
+        </h3>
+      </div>
+    </div>
+
+    <div id="file-metadata">
+      <div id="file-list-section" class="section">
+        <h3 class="section-header">In Files</h3>
+        <div class="section-body">
+          <ul>
+          
+            <li><a href="../../release/lib/dyi/formatter/xaml_formatter_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+              class="thickbox" title="release/lib/dyi/formatter/xaml_formatter.rb">release/lib/dyi/formatter/xaml_formatter.rb</a></li>
+          
+          </ul>
+        </div>
+      </div>
+
+      
+    </div>
+
+    <div id="class-metadata">
+      
+      <!-- Parent Class -->
+      <div id="parent-class-section" class="section">
+        <h3 class="section-header">Parent</h3>
+        
+        <p class="link"><a href="XmlFormatter.html">DYI::Formatter::XmlFormatter</a></p>
+        
+      </div>
+      
+
+      
+
+      
+
+      
+      <!-- Method Quickref -->
+      <div id="method-list-section" class="section">
+        <h3 class="section-header">Methods</h3>
+        <ul class="link-list">
+          
+          <li><a href="#method-i-puts">#puts</a></li>
+          
+          <li><a href="#method-i-write_canvas">#write_canvas</a></li>
+          
+          <li><a href="#method-i-write_circle">#write_circle</a></li>
+          
+          <li><a href="#method-i-write_clip">#write_clip</a></li>
+          
+          <li><a href="#method-i-write_ellipse">#write_ellipse</a></li>
+          
+          <li><a href="#method-i-write_gradient_stop">#write_gradient_stop</a></li>
+          
+          <li><a href="#method-i-write_group">#write_group</a></li>
+          
+          <li><a href="#method-i-write_line">#write_line</a></li>
+          
+          <li><a href="#method-i-write_linear_gradient">#write_linear_gradient</a></li>
+          
+          <li><a href="#method-i-write_path">#write_path</a></li>
+          
+          <li><a href="#method-i-write_polygon">#write_polygon</a></li>
+          
+          <li><a href="#method-i-write_polyline">#write_polyline</a></li>
+          
+          <li><a href="#method-i-write_rectangle">#write_rectangle</a></li>
+          
+          <li><a href="#method-i-write_text">#write_text</a></li>
+          
+        </ul>
+      </div>
+      
+
+      
+    </div>
+
+    <div id="project-metadata">
+      
+      
+      <div id="fileindex-section" class="section project-section">
+        <h3 class="section-header">Files</h3>
+        <ul>
+        
+          <li class="file"><a href="../../release/COPYING.html">COPYING</a></li>
+        
+          <li class="file"><a href="../../release/README.html">README</a></li>
+        
+        </ul>
+      </div>
+      
+
+      <div id="classindex-section" class="section project-section">
+        <h3 class="section-header">Class/Module Index
+          <span class="search-toggle"><img src="../../images/find.png"
+            height="16" width="16" alt="[+]"
+            title="show/hide quicksearch" /></span></h3>
+        <form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+        <fieldset>
+          <legend>Quicksearch</legend>
+          <input type="text" name="quicksearch" value=""
+            class="quicksearch-field" />
+        </fieldset>
+        </form>
+
+        <ul class="link-list">
+        
+          <li><a href="../../DYI.html">DYI</a></li>
+        
+          <li><a href="../../DYI/AttributeCreator.html">DYI::AttributeCreator</a></li>
+        
+          <li><a href="../../DYI/Chart.html">DYI::Chart</a></li>
+        
+          <li><a href="../../DYI/Chart/ArrayReader.html">DYI::Chart::ArrayReader</a></li>
+        
+          <li><a href="../../DYI/Chart/AxisUtil.html">DYI::Chart::AxisUtil</a></li>
+        
+          <li><a href="../../DYI/Chart/Base.html">DYI::Chart::Base</a></li>
+        
+          <li><a href="../../DYI/Chart/CsvReader.html">DYI::Chart::CsvReader</a></li>
+        
+          <li><a href="../../DYI/Chart/ExcelReader.html">DYI::Chart::ExcelReader</a></li>
+        
+          <li><a href="../../DYI/Chart/Legend.html">DYI::Chart::Legend</a></li>
+        
+          <li><a href="../../DYI/Chart/LineChart.html">DYI::Chart::LineChart</a></li>
+        
+          <li><a href="../../DYI/Chart/PieChart.html">DYI::Chart::PieChart</a></li>
+        
+          <li><a href="../../DYI/Chart/Table.html">DYI::Chart::Table</a></li>
+        
+          <li><a href="../../DYI/Color.html">DYI::Color</a></li>
+        
+          <li><a href="../../DYI/Coordinate.html">DYI::Coordinate</a></li>
+        
+          <li><a href="../../DYI/Drawing.html">DYI::Drawing</a></li>
+        
+          <li><a href="../../DYI/Drawing/Brush.html">DYI::Drawing::Brush</a></li>
+        
+          <li><a href="../../DYI/Drawing/Canvas.html">DYI::Drawing::Canvas</a></li>
+        
+          <li><a href="../../DYI/Drawing/Clipping.html">DYI::Drawing::Clipping</a></li>
+        
+          <li><a href="../../DYI/Drawing/ColorEffect.html">DYI::Drawing::ColorEffect</a></li>
+        
+          <li><a href="../../DYI/Drawing/ColorEffect/GradientStop.html">DYI::Drawing::ColorEffect::GradientStop</a></li>
+        
+          <li><a href="../../DYI/Drawing/ColorEffect/LinearGradient.html">DYI::Drawing::ColorEffect::LinearGradient</a></li>
+        
+          <li><a href="../../DYI/Drawing/ColumnBrush.html">DYI::Drawing::ColumnBrush</a></li>
+        
+          <li><a href="../../DYI/Drawing/CubicPen.html">DYI::Drawing::CubicPen</a></li>
+        
+          <li><a href="../../DYI/Drawing/CylinderBrush.html">DYI::Drawing::CylinderBrush</a></li>
+        
+          <li><a href="../../DYI/Drawing/Filter.html">DYI::Drawing::Filter</a></li>
+        
+          <li><a href="../../DYI/Drawing/Filter/DropShadow.html">DYI::Drawing::Filter::DropShadow</a></li>
+        
+          <li><a href="../../DYI/Drawing/Pen.html">DYI::Drawing::Pen</a></li>
+        
+          <li><a href="../../DYI/Drawing/PenBase.html">DYI::Drawing::PenBase</a></li>
+        
+          <li><a href="../../DYI/Font.html">DYI::Font</a></li>
+        
+          <li><a href="../../DYI/Formatter.html">DYI::Formatter</a></li>
+        
+          <li><a href="../../DYI/Formatter/Base.html">DYI::Formatter::Base</a></li>
+        
+          <li><a href="../../DYI/Formatter/EmfFormatter.html">DYI::Formatter::EmfFormatter</a></li>
+        
+          <li><a href="../../DYI/Formatter/EpsFormatter.html">DYI::Formatter::EpsFormatter</a></li>
+        
+          <li><a href="../../DYI/Formatter/SvgFormatter.html">DYI::Formatter::SvgFormatter</a></li>
+        
+          <li><a href="../../DYI/Formatter/SvgReader.html">DYI::Formatter::SvgReader</a></li>
+        
+          <li><a href="../../DYI/Formatter/XamlFormatter.html">DYI::Formatter::XamlFormatter</a></li>
+        
+          <li><a href="../../DYI/Formatter/XmlFormatter.html">DYI::Formatter::XmlFormatter</a></li>
+        
+          <li><a href="../../DYI/Length.html">DYI::Length</a></li>
+        
+          <li><a href="../../DYI/Matrix.html">DYI::Matrix</a></li>
+        
+          <li><a href="../../DYI/Painting.html">DYI::Painting</a></li>
+        
+          <li><a href="../../DYI/Shape.html">DYI::Shape</a></li>
+        
+          <li><a href="../../DYI/Shape/Base.html">DYI::Shape::Base</a></li>
+        
+          <li><a href="../../DYI/Shape/Circle.html">DYI::Shape::Circle</a></li>
+        
+          <li><a href="../../DYI/Shape/Ellipse.html">DYI::Shape::Ellipse</a></li>
+        
+          <li><a href="../../DYI/Shape/Line.html">DYI::Shape::Line</a></li>
+        
+          <li><a href="../../DYI/Shape/Path.html">DYI::Shape::Path</a></li>
+        
+          <li><a href="../../DYI/Shape/Polygon.html">DYI::Shape::Polygon</a></li>
+        
+          <li><a href="../../DYI/Shape/Polyline.html">DYI::Shape::Polyline</a></li>
+        
+          <li><a href="../../DYI/Shape/Rectangle.html">DYI::Shape::Rectangle</a></li>
+        
+          <li><a href="../../DYI/Shape/ShapeGroup.html">DYI::Shape::ShapeGroup</a></li>
+        
+          <li><a href="../../DYI/Shape/Text.html">DYI::Shape::Text</a></li>
+        
+          <li><a href="../../DYI/StringFormat.html">DYI::StringFormat</a></li>
+        
+          <li><a href="../../DYI/SvgElement.html">DYI::SvgElement</a></li>
+        
+          <li><a href="../../Numeric.html">Numeric</a></li>
+        
+        </ul>
+        <div id="no-class-search-results" style="display: none;">No matching classes.</div>
+      </div>
+
+      
+    </div>
+  </div>
+
+  <div id="documentation">
+    <h1 class="class">DYI::Formatter::XamlFormatter</h1>
+
+    <div id="description" class="description">
+      
+    </div><!-- description -->
+
+    
+    <div id="5Buntitled-5D" class="documentation-section">
+      
+
+      
+
+      
+      <!-- Constants -->
+      <div id="constants-list" class="section">
+        <h3 class="section-header">Constants</h3>
+        <dl>
+        
+          <dt><a name="FONT_STRETCH">FONT_STRETCH</a></dt>
+          
+          <dd class="description"></dd>
+          
+        
+          <dt><a name="FONT_STYLE">FONT_STYLE</a></dt>
+          
+          <dd class="description"></dd>
+          
+        
+          <dt><a name="FONT_WEIGHT">FONT_WEIGHT</a></dt>
+          
+          <dd class="description"></dd>
+          
+        
+          <dt><a name="SPREAD_METHOD">SPREAD_METHOD</a></dt>
+          
+          <dd class="description"></dd>
+          
+        
+          <dt><a name="STROKE_LINE_CAP">STROKE_LINE_CAP</a></dt>
+          
+          <dd class="description"></dd>
+          
+        
+          <dt><a name="STROKE_LINE_JOIN">STROKE_LINE_JOIN</a></dt>
+          
+          <dd class="description"></dd>
+          
+        
+          <dt><a name="TEXT_ANCHOR">TEXT_ANCHOR</a></dt>
+          
+          <dd class="description"></dd>
+          
+        
+        </dl>
+      </div>
+      
+
+      
+
+      <!-- Methods -->
+      
+      <div id="public-instance-method-details" class="method-section section">
+        <h3 class="section-header">Public Instance Methods</h3>
+
+      
+        <div id="puts-method" class="method-detail ">
+          <a name="method-i-puts"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">puts</span><span
+              class="method-args">(io=$>)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="puts-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 34</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">puts</span>(<span class="ruby-identifier">io</span>=<span class="ruby-identifier">$&gt;</span>)
+  <span class="ruby-constant">StringFormat</span>.<span class="ruby-identifier">set_default_formats</span>(<span class="ruby-value">:coordinate</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'x,y'</span>) {
+    <span class="ruby-keyword">super</span>
+  }
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- puts-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- puts-method -->
+
+      
+        <div id="write_canvas-method" class="method-detail ">
+          <a name="method-i-write_canvas"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_canvas</span><span
+              class="method-args">(canvas, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_canvas-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 40</span>
+      <span class="ruby-keyword">def</span> <span class="ruby-identifier">write_canvas</span>(<span class="ruby-identifier">canvas</span>, <span class="ruby-identifier">io</span>)
+        <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'UserControl'</span>,
+            <span class="ruby-value">:xmlns</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;</span>,
+            <span class="ruby-value">:&quot;xmlns:x&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;</span>,
+<span class="ruby-comment">#            :&quot;xmlns:navigation&quot; =&gt; &quot;clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Navigation&quot;,</span>
+<span class="ruby-comment">#            :&quot;xmlns:d&quot; =&gt; &quot;http://schemas.microsoft.com/expression/blend/2008&quot;,</span>
+<span class="ruby-comment">#            :&quot;xmlns:mc&quot; =&gt; &quot;http://schemas.openxmlformats.org/markup-compatibility/2006&quot;,</span>
+            <span class="ruby-value">:Width</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">canvas</span>.<span class="ruby-identifier">width</span>,
+            <span class="ruby-value">:Height</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">canvas</span>.<span class="ruby-identifier">height</span>) {
+          <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Canvas'</span>){
+            <span class="ruby-identifier">canvas</span>.<span class="ruby-identifier">child_elements</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">element</span><span class="ruby-operator">|</span>
+              <span class="ruby-identifier">element</span>.<span class="ruby-identifier">write_as</span>(<span class="ruby-keyword">self</span>, <span class="ruby-identifier">io</span>)
+            <span class="ruby-keyword">end</span>
+          }
+        }
+      <span class="ruby-keyword">end</span></pre>
+            </div><!-- write_canvas-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_canvas-method -->
+
+      
+        <div id="write_circle-method" class="method-detail ">
+          <a name="method-i-write_circle"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_circle</span><span
+              class="method-args">(shape, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_circle-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 71</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">write_circle</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+  <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">attr_creator</span> = <span class="ruby-identifier">common_attributes</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-value">:shape</span>)
+  <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-value">:&quot;Canvas.Left&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">center</span>.<span class="ruby-identifier">x</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">radius</span>, <span class="ruby-value">:&quot;Canvas.Top&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">center</span>.<span class="ruby-identifier">y</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">radius</span>, <span class="ruby-value">:Width=</span><span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">radius</span> * <span class="ruby-value">2</span>, <span class="ruby-value">:Height=</span><span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">radius</span> * <span class="ruby-value">2</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">attr_creator</span>
+    <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Ellipse'</span>, <span class="ruby-identifier">attrs</span>) {
+      <span class="ruby-identifier">attr_creator</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Ellipse'</span>)
+    }
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">create_leaf_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Ellipse'</span>, <span class="ruby-identifier">attrs</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- write_circle-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_circle-method -->
+
+      
+        <div id="write_clip-method" class="method-detail ">
+          <a name="method-i-write_clip"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_clip</span><span
+              class="method-args">(shape, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_clip-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 218</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">write_clip</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+  <span class="ruby-comment"># TODO</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- write_clip-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_clip-method -->
+
+      
+        <div id="write_ellipse-method" class="method-detail ">
+          <a name="method-i-write_ellipse"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_ellipse</span><span
+              class="method-args">(shape, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_ellipse-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 83</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">write_ellipse</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+  <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">attr_creator</span> = <span class="ruby-identifier">common_attributes</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-value">:shape</span>)
+  <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-value">:&quot;Canvas.Left&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">center</span>.<span class="ruby-identifier">x</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">radius</span>, <span class="ruby-value">:&quot;Canvas.Top&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">center</span>.<span class="ruby-identifier">y</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">radius</span>, <span class="ruby-value">:Width=</span><span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">radius_x</span> * <span class="ruby-value">2</span>, <span class="ruby-value">:Height=</span><span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">radius_y</span> * <span class="ruby-value">2</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">attr_creator</span>
+    <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Ellipse'</span>, <span class="ruby-identifier">attrs</span>) {
+      <span class="ruby-identifier">attr_creator</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Ellipse'</span>)
+    }
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">create_leaf_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Ellipse'</span>, <span class="ruby-identifier">attrs</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- write_ellipse-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_ellipse-method -->
+
+      
+        <div id="write_gradient_stop-method" class="method-detail ">
+          <a name="method-i-write_gradient_stop"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_gradient_stop</span><span
+              class="method-args">(shape, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_gradient_stop-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 212</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">write_gradient_stop</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+  <span class="ruby-identifier">attrs</span> = {<span class="ruby-value">:Offset=</span><span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">offset</span>}
+  <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:Color</span>] = <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">color</span>.<span class="ruby-identifier">to_s16</span>(<span class="ruby-identifier">shape</span>.<span class="ruby-identifier">opacity</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">color</span>
+  <span class="ruby-identifier">create_leaf_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'GradientStop'</span>, <span class="ruby-identifier">attrs</span>)
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- write_gradient_stop-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_gradient_stop-method -->
+
+      
+        <div id="write_group-method" class="method-detail ">
+          <a name="method-i-write_group"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_group</span><span
+              class="method-args">(shape, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_group-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 185</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">write_group</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+  <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">attr_creator</span> = <span class="ruby-identifier">common_attributes</span>(<span class="ruby-identifier">shape</span>)
+  <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Canvas'</span>, <span class="ruby-identifier">attrs</span>) {
+    <span class="ruby-identifier">attr_creator</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Canvas'</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">attr_creator</span>
+    <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Canvas.RenderTransform'</span>) {
+      <span class="ruby-identifier">create_transform_node</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+    } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">transform</span>.<span class="ruby-identifier">empty?</span>
+    <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">child_elements</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">element</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">element</span>.<span class="ruby-identifier">write_as</span>(<span class="ruby-keyword">self</span>, <span class="ruby-identifier">io</span>)
+    <span class="ruby-keyword">end</span>
+  }
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- write_group-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_group-method -->
+
+      
+        <div id="write_line-method" class="method-detail ">
+          <a name="method-i-write_line"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_line</span><span
+              class="method-args">(shape, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_line-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 95</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">write_line</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+  <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">attr_creator</span> = <span class="ruby-identifier">common_attributes</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-value">:line</span>)
+  <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-value">:X1</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">start_point</span>.<span class="ruby-identifier">x</span>, <span class="ruby-value">:Y1</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">start_point</span>.<span class="ruby-identifier">y</span>, <span class="ruby-value">:X2</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">end_point</span>.<span class="ruby-identifier">x</span>, <span class="ruby-value">:Y2</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">end_point</span>.<span class="ruby-identifier">y</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">attr_creator</span>
+    <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Line'</span>, <span class="ruby-identifier">attrs</span>) {
+      <span class="ruby-identifier">attr_creator</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Line'</span>)
+    }
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">create_leaf_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Line'</span>, <span class="ruby-identifier">attrs</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- write_line-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_line-method -->
+
+      
+        <div id="write_linear_gradient-method" class="method-detail ">
+          <a name="method-i-write_linear_gradient"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_linear_gradient</span><span
+              class="method-args">(shape, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_linear_gradient-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 198</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">write_linear_gradient</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+  <span class="ruby-identifier">attr</span> = {
+    <span class="ruby-value">:StartPoint</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;#{shape.start_point[0]},#{shape.start_point[1]}&quot;</span>,
+    <span class="ruby-value">:EndPoint</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;#{shape.stop_point[0]},#{shape.stop_point[1]}&quot;</span>}
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">spread_method</span> = <span class="ruby-constant">SPREAD_METHOD</span>[<span class="ruby-identifier">shape</span>.<span class="ruby-identifier">spread_method</span>]
+    <span class="ruby-identifier">attr</span>[<span class="ruby-value">:SpreadMethod</span>] = <span class="ruby-identifier">spread_method</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'LinearGradientBrush'</span>, <span class="ruby-identifier">attr</span>) {
+    <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">child_elements</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">element</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">element</span>.<span class="ruby-identifier">write_as</span>(<span class="ruby-keyword">self</span>, <span class="ruby-identifier">io</span>)
+    <span class="ruby-keyword">end</span>
+  }
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- write_linear_gradient-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_linear_gradient-method -->
+
+      
+        <div id="write_path-method" class="method-detail ">
+          <a name="method-i-write_path"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_path</span><span
+              class="method-args">(shape, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_path-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 131</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">write_path</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+  <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">attr_creator</span> = <span class="ruby-identifier">common_attributes</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-value">:line</span>)
+  <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-value">:Data</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">concise_path_data</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">attr_creator</span>
+    <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Path'</span>, <span class="ruby-identifier">attrs</span>) {
+      <span class="ruby-identifier">attr_creator</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Path'</span>)
+    }
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">create_leaf_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Path'</span>, <span class="ruby-identifier">attrs</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- write_path-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_path-method -->
+
+      
+        <div id="write_polygon-method" class="method-detail ">
+          <a name="method-i-write_polygon"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_polygon</span><span
+              class="method-args">(shape, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_polygon-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 119</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">write_polygon</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+  <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">attr_creator</span> = <span class="ruby-identifier">common_attributes</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-value">:shape</span>)
+  <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-value">:Points</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">points</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">' '</span>))
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">attr_creator</span>
+    <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Polygon'</span>, <span class="ruby-identifier">attrs</span>) {
+      <span class="ruby-identifier">attr_creator</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Polygon'</span>)
+    }
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">create_leaf_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Polygon'</span>, <span class="ruby-identifier">attrs</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- write_polygon-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_polygon-method -->
+
+      
+        <div id="write_polyline-method" class="method-detail ">
+          <a name="method-i-write_polyline"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_polyline</span><span
+              class="method-args">(shape, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_polyline-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 107</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">write_polyline</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+  <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">attr_creator</span> = <span class="ruby-identifier">common_attributes</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-value">:line</span>)
+  <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-value">:Points</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">points</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">' '</span>))
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">attr_creator</span>
+    <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Polyline'</span>, <span class="ruby-identifier">attrs</span>) {
+      <span class="ruby-identifier">attr_creator</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Polyline'</span>)
+    }
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">create_leaf_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Polyline'</span>, <span class="ruby-identifier">attrs</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- write_polyline-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_polyline-method -->
+
+      
+        <div id="write_rectangle-method" class="method-detail ">
+          <a name="method-i-write_rectangle"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_rectangle</span><span
+              class="method-args">(shape, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_rectangle-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 57</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">write_rectangle</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+  <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">attr_creator</span> = <span class="ruby-identifier">common_attributes</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-value">:shape</span>)
+  <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-value">:&quot;Canvas.Left&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">left</span>, <span class="ruby-value">:&quot;Canvas.Top&quot;</span>=<span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">top</span>, <span class="ruby-value">:Width=</span><span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">width</span>, <span class="ruby-value">:Height=</span><span class="ruby-operator">&gt;</span><span class="ruby-identifier">shape</span>.<span class="ruby-identifier">height</span>)
+  <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:RadiusX</span>] = <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value">:rx</span>] <span class="ruby-keyword">if</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value">:rx</span>]
+  <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:RadiusY</span>] = <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value">:ry</span>] <span class="ruby-keyword">if</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value">:ry</span>]
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">attr_creator</span>
+    <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Rectangle'</span>, <span class="ruby-identifier">attrs</span>) {
+      <span class="ruby-identifier">attr_creator</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Rectangle'</span>)
+    }
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">create_leaf_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Rectangle'</span>, <span class="ruby-identifier">attrs</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- write_rectangle-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_rectangle-method -->
+
+      
+        <div id="write_text-method" class="method-detail ">
+          <a name="method-i-write_text"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">write_text</span><span
+              class="method-args">(shape, io)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="write_text-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/formatter/xaml_formatter.rb, line 143</span>
+      <span class="ruby-keyword">def</span> <span class="ruby-identifier">write_text</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-identifier">io</span>)
+        <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">attr_creator</span> = <span class="ruby-identifier">common_attributes</span>(<span class="ruby-identifier">shape</span>, <span class="ruby-value">:text</span>)
+        <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-value">:&quot;Canvas.Left&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">point</span>.<span class="ruby-identifier">x</span>, <span class="ruby-value">:&quot;Canvas.Top&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">point</span>.<span class="ruby-identifier">y</span>)
+<span class="ruby-comment">#        attrs[:&quot;text-decoration&quot;] = shape.attributes[:text_decoration] if shape.attributes[:text_decoration]</span>
+        <span class="ruby-keyword">case</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value">:alignment_baseline</span>]
+          <span class="ruby-keyword">when</span> <span class="ruby-keyword">nil</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:&quot;Canvas.Top&quot;</span>] <span class="ruby-operator">-=</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">font_height</span> * <span class="ruby-value">0.85</span>
+          <span class="ruby-keyword">when</span> <span class="ruby-string">'middle'</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:&quot;Canvas.Top&quot;</span>] <span class="ruby-operator">-=</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">font_height</span> * <span class="ruby-value">0.5</span>
+          <span class="ruby-keyword">when</span> <span class="ruby-string">'bottom'</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:&quot;Canvas.Top&quot;</span>] <span class="ruby-operator">-=</span> <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">font_height</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">case</span> <span class="ruby-identifier">text_anchor</span> = <span class="ruby-constant">TEXT_ANCHOR</span>[<span class="ruby-identifier">shape</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value">:text_anchor</span>]]
+        <span class="ruby-keyword">when</span> <span class="ruby-string">'Left'</span>
+          <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:TextAlignment</span>] = <span class="ruby-identifier">text_anchor</span>
+        <span class="ruby-keyword">when</span> <span class="ruby-string">'Center'</span>
+          <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:Width</span>] = <span class="ruby-ivar">@canvas</span>.<span class="ruby-identifier">width</span>
+          <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:&quot;Canvas.Left&quot;</span>] <span class="ruby-operator">-=</span> <span class="ruby-ivar">@canvas</span>.<span class="ruby-identifier">width</span>.<span class="ruby-identifier">quo</span>(<span class="ruby-value">2</span>)
+          <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:TextAlignment</span>] = <span class="ruby-identifier">text_anchor</span>
+        <span class="ruby-keyword">when</span> <span class="ruby-string">'Right'</span>
+          <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:Width</span>] = <span class="ruby-ivar">@canvas</span>.<span class="ruby-identifier">width</span>
+          <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:&quot;Canvas.Left&quot;</span>] <span class="ruby-operator">-=</span> <span class="ruby-ivar">@canvas</span>.<span class="ruby-identifier">width</span>
+          <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:TextAlignment</span>] = <span class="ruby-identifier">text_anchor</span>
+        <span class="ruby-keyword">end</span>
+<span class="ruby-comment">#        attrs[:&quot;writing-mode&quot;] = shape.attributes[:writing_mode] if shape.attributes[:writing_mode]</span>
+        <span class="ruby-identifier">text</span> = <span class="ruby-identifier">shape</span>.<span class="ruby-identifier">formated_text</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">text</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/(\r\n|\n|\r)/</span>
+          <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:Text</span>] = <span class="ruby-node">$`</span>.<span class="ruby-identifier">strip</span>
+          <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'TextBlock'</span>, <span class="ruby-identifier">attrs</span>) {
+            <span class="ruby-identifier">attr_creator</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'TextBlock'</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">attr_creator</span>
+            <span class="ruby-identifier">create_leaf_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'LineBreak'</span>)
+            <span class="ruby-node">$'</span>.<span class="ruby-identifier">each_line</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">line</span><span class="ruby-operator">|</span>
+              <span class="ruby-identifier">create_leaf_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'Run'</span>, <span class="ruby-identifier">line</span>.<span class="ruby-identifier">strip</span>)
+            <span class="ruby-keyword">end</span>
+          }
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">attrs</span>[<span class="ruby-value">:Text</span>] = <span class="ruby-identifier">text</span>
+          <span class="ruby-keyword">if</span> <span class="ruby-identifier">attr_creator</span>
+            <span class="ruby-identifier">create_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'TextBlock'</span>, <span class="ruby-identifier">attrs</span>, &amp;<span class="ruby-identifier">attr_creator</span>)
+          <span class="ruby-keyword">else</span>
+            <span class="ruby-identifier">create_leaf_node</span>(<span class="ruby-identifier">io</span>, <span class="ruby-string">'TextBlock'</span>, <span class="ruby-identifier">attrs</span>)
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">end</span></pre>
+            </div><!-- write_text-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- write_text-method -->
+
+      
+      </div><!-- public-instance-method-details -->
+    
+    </div><!-- 5Buntitled-5D -->
+  
+
+  </div><!-- documentation -->
+
+  <div id="validator-badges">
+    <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+    <p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+      Rdoc Generator</a> 2</small>.</p>
+  </div>
+
+</body>
+</html>
+

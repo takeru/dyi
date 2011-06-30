@@ -1,0 +1,1202 @@
+<?xml version="1.0" encoding="utf8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta content="text/html; charset=utf8" http-equiv="Content-Type" />
+
+  <title>Class: DYI::Painting</title>
+
+  <link rel="stylesheet" href="../rdoc.css" type="text/css" media="screen" />
+
+  <script src="../js/jquery.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../js/thickbox-compressed.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../js/quicksearch.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../js/darkfish.js" type="text/javascript" charset="utf-8"></script>
+
+</head>
+<body id="top" class="class">
+
+  <div id="metadata">
+    <div id="home-metadata">
+      <div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#classes">Classes</a>
+          <a href="../index.html#methods">Methods</a>
+        </h3>
+      </div>
+    </div>
+
+    <div id="file-metadata">
+      <div id="file-list-section" class="section">
+        <h3 class="section-header">In Files</h3>
+        <div class="section-body">
+          <ul>
+          
+            <li><a href="../release/lib/dyi/painting_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+              class="thickbox" title="release/lib/dyi/painting.rb">release/lib/dyi/painting.rb</a></li>
+          
+            <li><a href="../release/lib/ironruby_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+              class="thickbox" title="release/lib/ironruby.rb">release/lib/ironruby.rb</a></li>
+          
+          </ul>
+        </div>
+      </div>
+
+      
+    </div>
+
+    <div id="class-metadata">
+      
+      <!-- Parent Class -->
+      <div id="parent-class-section" class="section">
+        <h3 class="section-header">Parent</h3>
+        
+        <p class="link">Object</p>
+        
+      </div>
+      
+
+      
+
+      
+
+      
+      <!-- Method Quickref -->
+      <div id="method-list-section" class="section">
+        <h3 class="section-header">Methods</h3>
+        <ul class="link-list">
+          
+          <li><a href="#method-c-new">::new</a></li>
+          
+          <li><a href="#method-c-new_or_nil">::new_or_nil</a></li>
+          
+          <li><a href="#method-i-attributes">#attributes</a></li>
+          
+          <li><a href="#method-i-empty-3F">#empty?</a></li>
+          
+          <li><a href="#method-i-fill">#fill</a></li>
+          
+          <li><a href="#method-i-fill-3D">#fill=</a></li>
+          
+          <li><a href="#method-i-fill_opacity">#fill_opacity</a></li>
+          
+          <li><a href="#method-i-fill_opacity-3D">#fill_opacity=</a></li>
+          
+          <li><a href="#method-i-fill_rule">#fill_rule</a></li>
+          
+          <li><a href="#method-i-fill_rule-3D">#fill_rule=</a></li>
+          
+          <li><a href="#method-i-stroke">#stroke</a></li>
+          
+          <li><a href="#method-i-stroke-3D">#stroke=</a></li>
+          
+          <li><a href="#method-i-stroke_dasharray">#stroke_dasharray</a></li>
+          
+          <li><a href="#method-i-stroke_dasharray-3D">#stroke_dasharray=</a></li>
+          
+          <li><a href="#method-i-stroke_dashoffset">#stroke_dashoffset</a></li>
+          
+          <li><a href="#method-i-stroke_dashoffset-3D">#stroke_dashoffset=</a></li>
+          
+          <li><a href="#method-i-stroke_linecap">#stroke_linecap</a></li>
+          
+          <li><a href="#method-i-stroke_linecap-3D">#stroke_linecap=</a></li>
+          
+          <li><a href="#method-i-stroke_linejoin">#stroke_linejoin</a></li>
+          
+          <li><a href="#method-i-stroke_linejoin-3D">#stroke_linejoin=</a></li>
+          
+          <li><a href="#method-i-stroke_miterlimit">#stroke_miterlimit</a></li>
+          
+          <li><a href="#method-i-stroke_miterlimit-3D">#stroke_miterlimit=</a></li>
+          
+          <li><a href="#method-i-stroke_opacity">#stroke_opacity</a></li>
+          
+          <li><a href="#method-i-stroke_opacity-3D">#stroke_opacity=</a></li>
+          
+          <li><a href="#method-i-stroke_width">#stroke_width</a></li>
+          
+          <li><a href="#method-i-stroke_width-3D">#stroke_width=</a></li>
+          
+        </ul>
+      </div>
+      
+
+      
+    </div>
+
+    <div id="project-metadata">
+      
+      
+      <div id="fileindex-section" class="section project-section">
+        <h3 class="section-header">Files</h3>
+        <ul>
+        
+          <li class="file"><a href="../release/COPYING.html">COPYING</a></li>
+        
+          <li class="file"><a href="../release/README.html">README</a></li>
+        
+        </ul>
+      </div>
+      
+
+      <div id="classindex-section" class="section project-section">
+        <h3 class="section-header">Class/Module Index
+          <span class="search-toggle"><img src="../images/find.png"
+            height="16" width="16" alt="[+]"
+            title="show/hide quicksearch" /></span></h3>
+        <form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+        <fieldset>
+          <legend>Quicksearch</legend>
+          <input type="text" name="quicksearch" value=""
+            class="quicksearch-field" />
+        </fieldset>
+        </form>
+
+        <ul class="link-list">
+        
+          <li><a href="../DYI.html">DYI</a></li>
+        
+          <li><a href="../DYI/AttributeCreator.html">DYI::AttributeCreator</a></li>
+        
+          <li><a href="../DYI/Chart.html">DYI::Chart</a></li>
+        
+          <li><a href="../DYI/Chart/ArrayReader.html">DYI::Chart::ArrayReader</a></li>
+        
+          <li><a href="../DYI/Chart/AxisUtil.html">DYI::Chart::AxisUtil</a></li>
+        
+          <li><a href="../DYI/Chart/Base.html">DYI::Chart::Base</a></li>
+        
+          <li><a href="../DYI/Chart/CsvReader.html">DYI::Chart::CsvReader</a></li>
+        
+          <li><a href="../DYI/Chart/ExcelReader.html">DYI::Chart::ExcelReader</a></li>
+        
+          <li><a href="../DYI/Chart/Legend.html">DYI::Chart::Legend</a></li>
+        
+          <li><a href="../DYI/Chart/LineChart.html">DYI::Chart::LineChart</a></li>
+        
+          <li><a href="../DYI/Chart/PieChart.html">DYI::Chart::PieChart</a></li>
+        
+          <li><a href="../DYI/Chart/Table.html">DYI::Chart::Table</a></li>
+        
+          <li><a href="../DYI/Color.html">DYI::Color</a></li>
+        
+          <li><a href="../DYI/Coordinate.html">DYI::Coordinate</a></li>
+        
+          <li><a href="../DYI/Drawing.html">DYI::Drawing</a></li>
+        
+          <li><a href="../DYI/Drawing/Brush.html">DYI::Drawing::Brush</a></li>
+        
+          <li><a href="../DYI/Drawing/Canvas.html">DYI::Drawing::Canvas</a></li>
+        
+          <li><a href="../DYI/Drawing/Clipping.html">DYI::Drawing::Clipping</a></li>
+        
+          <li><a href="../DYI/Drawing/ColorEffect.html">DYI::Drawing::ColorEffect</a></li>
+        
+          <li><a href="../DYI/Drawing/ColorEffect/GradientStop.html">DYI::Drawing::ColorEffect::GradientStop</a></li>
+        
+          <li><a href="../DYI/Drawing/ColorEffect/LinearGradient.html">DYI::Drawing::ColorEffect::LinearGradient</a></li>
+        
+          <li><a href="../DYI/Drawing/ColumnBrush.html">DYI::Drawing::ColumnBrush</a></li>
+        
+          <li><a href="../DYI/Drawing/CubicPen.html">DYI::Drawing::CubicPen</a></li>
+        
+          <li><a href="../DYI/Drawing/CylinderBrush.html">DYI::Drawing::CylinderBrush</a></li>
+        
+          <li><a href="../DYI/Drawing/Filter.html">DYI::Drawing::Filter</a></li>
+        
+          <li><a href="../DYI/Drawing/Filter/DropShadow.html">DYI::Drawing::Filter::DropShadow</a></li>
+        
+          <li><a href="../DYI/Drawing/Pen.html">DYI::Drawing::Pen</a></li>
+        
+          <li><a href="../DYI/Drawing/PenBase.html">DYI::Drawing::PenBase</a></li>
+        
+          <li><a href="../DYI/Font.html">DYI::Font</a></li>
+        
+          <li><a href="../DYI/Formatter.html">DYI::Formatter</a></li>
+        
+          <li><a href="../DYI/Formatter/Base.html">DYI::Formatter::Base</a></li>
+        
+          <li><a href="../DYI/Formatter/EmfFormatter.html">DYI::Formatter::EmfFormatter</a></li>
+        
+          <li><a href="../DYI/Formatter/EpsFormatter.html">DYI::Formatter::EpsFormatter</a></li>
+        
+          <li><a href="../DYI/Formatter/SvgFormatter.html">DYI::Formatter::SvgFormatter</a></li>
+        
+          <li><a href="../DYI/Formatter/SvgReader.html">DYI::Formatter::SvgReader</a></li>
+        
+          <li><a href="../DYI/Formatter/XamlFormatter.html">DYI::Formatter::XamlFormatter</a></li>
+        
+          <li><a href="../DYI/Formatter/XmlFormatter.html">DYI::Formatter::XmlFormatter</a></li>
+        
+          <li><a href="../DYI/Length.html">DYI::Length</a></li>
+        
+          <li><a href="../DYI/Matrix.html">DYI::Matrix</a></li>
+        
+          <li><a href="../DYI/Painting.html">DYI::Painting</a></li>
+        
+          <li><a href="../DYI/Shape.html">DYI::Shape</a></li>
+        
+          <li><a href="../DYI/Shape/Base.html">DYI::Shape::Base</a></li>
+        
+          <li><a href="../DYI/Shape/Circle.html">DYI::Shape::Circle</a></li>
+        
+          <li><a href="../DYI/Shape/Ellipse.html">DYI::Shape::Ellipse</a></li>
+        
+          <li><a href="../DYI/Shape/Line.html">DYI::Shape::Line</a></li>
+        
+          <li><a href="../DYI/Shape/Path.html">DYI::Shape::Path</a></li>
+        
+          <li><a href="../DYI/Shape/Polygon.html">DYI::Shape::Polygon</a></li>
+        
+          <li><a href="../DYI/Shape/Polyline.html">DYI::Shape::Polyline</a></li>
+        
+          <li><a href="../DYI/Shape/Rectangle.html">DYI::Shape::Rectangle</a></li>
+        
+          <li><a href="../DYI/Shape/ShapeGroup.html">DYI::Shape::ShapeGroup</a></li>
+        
+          <li><a href="../DYI/Shape/Text.html">DYI::Shape::Text</a></li>
+        
+          <li><a href="../DYI/StringFormat.html">DYI::StringFormat</a></li>
+        
+          <li><a href="../DYI/SvgElement.html">DYI::SvgElement</a></li>
+        
+          <li><a href="../Numeric.html">Numeric</a></li>
+        
+        </ul>
+        <div id="no-class-search-results" style="display: none;">No matching classes.</div>
+      </div>
+
+      
+    </div>
+  </div>
+
+  <div id="documentation">
+    <h1 class="class">DYI::Painting</h1>
+
+    <div id="description" class="description">
+      
+    </div><!-- description -->
+
+    
+    <div id="5Buntitled-5D" class="documentation-section">
+      
+
+      
+
+      
+      <!-- Constants -->
+      <div id="constants-list" class="section">
+        <h3 class="section-header">Constants</h3>
+        <dl>
+        
+          <dt><a name="IMPLEMENT_ATTRIBUTES">IMPLEMENT_ATTRIBUTES</a></dt>
+          
+          <dd class="description"></dd>
+          
+        
+          <dt><a name="VALID_VALUES">VALID_VALUES</a></dt>
+          
+          <dd class="description"></dd>
+          
+        
+        </dl>
+      </div>
+      
+
+      
+
+      <!-- Methods -->
+      
+      <div id="public-class-method-details" class="method-section section">
+        <h3 class="section-header">Public Class Methods</h3>
+
+      
+        <div id="new-method" class="method-detail ">
+          <a name="method-c-new"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">new</span><span
+              class="method-args">(options={})</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="new-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 67</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">options</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-constant">Painting</span>
+    <span class="ruby-constant">IMPLEMENT_ATTRIBUTES</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attr</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">instance_variable_set</span>(<span class="ruby-node">&quot;@#{attr}&quot;</span>, <span class="ruby-identifier">options</span>.<span class="ruby-identifier">__send__</span>(<span class="ruby-identifier">attr</span>))
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-constant">Hash</span>
+    <span class="ruby-identifier">options</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attr</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">__send__</span>(<span class="ruby-node">&quot;#{attr}=&quot;</span>, <span class="ruby-identifier">value</span>) <span class="ruby-keyword">if</span> <span class="ruby-constant">IMPLEMENT_ATTRIBUTES</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">attr</span>.<span class="ruby-identifier">to_sym</span>)
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{options.class} can't be coerced into #{self.class}&quot;</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- new-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- new-method -->
+
+      
+        <div id="new_or_nil-method" class="method-detail ">
+          <a name="method-c-new_or_nil"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">new_or_nil</span><span
+              class="method-args">(*args)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="new_or_nil-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 171</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">new_or_nil</span>(*<span class="ruby-identifier">args</span>)
+  (<span class="ruby-identifier">args</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">nil?</span>) <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">new</span>(*<span class="ruby-identifier">args</span>)
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- new_or_nil-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- new_or_nil-method -->
+
+      
+      </div><!-- public-class-method-details -->
+    
+      <div id="public-instance-method-details" class="method-section section">
+        <h3 class="section-header">Public Instance Methods</h3>
+
+      
+        <div id="attributes-method" class="method-detail ">
+          <a name="method-i-attributes"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">attributes</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="attributes-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 153</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">attributes</span>
+  <span class="ruby-constant">IMPLEMENT_ATTRIBUTES</span>.<span class="ruby-identifier">inject</span>({}) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">hash</span>, <span class="ruby-identifier">attr</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">value</span> = <span class="ruby-identifier">instance_variable_get</span>(<span class="ruby-node">&quot;@#{attr}&quot;</span>)
+    <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-identifier">hash</span>[<span class="ruby-identifier">attr</span>] = <span class="ruby-identifier">value</span> <span class="ruby-comment"># value.respond_to?(:join) ? value.join(',') : value.to_s</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">hash</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- attributes-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- attributes-method -->
+
+      
+        <div id="empty-3F-method" class="method-detail ">
+          <a name="method-i-empty-3F"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">empty?</span><span
+              class="method-args">()</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="empty-3F-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 163</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">empty?</span>
+  <span class="ruby-constant">IMPLEMENT_ATTRIBUTES</span>.<span class="ruby-identifier">all?</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attr</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">not</span> <span class="ruby-identifier">instance_variable_get</span>(<span class="ruby-node">&quot;@#{attr}&quot;</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- empty-3F-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- empty-3F-method -->
+
+      
+        <div id="fill-method" class="method-detail ">
+          <a name="method-i-fill"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">fill</span><span
+              class="method-args"></span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="fill-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 34</span>
+    </pre>
+            </div><!-- fill-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- fill-method -->
+
+      
+        <div id="fill-3D-method" class="method-detail ">
+          <a name="method-i-fill-3D"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">fill=</span><span
+              class="method-args">(color)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="fill-3D-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 115</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">fill=</span>(<span class="ruby-identifier">color</span>)
+  <span class="ruby-ivar">@fill</span> = <span class="ruby-identifier">color</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:color?</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">color</span>.<span class="ruby-identifier">color?</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">color</span> <span class="ruby-operator">:</span> <span class="ruby-constant">Color</span>.<span class="ruby-identifier">new_or_nil</span>(<span class="ruby-identifier">color</span>)
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- fill-3D-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- fill-3D-method -->
+
+      
+        <div id="fill_opacity-method" class="method-detail ">
+          <a name="method-i-fill_opacity"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">fill_opacity</span><span
+              class="method-args"></span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="fill_opacity-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 37</span>
+    </pre>
+            </div><!-- fill_opacity-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- fill_opacity-method -->
+
+      
+        <div id="fill_opacity-3D-method" class="method-detail ">
+          <a name="method-i-fill_opacity-3D"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">fill_opacity=</span><span
+              class="method-args">(opacity)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="fill_opacity-3D-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 123</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">fill_opacity=</span>(<span class="ruby-identifier">opacity</span>)
+  <span class="ruby-ivar">@fill_opacity</span> = <span class="ruby-identifier">opacity</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">opacity</span>.<span class="ruby-identifier">to_f</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- fill_opacity-3D-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- fill_opacity-3D-method -->
+
+      
+        <div id="fill_rule-method" class="method-detail ">
+          <a name="method-i-fill_rule"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">fill_rule</span><span
+              class="method-args"></span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="fill_rule-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 40</span>
+    </pre>
+            </div><!-- fill_rule-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- fill_rule-method -->
+
+      
+        <div id="fill_rule-3D-method" class="method-detail ">
+          <a name="method-i-fill_rule-3D"></a>
+
+          
+          
+          <div class="method-heading">
+            <span class="method-callseq">fill_rule= (value)</span>
+            
+            <span class="method-click-advice">click to toggle source</span>
+            
+          </div>
+          
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="fill_rule-3D-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 89</span>
+    </pre>
+            </div><!-- fill_rule-3D-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- fill_rule-3D-method -->
+
+      
+        <div id="stroke-method" class="method-detail ">
+          <a name="method-i-stroke"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke</span><span
+              class="method-args"></span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 43</span>
+    </pre>
+            </div><!-- stroke-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke-method -->
+
+      
+        <div id="stroke-3D-method" class="method-detail ">
+          <a name="method-i-stroke-3D"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke=</span><span
+              class="method-args">(color)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke-3D-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 119</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">stroke=</span>(<span class="ruby-identifier">color</span>)
+  <span class="ruby-ivar">@stroke</span> = <span class="ruby-identifier">color</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:color?</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">color</span>.<span class="ruby-identifier">color?</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">color</span> <span class="ruby-operator">:</span> <span class="ruby-constant">Color</span>.<span class="ruby-identifier">new_or_nil</span>(<span class="ruby-identifier">color</span>)
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- stroke-3D-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke-3D-method -->
+
+      
+        <div id="stroke_dasharray-method" class="method-detail ">
+          <a name="method-i-stroke_dasharray"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke_dasharray</span><span
+              class="method-args"></span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_dasharray-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 46</span>
+    </pre>
+            </div><!-- stroke_dasharray-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_dasharray-method -->
+
+      
+        <div id="stroke_dasharray-3D-method" class="method-detail ">
+          <a name="method-i-stroke_dasharray-3D"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke_dasharray=</span><span
+              class="method-args">(array)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_dasharray-3D-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 139</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">stroke_dasharray=</span>(<span class="ruby-identifier">array</span>)
+  <span class="ruby-keyword">if</span> (<span class="ruby-identifier">array</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">array</span>.<span class="ruby-identifier">empty?</span>)
+    <span class="ruby-ivar">@stroke_dasharray</span> = <span class="ruby-keyword">nil</span>
+  <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">array</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">String</span>)
+    <span class="ruby-ivar">@stroke_dasharray</span> = <span class="ruby-identifier">array</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp">/\s*,\s*/</span>).<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">len</span><span class="ruby-operator">|</span> <span class="ruby-constant">Length</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">len</span>)}
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-ivar">@stroke_dasharray</span> = <span class="ruby-identifier">array</span>.<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">len</span><span class="ruby-operator">|</span> <span class="ruby-constant">Length</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">len</span>)}
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- stroke_dasharray-3D-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_dasharray-3D-method -->
+
+      
+        <div id="stroke_dashoffset-method" class="method-detail ">
+          <a name="method-i-stroke_dashoffset"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke_dashoffset</span><span
+              class="method-args"></span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_dashoffset-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 49</span>
+    </pre>
+            </div><!-- stroke_dashoffset-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_dashoffset-method -->
+
+      
+        <div id="stroke_dashoffset-3D-method" class="method-detail ">
+          <a name="method-i-stroke_dashoffset-3D"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke_dashoffset=</span><span
+              class="method-args">(offset)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_dashoffset-3D-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 149</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">stroke_dashoffset=</span>(<span class="ruby-identifier">offset</span>)
+  <span class="ruby-ivar">@stroke_dashoffset</span> = <span class="ruby-constant">Length</span>.<span class="ruby-identifier">new_or_nil</span>(<span class="ruby-identifier">offset</span>)
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- stroke_dashoffset-3D-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_dashoffset-3D-method -->
+
+      
+        <div id="stroke_linecap-method" class="method-detail ">
+          <a name="method-i-stroke_linecap"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke_linecap</span><span
+              class="method-args"></span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_linecap-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 52</span>
+    </pre>
+            </div><!-- stroke_linecap-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_linecap-method -->
+
+      
+        <div id="stroke_linecap-3D-method" class="method-detail ">
+          <a name="method-i-stroke_linecap-3D"></a>
+
+          
+          
+          <div class="method-heading">
+            <span class="method-callseq">stroke_linecap= (value)</span>
+            
+            <span class="method-click-advice">click to toggle source</span>
+            
+          </div>
+          
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_linecap-3D-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 96</span>
+    </pre>
+            </div><!-- stroke_linecap-3D-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_linecap-3D-method -->
+
+      
+        <div id="stroke_linejoin-method" class="method-detail ">
+          <a name="method-i-stroke_linejoin"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke_linejoin</span><span
+              class="method-args"></span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_linejoin-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 55</span>
+    </pre>
+            </div><!-- stroke_linejoin-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_linejoin-method -->
+
+      
+        <div id="stroke_linejoin-3D-method" class="method-detail ">
+          <a name="method-i-stroke_linejoin-3D"></a>
+
+          
+          
+          <div class="method-heading">
+            <span class="method-callseq">stroke_linejoin= (value)</span>
+            
+            <span class="method-click-advice">click to toggle source</span>
+            
+          </div>
+          
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_linejoin-3D-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 103</span>
+    </pre>
+            </div><!-- stroke_linejoin-3D-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_linejoin-3D-method -->
+
+      
+        <div id="stroke_miterlimit-method" class="method-detail ">
+          <a name="method-i-stroke_miterlimit"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke_miterlimit</span><span
+              class="method-args"></span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_miterlimit-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 58</span>
+    </pre>
+            </div><!-- stroke_miterlimit-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_miterlimit-method -->
+
+      
+        <div id="stroke_miterlimit-3D-method" class="method-detail ">
+          <a name="method-i-stroke_miterlimit-3D"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke_miterlimit=</span><span
+              class="method-args">(miterlimit)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_miterlimit-3D-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 135</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">stroke_miterlimit=</span>(<span class="ruby-identifier">miterlimit</span>)
+  <span class="ruby-ivar">@stroke_miterlimit</span> = <span class="ruby-identifier">miterlimit</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">miterlimit</span>.<span class="ruby-identifier">to_f</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- stroke_miterlimit-3D-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_miterlimit-3D-method -->
+
+      
+        <div id="stroke_opacity-method" class="method-detail ">
+          <a name="method-i-stroke_opacity"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke_opacity</span><span
+              class="method-args"></span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_opacity-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 61</span>
+    </pre>
+            </div><!-- stroke_opacity-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_opacity-method -->
+
+      
+        <div id="stroke_opacity-3D-method" class="method-detail ">
+          <a name="method-i-stroke_opacity-3D"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke_opacity=</span><span
+              class="method-args">(opacity)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_opacity-3D-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 127</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">stroke_opacity=</span>(<span class="ruby-identifier">opacity</span>)
+  <span class="ruby-ivar">@stroke_opacity</span> = <span class="ruby-identifier">opacity</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">opacity</span>.<span class="ruby-identifier">to_f</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- stroke_opacity-3D-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_opacity-3D-method -->
+
+      
+        <div id="stroke_width-method" class="method-detail ">
+          <a name="method-i-stroke_width"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke_width</span><span
+              class="method-args"></span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_width-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 64</span>
+    </pre>
+            </div><!-- stroke_width-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_width-method -->
+
+      
+        <div id="stroke_width-3D-method" class="method-detail ">
+          <a name="method-i-stroke_width-3D"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">stroke_width=</span><span
+              class="method-args">(width)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="stroke_width-3D-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/painting.rb, line 131</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">stroke_width=</span>(<span class="ruby-identifier">width</span>)
+  <span class="ruby-ivar">@stroke_width</span> = <span class="ruby-constant">Length</span>.<span class="ruby-identifier">new_or_nil</span>(<span class="ruby-identifier">width</span>)
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- stroke_width-3D-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- stroke_width-3D-method -->
+
+      
+      </div><!-- public-instance-method-details -->
+    
+    </div><!-- 5Buntitled-5D -->
+  
+
+  </div><!-- documentation -->
+
+  <div id="validator-badges">
+    <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+    <p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+      Rdoc Generator</a> 2</small>.</p>
+  </div>
+
+</body>
+</html>
+

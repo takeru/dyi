@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta content="text/html; charset=utf8" http-equiv="Content-Type" />
+
+  <title>Class: DYI::Chart::CsvReader</title>
+
+  <link rel="stylesheet" href="../../rdoc.css" type="text/css" media="screen" />
+
+  <script src="../../js/jquery.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../../js/thickbox-compressed.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../../js/quicksearch.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../../js/darkfish.js" type="text/javascript" charset="utf-8"></script>
+
+</head>
+<body id="top" class="class">
+
+  <div id="metadata">
+    <div id="home-metadata">
+      <div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#classes">Classes</a>
+          <a href="../../index.html#methods">Methods</a>
+        </h3>
+      </div>
+    </div>
+
+    <div id="file-metadata">
+      <div id="file-list-section" class="section">
+        <h3 class="section-header">In Files</h3>
+        <div class="section-body">
+          <ul>
+          
+            <li><a href="../../release/lib/dyi/chart/csv_reader_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+              class="thickbox" title="release/lib/dyi/chart/csv_reader.rb">release/lib/dyi/chart/csv_reader.rb</a></li>
+          
+            <li><a href="../../release/lib/ironruby_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+              class="thickbox" title="release/lib/ironruby.rb">release/lib/ironruby.rb</a></li>
+          
+          </ul>
+        </div>
+      </div>
+
+      
+    </div>
+
+    <div id="class-metadata">
+      
+      <!-- Parent Class -->
+      <div id="parent-class-section" class="section">
+        <h3 class="section-header">Parent</h3>
+        
+        <p class="link"><a href="ArrayReader.html">DYI::Chart::ArrayReader</a></p>
+        
+      </div>
+      
+
+      
+
+      
+
+      
+      <!-- Method Quickref -->
+      <div id="method-list-section" class="section">
+        <h3 class="section-header">Methods</h3>
+        <ul class="link-list">
+          
+          <li><a href="#method-c-read">::read</a></li>
+          
+          <li><a href="#method-i-primitive_title_value">#primitive_title_value</a></li>
+          
+          <li><a href="#method-i-primitive_value">#primitive_value</a></li>
+          
+          <li><a href="#method-i-read">#read</a></li>
+          
+        </ul>
+      </div>
+      
+
+      
+    </div>
+
+    <div id="project-metadata">
+      
+      
+      <div id="fileindex-section" class="section project-section">
+        <h3 class="section-header">Files</h3>
+        <ul>
+        
+          <li class="file"><a href="../../release/COPYING.html">COPYING</a></li>
+        
+          <li class="file"><a href="../../release/README.html">README</a></li>
+        
+        </ul>
+      </div>
+      
+
+      <div id="classindex-section" class="section project-section">
+        <h3 class="section-header">Class/Module Index
+          <span class="search-toggle"><img src="../../images/find.png"
+            height="16" width="16" alt="[+]"
+            title="show/hide quicksearch" /></span></h3>
+        <form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+        <fieldset>
+          <legend>Quicksearch</legend>
+          <input type="text" name="quicksearch" value=""
+            class="quicksearch-field" />
+        </fieldset>
+        </form>
+
+        <ul class="link-list">
+        
+          <li><a href="../../DYI.html">DYI</a></li>
+        
+          <li><a href="../../DYI/AttributeCreator.html">DYI::AttributeCreator</a></li>
+        
+          <li><a href="../../DYI/Chart.html">DYI::Chart</a></li>
+        
+          <li><a href="../../DYI/Chart/ArrayReader.html">DYI::Chart::ArrayReader</a></li>
+        
+          <li><a href="../../DYI/Chart/AxisUtil.html">DYI::Chart::AxisUtil</a></li>
+        
+          <li><a href="../../DYI/Chart/Base.html">DYI::Chart::Base</a></li>
+        
+          <li><a href="../../DYI/Chart/CsvReader.html">DYI::Chart::CsvReader</a></li>
+        
+          <li><a href="../../DYI/Chart/ExcelReader.html">DYI::Chart::ExcelReader</a></li>
+        
+          <li><a href="../../DYI/Chart/Legend.html">DYI::Chart::Legend</a></li>
+        
+          <li><a href="../../DYI/Chart/LineChart.html">DYI::Chart::LineChart</a></li>
+        
+          <li><a href="../../DYI/Chart/PieChart.html">DYI::Chart::PieChart</a></li>
+        
+          <li><a href="../../DYI/Chart/Table.html">DYI::Chart::Table</a></li>
+        
+          <li><a href="../../DYI/Color.html">DYI::Color</a></li>
+        
+          <li><a href="../../DYI/Coordinate.html">DYI::Coordinate</a></li>
+        
+          <li><a href="../../DYI/Drawing.html">DYI::Drawing</a></li>
+        
+          <li><a href="../../DYI/Drawing/Brush.html">DYI::Drawing::Brush</a></li>
+        
+          <li><a href="../../DYI/Drawing/Canvas.html">DYI::Drawing::Canvas</a></li>
+        
+          <li><a href="../../DYI/Drawing/Clipping.html">DYI::Drawing::Clipping</a></li>
+        
+          <li><a href="../../DYI/Drawing/ColorEffect.html">DYI::Drawing::ColorEffect</a></li>
+        
+          <li><a href="../../DYI/Drawing/ColorEffect/GradientStop.html">DYI::Drawing::ColorEffect::GradientStop</a></li>
+        
+          <li><a href="../../DYI/Drawing/ColorEffect/LinearGradient.html">DYI::Drawing::ColorEffect::LinearGradient</a></li>
+        
+          <li><a href="../../DYI/Drawing/ColumnBrush.html">DYI::Drawing::ColumnBrush</a></li>
+        
+          <li><a href="../../DYI/Drawing/CubicPen.html">DYI::Drawing::CubicPen</a></li>
+        
+          <li><a href="../../DYI/Drawing/CylinderBrush.html">DYI::Drawing::CylinderBrush</a></li>
+        
+          <li><a href="../../DYI/Drawing/Filter.html">DYI::Drawing::Filter</a></li>
+        
+          <li><a href="../../DYI/Drawing/Filter/DropShadow.html">DYI::Drawing::Filter::DropShadow</a></li>
+        
+          <li><a href="../../DYI/Drawing/Pen.html">DYI::Drawing::Pen</a></li>
+        
+          <li><a href="../../DYI/Drawing/PenBase.html">DYI::Drawing::PenBase</a></li>
+        
+          <li><a href="../../DYI/Font.html">DYI::Font</a></li>
+        
+          <li><a href="../../DYI/Formatter.html">DYI::Formatter</a></li>
+        
+          <li><a href="../../DYI/Formatter/Base.html">DYI::Formatter::Base</a></li>
+        
+          <li><a href="../../DYI/Formatter/EmfFormatter.html">DYI::Formatter::EmfFormatter</a></li>
+        
+          <li><a href="../../DYI/Formatter/EpsFormatter.html">DYI::Formatter::EpsFormatter</a></li>
+        
+          <li><a href="../../DYI/Formatter/SvgFormatter.html">DYI::Formatter::SvgFormatter</a></li>
+        
+          <li><a href="../../DYI/Formatter/SvgReader.html">DYI::Formatter::SvgReader</a></li>
+        
+          <li><a href="../../DYI/Formatter/XamlFormatter.html">DYI::Formatter::XamlFormatter</a></li>
+        
+          <li><a href="../../DYI/Formatter/XmlFormatter.html">DYI::Formatter::XmlFormatter</a></li>
+        
+          <li><a href="../../DYI/Length.html">DYI::Length</a></li>
+        
+          <li><a href="../../DYI/Matrix.html">DYI::Matrix</a></li>
+        
+          <li><a href="../../DYI/Painting.html">DYI::Painting</a></li>
+        
+          <li><a href="../../DYI/Shape.html">DYI::Shape</a></li>
+        
+          <li><a href="../../DYI/Shape/Base.html">DYI::Shape::Base</a></li>
+        
+          <li><a href="../../DYI/Shape/Circle.html">DYI::Shape::Circle</a></li>
+        
+          <li><a href="../../DYI/Shape/Ellipse.html">DYI::Shape::Ellipse</a></li>
+        
+          <li><a href="../../DYI/Shape/Line.html">DYI::Shape::Line</a></li>
+        
+          <li><a href="../../DYI/Shape/Path.html">DYI::Shape::Path</a></li>
+        
+          <li><a href="../../DYI/Shape/Polygon.html">DYI::Shape::Polygon</a></li>
+        
+          <li><a href="../../DYI/Shape/Polyline.html">DYI::Shape::Polyline</a></li>
+        
+          <li><a href="../../DYI/Shape/Rectangle.html">DYI::Shape::Rectangle</a></li>
+        
+          <li><a href="../../DYI/Shape/ShapeGroup.html">DYI::Shape::ShapeGroup</a></li>
+        
+          <li><a href="../../DYI/Shape/Text.html">DYI::Shape::Text</a></li>
+        
+          <li><a href="../../DYI/StringFormat.html">DYI::StringFormat</a></li>
+        
+          <li><a href="../../DYI/SvgElement.html">DYI::SvgElement</a></li>
+        
+          <li><a href="../../Numeric.html">Numeric</a></li>
+        
+        </ul>
+        <div id="no-class-search-results" style="display: none;">No matching classes.</div>
+      </div>
+
+      
+    </div>
+  </div>
+
+  <div id="documentation">
+    <h1 class="class">DYI::Chart::CsvReader</h1>
+
+    <div id="description" class="description">
+      
+    </div><!-- description -->
+
+    
+    <div id="5Buntitled-5D" class="documentation-section">
+      
+
+      
+
+      
+
+      
+
+      <!-- Methods -->
+      
+      <div id="private-class-method-details" class="method-section section">
+        <h3 class="section-header">Private Class Methods</h3>
+
+      
+        <div id="read-method" class="method-detail ">
+          <a name="method-c-read"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">read</span><span
+              class="method-args">(path, options={})</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="read-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/chart/csv_reader.rb, line 86</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">read</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">options</span>={})
+  <span class="ruby-identifier">new</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">options</span>)
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- read-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- read-method -->
+
+      
+      </div><!-- private-class-method-details -->
+    
+      <div id="public-instance-method-details" class="method-section section">
+        <h3 class="section-header">Public Instance Methods</h3>
+
+      
+        <div id="read-method" class="method-detail ">
+          <a name="method-i-read"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">read</span><span
+              class="method-args">(path, options={})</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="read-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/chart/csv_reader.rb, line 30</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">read</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">options</span>={})
+  <span class="ruby-identifier">options</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">dup</span>
+  <span class="ruby-ivar">@date_format</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value">:date_format</span>)
+  <span class="ruby-ivar">@datetime_format</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value">:datetime_format</span>)
+  <span class="ruby-identifier">nkf_options</span> =
+    <span class="ruby-keyword">case</span> (<span class="ruby-identifier">options</span>[<span class="ruby-value">:encode</span>] <span class="ruby-operator">||</span> <span class="ruby-value">:utf8</span>).<span class="ruby-identifier">to_sym</span>
+      <span class="ruby-keyword">when</span> <span class="ruby-value">:utf8</span> <span class="ruby-keyword">then</span> <span class="ruby-keyword">nil</span>
+      <span class="ruby-keyword">when</span> <span class="ruby-value">:sjis</span> <span class="ruby-keyword">then</span> <span class="ruby-string">'-w -S -m0 -x --cp932'</span>
+      <span class="ruby-keyword">when</span> <span class="ruby-value">:euc</span> <span class="ruby-keyword">then</span> <span class="ruby-string">'-w -E -m0 -x --cp932'</span>
+      <span class="ruby-keyword">when</span> <span class="ruby-value">:jis</span> <span class="ruby-keyword">then</span> <span class="ruby-string">'-w -J -m0 -x'</span>
+      <span class="ruby-keyword">when</span> <span class="ruby-value">:utf16</span> <span class="ruby-keyword">then</span> <span class="ruby-string">'-w -W16 -m0 -x'</span>
+      <span class="ruby-keyword">else</span> <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>,<span class="ruby-node">&quot;Unknown encode: `#{@encode}'&quot;</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">parsed_array</span> = 
+    <span class="ruby-keyword">if</span> <span class="ruby-constant">RUBY_VERSION</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-string">'1.9'</span>
+      <span class="ruby-constant">CSV</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">nkf_options</span> <span class="ruby-operator">?</span> <span class="ruby-constant">NKF</span>.<span class="ruby-identifier">nkf</span>(<span class="ruby-identifier">nkf_options</span>, <span class="ruby-constant">IO</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">path</span>)) <span class="ruby-operator">:</span> <span class="ruby-constant">IO</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">path</span>), <span class="ruby-value">:col_sep</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:col_sep</span>] <span class="ruby-operator">||</span> <span class="ruby-string">','</span>, <span class="ruby-value">:row_sep</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:row_sep</span>] <span class="ruby-operator">||</span> <span class="ruby-value">:auto</span>)
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-constant">CSV</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">nkf_options</span> <span class="ruby-operator">?</span> <span class="ruby-constant">NKF</span>.<span class="ruby-identifier">nkf</span>(<span class="ruby-identifier">nkf_options</span>, <span class="ruby-constant">IO</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">path</span>)) <span class="ruby-operator">:</span> <span class="ruby-constant">IO</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">path</span>), <span class="ruby-identifier">options</span>[<span class="ruby-value">:col_sep</span>], <span class="ruby-identifier">options</span>[<span class="ruby-value">:row_sep</span>])
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">super</span>(<span class="ruby-identifier">parsed_array</span>, <span class="ruby-identifier">options</span>)
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- read-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- read-method -->
+
+      
+      </div><!-- public-instance-method-details -->
+    
+      <div id="private-instance-method-details" class="method-section section">
+        <h3 class="section-header">Private Instance Methods</h3>
+
+      
+        <div id="primitive_title_value-method" class="method-detail ">
+          <a name="method-i-primitive_title_value"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">primitive_title_value</span><span
+              class="method-args">(value, type=nil)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="primitive_title_value-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/chart/csv_reader.rb, line 81</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">primitive_title_value</span>(<span class="ruby-identifier">value</span>, <span class="ruby-identifier">type</span>=<span class="ruby-keyword">nil</span>)
+  <span class="ruby-identifier">value</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- primitive_title_value-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- primitive_title_value-method -->
+
+      
+        <div id="primitive_value-method" class="method-detail ">
+          <a name="method-i-primitive_value"></a>
+
+          
+          <div class="method-heading">
+            <span class="method-name">primitive_value</span><span
+              class="method-args">(value, type)</span>
+            <span class="method-click-advice">click to toggle source</span>
+          </div>
+          
+
+          <div class="method-description">
+            
+            
+            
+
+            
+            <div class="method-source-code" id="primitive_value-source">
+<pre>
+<span class="ruby-comment"># File release/lib/dyi/chart/csv_reader.rb, line 54</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">primitive_value</span>(<span class="ruby-identifier">value</span>, <span class="ruby-identifier">type</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>)
+    <span class="ruby-keyword">case</span> <span class="ruby-identifier">type</span>.<span class="ruby-identifier">to_sym</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-value">:string</span>
+      <span class="ruby-identifier">value</span> <span class="ruby-operator">||</span> <span class="ruby-string">''</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-value">:number</span>, <span class="ruby-value">:decimal</span>
+      <span class="ruby-identifier">value</span> <span class="ruby-operator">?</span> <span class="ruby-constant">BigDecimal</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">value</span>) <span class="ruby-operator">:</span> <span class="ruby-keyword">nil</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-value">:float</span>
+      <span class="ruby-identifier">value</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_f</span> <span class="ruby-operator">:</span> <span class="ruby-keyword">nil</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-value">:integer</span>
+      <span class="ruby-identifier">value</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-operator">:</span> <span class="ruby-keyword">nil</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-value">:date</span>
+      <span class="ruby-keyword">return</span> <span class="ruby-keyword">nil</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-ivar">@date_format</span> <span class="ruby-operator">?</span> <span class="ruby-constant">Date</span>.<span class="ruby-identifier">strptime</span>(<span class="ruby-identifier">value</span>, <span class="ruby-ivar">@date_format</span>) <span class="ruby-operator">:</span> <span class="ruby-constant">Date</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">value</span>)
+    <span class="ruby-keyword">when</span> <span class="ruby-value">:datetime</span>
+      <span class="ruby-keyword">return</span> <span class="ruby-keyword">nil</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-ivar">@datetime_format</span> <span class="ruby-operator">?</span> <span class="ruby-constant">DateTime</span>.<span class="ruby-identifier">strptime</span>(<span class="ruby-identifier">value</span>, <span class="ruby-ivar">@datetime_format</span>) <span class="ruby-operator">:</span> <span class="ruby-constant">DateTime</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">value</span>)
+    <span class="ruby-keyword">when</span> <span class="ruby-value">:boolean</span>
+      <span class="ruby-identifier">value</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">true</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">value</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">value</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_f</span> <span class="ruby-operator">:</span> <span class="ruby-keyword">nil</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">value</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_f</span> <span class="ruby-operator">:</span> <span class="ruby-keyword">nil</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+            </div><!-- primitive_value-source -->
+            
+          </div>
+
+          
+
+          
+        </div><!-- primitive_value-method -->
+
+      
+      </div><!-- private-instance-method-details -->
+    
+    </div><!-- 5Buntitled-5D -->
+  
+
+  </div><!-- documentation -->
+
+  <div id="validator-badges">
+    <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+    <p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+      Rdoc Generator</a> 2</small>.</p>
+  </div>
+
+</body>
+</html>
+
