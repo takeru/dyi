@@ -852,7 +852,7 @@ module DYI #:nodoc:
         end
 
         def last_point
-          (relative? && preceding_command.nil?) ? preceding_command : super
+          (relative? && preceding_command.nil?) ? point : super
         end
 
         def relative?
