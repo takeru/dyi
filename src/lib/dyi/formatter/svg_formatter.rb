@@ -119,8 +119,7 @@ module DYI #:nodoc:
       end
 
       def write_path(shape, io)
-#        attrs = {:d => shape.concise_path_data}
-        attrs = {:d => shape.compatible_path_data.to_concise_syntax}
+        attrs = {:d => shape.concise_path_data}
         attrs.merge!(common_attributes(shape))
         create_leaf_node(io, 'path', attrs)
       end

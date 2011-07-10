@@ -1135,11 +1135,16 @@ module DYI #:nodoc:
           @relative = relative
           @preceding_command = preceding_command
           @point = Coordinate.new(point)
-          @rx = Length.new(rx)
-          @ry = Length.new(ry)
           @rotation = rotation
           @is_large_arc = is_large_arc
           @is_clockwise = is_clockwise
+          @rx = Length.new(rx).abs
+          @ry = Length.new(ry).abs
+          l = (modified_mid_point.x.to_f / @rx.to_f) ** 2 + (modified_mid_point.y.to_f / @ry.to_f) ** 2
+          if 1 < l
+            @rx *= Math.sqrt(l)
+            @ry *= Math.sqrt(l)
+          end
         end
 
         def large_arc?
@@ -1151,6 +1156,7 @@ module DYI #:nodoc:
         end
 
         def to_compatible_commands(preceding_command)
+          return LineCommand.new(relative?, preceding_command, point) if rx.zero? || ry.zero?
           division_count = (center_angle / 30.0).ceil
           division_angle = center_angle / division_count * (clockwise? ? 1 : -1)
           current_point = start_angle_point
@@ -1163,12 +1169,16 @@ module DYI #:nodoc:
                         end
             control_point1 = control_point_of_curve(current_point, division_angle, true)
             control_point2 = control_point_of_curve(end_point, division_angle, false)
-            preceding_command = CurveCommand.new(relative?,
-                                                 preceding_command,
-                                                 control_point1,
-                                                 control_point2,
-                                                 (i == division_count - 1) ?
-                                                   point : transform_orginal_shape(end_point))
+            path_point = (i == division_count - 1) ? point : transform_orginal_shape(end_point)
+            if relative?
+              control_point1 += preceding_point
+              control_point2 += preceding_point
+              path_point += preceding_point
+            end
+            preceding_command = CurveCommand.absolute_commands(preceding_command,
+                                                               control_point1,
+                                                               control_point2,
+                                                               path_point).first
             compat_commands << preceding_command
             current_point = end_point
           end
@@ -1185,13 +1195,15 @@ module DYI #:nodoc:
         end
 
         def center_point
-          Matrix.rotate(rotation).transform(modified_center_point) + (preceding_point + point) * 0.5
+          st_pt = relative? ? Coordinate::ZERO : preceding_point
+          Matrix.rotate(rotation).transform(modified_center_point) + (st_pt + point) * 0.5
         end
 
         private
 
         def modified_mid_point
-          Matrix.rotate(-rotation).transform((preceding_point - point) * 0.5)
+          st_pt = relative? ? Coordinate::ZERO : preceding_point
+          Matrix.rotate(-rotation).transform((st_pt - point) * 0.5)
         end
 
         def modified_center_point
@@ -1234,7 +1246,15 @@ module DYI #:nodoc:
 
         class << self
           def commands(relative, preceding_command, *args)
-            new(relative, preceding_command, *args)
+            raise ArgumentError, "number of arguments must be a multipule of 6" if args.size % 6 != 0
+            cmd = preceding_command
+            args.each_slice(6).inject([]) do |cmds, ars|
+              if ars[0].zero? || ars[1].zero?
+                cmds << (cmd = LineCommand.new(relative, cmd, ars.last))
+              else
+                cmds << (cmd = new(relative, cmd, *ars))
+              end
+            end
           end
         end
       end
