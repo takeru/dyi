@@ -117,7 +117,7 @@ module DYI #:nodoc:
       end
 
       def set_clipping_shapes(*shapes)
-        @clipping = Drawing::Compositing::Clip.new(*shapes)
+        @clipping = Drawing::Clipping.new(*shapes)
       end
 
       private
