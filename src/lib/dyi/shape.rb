@@ -946,7 +946,7 @@ module DYI #:nodoc:
         end
 
         def to_compatible_commands(preceding_command)
-          LineCommand.new(relative?, preceding_command, pt)
+          LineCommand.new(relative?, preceding_command, @point)
         end
 
         def to_concise_syntax_fragments
@@ -964,7 +964,7 @@ module DYI #:nodoc:
         end
 
         def to_compatible_commands(preceding_command)
-          LineCommand.new(relative?, preceding_command, pt)
+          LineCommand.new(relative?, preceding_command, @point)
         end
 
         def to_concise_syntax_fragments
