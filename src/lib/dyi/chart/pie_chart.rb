@@ -129,11 +129,11 @@ module DYI #:nodoc:
           legend_point = Coordinate.new(
             chart_radius_x * (data_label_position + (dr || 0)) * Math.cos(((accumulation * 2.0 + value) / total_value - 0.5) * Math::PI),
             chart_radius_y * (data_label_position + (dr || 0)) * Math.sin(((accumulation * 2.0 + value) / total_value - 0.5) * Math::PI))
-          Drawing::Pen.black_pen(:font => legend_font).draw_text(
+          Drawing::Pen.black_pen(:font => data_label_font).draw_text(
             @data_label_canvas,
             center_point + legend_point,
             data_label_format.gsub(/\{name\}/, name).gsub(/\{value\}/, value.to_s).gsub(/\{percent\}/, '%.1f%' % (ratio * 100.0).to_s),
-            :text_anchor => 'middle', :font => data_label_font)
+            :text_anchor => 'middle')
         end if hide_data_label_ratio < ratio
       end
     end
