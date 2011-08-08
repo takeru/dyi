@@ -391,7 +391,10 @@ module DYI #:nodoc:
       attr_painting :painting
 
       def initialize(start_point, options={})
-        @path_data = PathData.new(start_point)
+        @path_data = case start_point
+                       when PathData then start_point
+                       else PathData.new(start_point)
+                     end
         @attributes = init_attributes(options)
       end
 

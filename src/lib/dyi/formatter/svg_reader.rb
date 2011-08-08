@@ -19,6 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'enumerator'
 require 'rexml/document'
 
 module DYI #:nodoc:
@@ -70,42 +71,75 @@ module DYI #:nodoc:
 
         def create_path(element)
           color = DYI::Color.new(element.attributes['fill']) if element.attributes['fill'] != 'none'
-          pathes = element.attributes['d'].scan(/(M|L|l|H|h|V|v|C|c|z)\s*(\s*(?:\s*,?[\-\.0-9]+)*)/)
-          path = nil
-          if pathes.first.first == 'M'
-            pathes.each do |p_el|
-              coors = p_el[1].scan(/-?[\.0-9]+/).map {|s| s.to_f}
-              case p_el.first
-              when 'M'
-                if path
-                  path.move_to(coors)
-                else
-                  path = DYI::Shape::Path.new(coors, :painting => {:fill => color})
+          paths = element.attributes['d'].scan(/([MmZzLlHhVvCcSsQqTtAa])\s*([+-]?(?:\d+\.?\d*|\.\d+)(?:\s*,?\s*[+-]?(?:\d+\.?\d*|\.\d+))*)?/)
+          enumerator = paths.each
+          path_element = enumerator.next
+          if path_element.first.upcase == 'M'
+            lengths = path_element[1].scan(/[+-]?(?:\d+\.?\d*|\.\d+)/).map{|n| DYI::Length.new(n)}
+            return if lengths.count % 2 == 1
+            points = lengths.each_slice(2).map{|x, y| DYI::Coordinate.new(x, y)}
+            path_data = DYI::Shape::Path::PathData.new(*points)
+            loop do
+              path_element = enumerator.next
+              case path_element.first
+              when 'M', 'm', 'L', 'l', 'C', 'c', 'S', 's', 'Q', 'q', 'T', 't'
+                lengths = path_element[1].scan(/[+-]?(?:\d+\.?\d*|\.\d+)/).map{|n| DYI::Length.new(n)}
+                return unless lengths.size % 2 == 0
+                command_type = case path_element.first
+                                 when 'M' then :move_to
+                                 when 'm' then :rmove_to
+                                 when 'L' then :line_to
+                                 when 'l' then :rline_to
+                                 when 'C' then :curve_to
+                                 when 'c' then :rcurve_to
+                                 when 'S' then :shorthand_curve_to
+                                 when 's' then :rshorthand_curve_to
+                                 when 'Q' then :quadratic_curve_to
+                                 when 'q' then :rquadratic_curve_to
+                                 when 'T' then :shorthand_quadratic_curve_to
+                                 when 't' then :rshorthand_quadratic_curve_to
+                               end
+                points = lengths.each_slice(2).map{|x, y| DYI::Coordinate.new(x, y)}
+                path_data.push_command(command_type, *points)
+              when 'Z', 'z'
+                path_data.push_command(:close_path, *lengths)
+              when 'H', 'h', 'V', 'v'
+                lengths = path_element[1].scan(/[+-]?(?:\d+\.?\d*|\.\d+)/).map{|n| DYI::Length.new(n)}
+                command_type = case path_element.first
+                                 when 'H' then :horizontal_lineto_to
+                                 when 'h' then :rhorizontal_lineto_to
+                                 when 'V' then :vertical_lineto_to
+                                 when 'v' then :rvertical_lineto_to
+                               end
+                path_data.push_command(command_type, *lengths)
+              when 'A', 'a'
+                params = []
+                enumerator = path_element[1].scan(/[+-]?(?:\d+\.?\d*|\.\d+)/).each
+                return unless enumerator.count % 7 == 0
+                loop do
+                  rx = enumerator.next
+                  ry = enumerator.next
+                  rotation = enumerator.next
+                  is_large_arc = enumerator.next
+                  is_clockwise = enumerator.next
+                  cx = enumerator.next
+                  cy = enumerator.next
+                  params << DYI::Length.new(rx) << DYI::Length.new(ry)
+                  params << rotation.to_f
+                  [is_large_arc, is_clockwise].each do |flg|
+                    case flg
+                      when '0' then params << false
+                      when '1' then params << true
+                      else return
+                    end
+                  end
+                  params << Coordinate.new(cx, cy)
                 end
-              when 'L'
-                path.line_to(coors)
-              when 'l'
-                path.line_to(coors, true)
-              when 'H'
-    p 'H'
-                path.line_to([coors.first, path.current_point.y])
-              when 'h'
-                path.line_to([coors.first, 0], true)
-              when 'V'
-    p 'V'
-                path.line_to([path.current_point.x, coors.first])
-              when 'v'
-                path.line_to([0, coors.first], true)
-              when 'C'
-                path.curve_to([coors[0..1], coors[2..3], coors[4..5]])
-              when 'c'
-                path.curve_to([coors[0..1], coors[2..3], coors[4..5]], true)
-              when 'z'
-                path.close_path
+                path_data.push_command(path_element.first == 'A' ? :arc_to : :rarc_to, *params)
               end
             end
           end
-          path
+          DYI::Shape::Path.new(path_data, :painting => {:fill => color})
         end
       end
     end
