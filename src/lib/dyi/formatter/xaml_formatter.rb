@@ -286,7 +286,7 @@ module DYI #:nodoc:
           if linejoin = STROKE_LINE_JOIN[painting.stroke_linejoin]
             attr[:StrokeLineJoin] = linejoin
           end
-          attr[:StrokeMitterLimit] = painting.stroke_miterlimit if painting.stroke_miterlimit
+          attr[:StrokeMiterLimit] = painting.stroke_miterlimit if painting.stroke_miterlimit
           if painting.stroke_width
             attr[:StrokeThickness] = painting.stroke_width.to_user_unit
           end
