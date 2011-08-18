@@ -134,7 +134,7 @@ module DYI #:nodoc:
     end
 
     def stroke_miterlimit=(miterlimit)
-      @stroke_miterlimit = miterlimit.nil? ? nil : miterlimit.to_f
+      @stroke_miterlimit = miterlimit.nil? ? nil : [miterlimit.to_f, 1].max
     end
 
     def stroke_dasharray=(array)
