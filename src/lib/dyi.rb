@@ -21,7 +21,8 @@
 
 
 module DYI
-  VERSION = '0.0.0'
+  VERSION = '0.0.2'
+  URL = 'http://sourceforge.net/projects/dyi/'
 end
 
 %w(

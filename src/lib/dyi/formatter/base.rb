@@ -175,7 +175,7 @@ module DYI #:nodoc:
       end
 
       def generator_comment
-        %Q{<!-- Create with DYI #{VERSION} (http://xxxx/) -->}
+        %Q{<!-- Create with DYI #{DYI::VERSION} (#{DYI::URL}) -->}
       end
 
       def declaration

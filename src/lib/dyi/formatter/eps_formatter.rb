@@ -29,6 +29,7 @@ module DYI #:nodoc:
       def header_comment
         <<-EOS
 %!PS-Adobe-3.0 EPSF-3.0
+%%Creator: DYI #{DYI::VERSION} (#{DYI::URL})
 %%CreationDate: #{Time.now.strftime('%a %b %d %H:%M:%S %Y')}
 %%BoundingBox: 0 0 #{@canvas.real_width.to_f('pt').ceil}  #{@canvas.real_height.to_f('pt').ceil}
 %%EndComments
