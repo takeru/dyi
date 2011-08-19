@@ -75,7 +75,7 @@ module DYI #:nodoc:
         if represent_3d?
           brush = Drawing::ColumnBrush.new(back_translate_value.merge(chart_stroke_color ? {:stroke_width => chart_stroke_width, :stroke => chart_stroke_color} : {}))
         else
-          brush = Drawing::Brush.new(chart_stroke_color ? {:stroke_width => chart_stroke_width, :stroke => chart_stroke_color, :stroke_miterlimit => chart_stroke_width / 2.0} : {})
+          brush = Drawing::Brush.new(chart_stroke_color ? {:stroke_width => chart_stroke_width, :stroke => chart_stroke_color, :stroke_miterlimit => chart_stroke_width} : {})
         end
         @chart_canvas = Shape::ShapeGroup.draw_on(@canvas)
         @data_label_canvas = Shape::ShapeGroup.draw_on(@canvas)
