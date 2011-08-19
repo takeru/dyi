@@ -1,4 +1,7 @@
-require '../lib/dyi'
+# -*- encoding: UTF-8 -*-
+
+require 'rubygems'
+require 'dyi'
 
 class ClassBox
   def initialize class_name
@@ -148,4 +151,4 @@ pen.draw_rectangle(canvas, [310, 600], 770, 200)
 pen.draw_text(canvas, [730, 620], 'DYI::Shape')
 base_class.draw(canvas, pen, [650,630])
 
-canvas.save 'output/test.svg'
+canvas.save 'output/class_diagram.svg'

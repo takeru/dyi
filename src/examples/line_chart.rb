@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 
-require '../lib/dyi'
+require 'rubygems'
+require 'dyi'
 
 gr = DYI::Drawing::ColorEffect::LinearGradient.new([0,0],[0,1])
 gr.add_color(0, '#8FD3F5')
@@ -24,7 +25,7 @@ chart = DYI::Chart::LineChart.new 720,300,
 reader = DYI::Chart::ExcelReader.read('data/03311056.xlsx', :sheet => 'Sheet2', :title_column=>1, :column_skip=>2, :title_row=>1, :row_skip=>2)
 chart.load_data reader
 
-chart.save 'output/test.svg'
-chart.save 'output/test.xaml', :xaml
-chart.save 'output/test.eps', :eps
-chart.save 'output/test.emf', :emf if defined? IRONRUBY_VERSION
+chart.save 'output/line_chart.svg'
+chart.save 'output/line_chart.xaml', :xaml
+chart.save 'output/line_chart.eps', :eps
+chart.save 'output/line_chart.emf', :emf if defined? IRONRUBY_VERSION

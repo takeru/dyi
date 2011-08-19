@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 
-require '../lib/dyi'
+require 'rubygems'
+require 'dyi'
 
 chart = DYI::Chart::PieChart.new 400,500,
   :data_label_format => "{name}\n{percent}",
@@ -13,7 +14,7 @@ chart = DYI::Chart::PieChart.new 400,500,
 reader = DYI::Chart::ExcelReader.read('data/currency.xlsx', :title_column=>0, :column_skip=>1)
 chart.load_data reader
 
-chart.save 'output/test.svg'
-chart.save 'output/test.xaml', :xaml
-chart.save 'output/test.eps', :eps
-chart.save 'output/test.emf', :emf if defined? IRONRUBY_VERSION
+chart.save 'output/pie_chart.svg'
+chart.save 'output/pie_chart.xaml', :xaml
+chart.save 'output/pie_chart.eps', :eps
+chart.save 'output/pie_chart.emf', :emf if defined? IRONRUBY_VERSION

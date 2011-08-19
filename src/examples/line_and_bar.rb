@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 
-require '../lib/dyi'
+require 'rubygems'
+require 'dyi'
 
 chart = DYI::Chart::LineChart.new 800,500,
   :use_y_second_axises => [true, nil],
@@ -21,6 +22,6 @@ chart = DYI::Chart::LineChart.new 800,500,
 reader = DYI::Chart::CsvReader.read('data/money.csv', :data_types => [:number, :number, :string], :title_column=>0, :column_skip => 1)
 chart.load_data reader
 
-chart.save 'output/test.svg'
-chart.save 'output/test.eps', :eps
-chart.save 'output/test.emf', :emf if defined? IRONRUBY_VERSION
+chart.save 'output/line_and_bar.svg'
+chart.save 'output/line_and_bar.eps', :eps
+chart.save 'output/line_and_bar.emf', :emf if defined? IRONRUBY_VERSION

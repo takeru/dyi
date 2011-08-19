@@ -1,4 +1,7 @@
-require '../lib/dyi'
+# -*- encoding: UTF-8 -*-
+
+require 'rubygems'
+require 'dyi'
 
 canvas = DYI::Drawing::Canvas.new(500, 500)
 
@@ -12,4 +15,4 @@ brush.draw_circle(canvas, center_point, 20)
 pen = DYI::Drawing::Pen.new(:color => '#CCFFCC', :width => 5)
 pen.draw_line(canvas, [150,70], [80,140])
 
-canvas.save 'output/test.svg'
+canvas.save 'output/simple_shape.svg'

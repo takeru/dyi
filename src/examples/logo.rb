@@ -1,5 +1,7 @@
+# -*- encoding: UTF-8 -*-
+
 require 'rubygems'
-require '../lib/dyi'
+require 'dyi'
 
 canvas = DYI::Drawing::Canvas.new(287.008, 162.637)
 
