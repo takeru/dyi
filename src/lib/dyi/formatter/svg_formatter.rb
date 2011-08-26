@@ -222,12 +222,6 @@ module DYI #:nodoc:
         if shape.attributes[:text_decoration]
           attrs[:"text-decoration"] = shape.attributes[:text_decoration]
         end
-#        attrs[:"alignment-baseline"] = shape.attributes[:alignment_baseline] if shape.attributes[:alignment_baseline]
-        case shape.attributes[:alignment_baseline]
-          when 'top' then attrs[:y] += shape.font_height * 0.85
-          when 'middle' then attrs[:y] += shape.font_height * 0.35
-          when 'bottom' then attrs[:y] -= shape.font_height * 0.15
-        end
         if shape.attributes[:text_anchor]
           attrs[:"text-anchor"] = shape.attributes[:text_anchor]
         end
@@ -246,6 +240,12 @@ module DYI #:nodoc:
           create_node(io, 'g', attrs) {
             line_number = 0
             attrs = {:x => shape.point.x, :y => shape.point.y}
+            # FIXME: Implementation of baseline attribute are not suitable
+            case shape.attributes[:alignment_baseline]
+              when 'top' then attrs[:y] += shape.font_height * 0.85
+              when 'middle' then attrs[:y] += shape.font_height * 0.35
+              when 'bottom' then attrs[:y] -= shape.font_height * 0.15
+            end
             attrs[:id] = shape.id + '_%02d' % line_number if shape.inner_id
             create_leaf_node(io, 'text', $`.strip, attrs)
             $'.each_line do |line|
