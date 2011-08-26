@@ -356,7 +356,7 @@ module DYI #:nodoc:
       attr_reader :options, :data, :canvas
 
       def initialize(width, height, options={})
-        @canvas = Drawing::Canvas.new(width, height)
+        @canvas = Canvas.new(width, height)
         @options = {}
         options.each do |key, value|
           __send__("#{key}=", value) if respond_to?("#{key}=")

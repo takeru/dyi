@@ -21,7 +21,6 @@
 
 %w(
 
-canvas
 pen
 pen_3d
 clipping
@@ -29,4 +28,12 @@ color_effect
 
 ).each do |file_name|
   require File.join(File.dirname(__FILE__), 'drawing', file_name)
+end
+
+module DYI
+  module Drawing
+    # DYI::Drawing::Canvas is depricated; use DYI::Canvas
+    # @deprecated
+    Canvas = DYI::Canvas
+  end
 end

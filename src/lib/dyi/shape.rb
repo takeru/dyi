@@ -26,22 +26,97 @@ module DYI #:nodoc:
 
     class Base
       extend AttributeCreator
+      attr_painting :painting
+      attr_font :font
       attr_reader :attributes, :clipping
+      attr_reader :parent
 
+      ID_REGEXP = /\A[:A-Z_a-z][0-9:A-Z_a-z]*\z/
+
+      # Draws the shape on a parent element.
+      # @param [Element] parent a element that you draw the shape on
+      # @return [Shape::Base] receiver itself
       def draw_on(parent)
-        parent.child_elements.push(self)
+        raise ArgumentError, "parent is nil" if parent.nil?
+        return self if @parent == parent
+        raise RuntimeError, "this shape already has a parent" if @parent
+        current_node = parent
+        loop do
+          break if current_node.nil? || current_node.root_element?
+          if current_node == self
+            raise RuntimeError, "descendants of this shape include itself"
+          end
+          current_node = current_node.parent
+        end
+        (@parent = parent).child_elements.push(self)
         self
       end
 
       def write_as(formatter, io=$>)
       end
 
+      # This method is depricated; use Shape::Base#root_element?
+      # @deprecated
       def root_node?
+        msg = [__FILE__, __LINE__, ' waring']
+        msg << ' DYI::Shape::Base#root_node? is depricated; use DYI::Shape::Base#root_element?'
+        warn(msg.join(':'))
         false
+      end
+
+      # @since 1.0.0
+      def root_element?
+        false
+      end
+
+      # Returns id for the shape. If the shape has no id yet, makes id and
+      # returns it.
+      # @return [String] id for the shape
+      # @since 1.0.0
+      def id
+        @id ||= canvas && canvas.publish_shape_id
+      end
+
+      # @since 1.0.0
+      alias publish_id id
+
+      # Returns id of the shape. If the shape has no id yet, returns nil.
+      # @return [String] id for the shape if it has id, nil if not
+      # @since 1.0.0
+      def inner_id
+        @id
+      end
+
+      # Sets id for the shape.
+      # @param [String] value id for the shape
+      # @return [String] id that is given
+      # @raise [ArgumentError] value is empty or illegal format
+      # @since 1.0.0
+      def id=(value)
+        # TODO: veryfy that the id is unique.
+        raise ArgumentError, "`#{value}' is empty" if value.to_s.size == 0
+        raise ArgumentError, "`#{value}' is a illegal id" if value.to_s !~ ID_REGEXP
+        @id = value.to_s
+      end
+
+      # Returns the canvas where the shape is drawn
+      # @return [Canvas] the canvas where the shape is drawn
+      # @since 1.0.0
+      def canvas
+        current_node = self
+        loop do
+          return current_node if current_node.nil? || current_node.root_element?
+          current_node = current_node.parent
+        end
       end
 
       def transform
         @transform ||= []
+      end
+
+      # @since 1.0.0
+      def event_listeners
+        @event_listeners ||= {}
       end
 
       def translate(x, y=0)
@@ -117,21 +192,118 @@ module DYI #:nodoc:
       end
 
       def set_clipping_shapes(*shapes)
-        @clipping = Drawing::Clipping.new(*shapes)
+        set_clipping(Drawing::Clipping.new(*shapes))
+      end
+
+      # since 1.0.0
+      def animations
+        @animations ||= []
+      end
+
+      # @return [Boolean] whether the shape is animated
+      # @since 1.0.0
+      def animate?
+        !(@animations.nil? || @animations.empty?)
+      end
+
+      # Add animation to the shape
+      # @param [Animation::Base] animation a animation that the shape is run
+      # @return [void]
+      # @since 1.0.0
+      def add_animation(animation)
+        animations << animation
+      end
+
+      # Add animation of painting to the shape
+      # @param [Hash] options
+      # @option options [Painting] :from the starting painting of the animation
+      # @option options [Painting] :to the ending painting of the animation
+      # @option options [Number] :duration a simple duration in seconds
+      # @option options [Number] :begin_offset a offset that determine the
+      #                                        animation begin, in seconds
+      # @option options [Event] :begin_event an event that determine the
+      #                                      animation begin
+      # @option options [Number] :end_offset a offset that determine the
+      #                                      animation end, in seconds
+      # @option options [Event] :end_event an event that determine the
+      #                                    animation end
+      # @option options [String] :fill `freeze' or `remove'
+      # @return [void]
+      # @since 1.0.0
+      def add_painting_animation(options)
+        add_animation(Animation::PaintingAnimation.new(self, options))
+      end
+
+      # Add animation of transform to the shape
+      #
+      # @param [Symbol] type a type of transformation which is to have values
+      # @param [Hash] options
+      # @option options [Number|Array] :from the starting transform of the animation
+      # @option options [Number|Array] :to the ending transform of the animation
+      # @option options [Number] :duration a simple duration in seconds
+      # @option options [Number] :begin_offset a offset that determine the
+      #                                        animation begin, in seconds
+      # @option options [Event] :begin_event an event that determine the
+      #                                      animation begin
+      # @option options [Number] :end_offset a offset that determine the
+      #                                      animation end, in seconds
+      # @option options [Event] :end_event an event that determine the
+      #                                    animation end
+      # @option options [String] :fill `freeze' or `remove'
+      # @return [void]
+      # @since 1.0.0
+      def add_transform_animation(type, options)
+        add_animation(Animation::TransformAnimation.new(self, type, options))
+      end
+
+      # Add animation of painting to the shape
+      #
+      # @param [Event] an event that is set to the shape
+      # @return [void]
+      # @since 1.0.0
+      def set_event(event)
+        @events ||= []
+        @events << event
+        canvas.set_event(event)
+        publish_id
+      end
+
+      # @return [Boolean] whether event is set to the shape
+      # @since 1.0.0
+      def accept_event?
+        !(@events.nil? || @events.empty?)
+      end
+
+      # @since 1.0.0
+      def add_event_listener(event_name, event_listener)
+        if event_listeners.key?(event_name)
+          unless event_listeners[event_name].include?(event_listener)
+            event_listeners[event_name] << event_listener
+          end
+        else
+          event_listeners[event_name] = [event_listener]
+        end
+      end
+
+      # @since 1.0.0
+      def remove_event_listener(event_name, event_listener)
+        if event_listeners.key?(event_name)
+          event_listeners[event_name].delete(event_listener)
+        end
       end
 
       private
 
       def init_attributes(options)
         options = options.clone
-        @font = Font.new_or_nil(options.delete(:font)) if respond_to?(:font)
-        @painting = Painting.new_or_nil(options.delete(:painting)) if respond_to?(:painting)
+        @font = Font.new_or_nil(options.delete(:font))
+        @painting = Painting.new_or_nil(options.delete(:painting))
+        self.id = options.delete(:id) if options[:id]
         options
       end
     end
 
     class Rectangle < Base
-      attr_painting :painting
       attr_length :width, :height
 
       def initialize(left_top, width, height, options={})
@@ -187,7 +359,6 @@ module DYI #:nodoc:
     end
 
     class Circle < Base
-      attr_painting :painting
       attr_coordinate :center
       attr_length :radius
 
@@ -236,7 +407,6 @@ module DYI #:nodoc:
     end
 
     class Ellipse < Base
-      attr_painting :painting
       attr_coordinate :center
       attr_length :radius_x, :radius_y
 
@@ -286,7 +456,6 @@ module DYI #:nodoc:
     end
 
     class Line < Base
-      attr_painting :painting
       attr_coordinate :start_point, :end_point
 
       def initialize(start_point, end_point, options={})
@@ -332,7 +501,6 @@ module DYI #:nodoc:
     end
 
     class Polyline < Base
-      attr_painting :painting
 
       def initialize(start_point, options={})
         @points = [Coordinate.new(start_point)]
@@ -388,7 +556,6 @@ module DYI #:nodoc:
     end
 
     class Path < Base
-      attr_painting :painting
 
       def initialize(start_point, options={})
         @path_data = case start_point
@@ -1267,8 +1434,6 @@ module DYI #:nodoc:
       UNPRIMITIVE_OPTIONS = [:line_height, :alignment_baseline, :format]
       BASELINE_VALUES = ['baseline', 'top', 'middle', 'bottom']
       DEFAULT_LINE_HEIGHT = 1
-      attr_font :font
-      attr_painting :painting
       attr_coordinate :point
       attr_coordinate :line_height
       attr_accessor :text
@@ -1327,7 +1492,7 @@ module DYI #:nodoc:
       attr_reader :child_elements
 
       def initialize(options={})
-        @attributes = options
+        @attributes = init_attributes(options)
         @child_elements = []
       end
 

@@ -183,7 +183,7 @@ module DYI #:nodoc:
       end
 
       def puts(io=$>)
-        if @canvas.root_node?
+        if @canvas.root_element?
           puts_line(io) {io << instruction}
           puts_line(io) {io << generator_comment}
           declaration.each_line do |dec|
@@ -239,6 +239,19 @@ module DYI #:nodoc:
         yield io
       ensure
         @level -= 1
+      end
+
+      # @since 1.0.0
+      def create_cdata_node(io, tag_name, attributes={}, &block) #:nodoc:
+        puts_line(io) {
+          io << '<' << tag_name
+          attributes.each do |key, value|
+            io << ' ' << key << '="' << attr_escape(value) << '"'
+          end
+          io << '><![CDATA['
+        }
+        yield
+        puts_line(io) {io << ']]></' << tag_name << '>'}
       end
     end
   end

@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'dyi'
 
-canvas = DYI::Drawing::Canvas.new(287.008, 162.637)
+canvas = DYI::Canvas.new(287.008, 162.637)
 
 DYI::Drawing::Brush.new(:color=>'#51ADE2').draw_closed_path(canvas, [287.008,0]) {|path|
   path.rline_to([0,162.637], [-39.41,0])

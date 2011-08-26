@@ -78,7 +78,7 @@ class ArrowPen < DYI::Drawing::Pen
   end
 end
 
-canvas = DYI::Drawing::Canvas.new 1300, 1300
+canvas = DYI::Canvas.new 1300, 1300
 
 pen = ArrowPen.new
 dashed_pen = ArrowPen.new(:stroke_dasharray => [3])

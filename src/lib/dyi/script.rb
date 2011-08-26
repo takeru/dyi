@@ -19,36 +19,11 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-
-module DYI
-  VERSION = '1.0.0'
-  URL = 'http://sourceforge.net/projects/dyi/'
-end
-
 %w(
 
-util
-dyi/length
-dyi/coordinate
-dyi/color
-dyi/painting
-dyi/font
-dyi/matrix
-dyi/type
-dyi/svg_element
-dyi/canvas
-dyi/shape
-dyi/drawing
-dyi/event
-dyi/animation
-dyi/script
-dyi/formatter
-dyi/chart
+base
+ecmascript
 
 ).each do |file_name|
-  require File.join(File.dirname(__FILE__), file_name)
-end
-
-if defined? IRONRUBY_VERSION
-  require File.join(File.dirname(__FILE__), 'ironruby')
+  require File.join(File.dirname(__FILE__), 'script', file_name)
 end

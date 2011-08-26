@@ -106,17 +106,52 @@ module DYI #:nodoc:
         end
 #        draw_legend(data.row_titles, nil, nil, data[:$color])
         draw_legend(data.row_titles, nil, nil, nil)
+
+        script_body = <<-EOS
+  for (var i=0; i<10; i++) {
+    var rect = document.getElementById("labelrect_0" + i);
+    var textGroup = document.getElementById("labeltxt_0" + i);
+    var top = null;
+    var right = null;
+    var bottom = null;
+    var bottom, left = null;
+    for (var j=0, len=textGroup.childNodes.length; j < len; j++) {
+      var text = textGroup.childNodes[j];
+      if (text.nodeName != 'text') {
+          continue;
+      }
+      var text_width = text.getComputedTextLength();
+      var ext = text.getExtentOfChar(0);
+      if (top == null || ext.y < top)
+        top = ext.y;
+      if (right == null || right < ext.x + text_width)
+        right = ext.x + text_width;
+      if (bottom == null || bottom < ext.y + ext.height)
+        bottom = ext.y + ext.height;
+      if (left == null || ext.x < left)
+        left = ext.x;
+    }
+    rect.setAttribute("x", left - 5);
+    rect.setAttribute("y", top - 2);
+    rect.setAttribute("width", right - left + 11);
+    rect.setAttribute("height", bottom - top + 5);
+  }
+        EOS
+        script = DYI::Script::EcmaScript::EventListener.new(script_body, 'init')
+        DYI::Event.load(canvas).set_listener(script)
+        canvas.add_script(script)
       end
 
       def draw_chart(brush, name, value, accumulation, total_value, index) #:nodoc:
         canvas = Shape::ShapeGroup.draw_on(@chart_canvas)
-        brush.draw_sector(
+        pie_sector = brush.draw_sector(
           canvas,
           center_point,
           chart_radius_x,
           chart_radius_y,
           accumulation * 360.0 / total_value - 90,
-          value * 360.0 / total_value)
+          value * 360.0 / total_value,
+          :id => 'pie%02d' % index)
 
         if moved_elements && (dr = moved_elements[index])
           canvas.translate(
@@ -124,16 +159,43 @@ module DYI #:nodoc:
             chart_radius_y * dr * Math.sin(((accumulation * 2.0 + value) / total_value - 0.5) * Math::PI))
         end
 
+        canvas = Shape::ShapeGroup.draw_on(@data_label_canvas, :id => 'label_%02d' % index, :painting => {:fill_opacity => 0, :stroke_opacity => 0})
         ratio = value.to_f.quo(total_value)
         if show_data_label?
           legend_point = Coordinate.new(
             chart_radius_x * (data_label_position + (dr || 0)) * Math.cos(((accumulation * 2.0 + value) / total_value - 0.5) * Math::PI),
             chart_radius_y * (data_label_position + (dr || 0)) * Math.sin(((accumulation * 2.0 + value) / total_value - 0.5) * Math::PI))
           Drawing::Pen.black_pen(:font => data_label_font).draw_text(
-            @data_label_canvas,
+            canvas,
             center_point + legend_point,
             data_label_format.gsub(/\{name\}/, name).gsub(/\{value\}/, value.to_s).gsub(/\{percent\}/, '%.1f%' % (ratio * 100.0).to_s),
             :text_anchor => 'middle')
+        else
+          legend_point = Coordinate.new(
+            chart_radius_x * (data_label_position + (dr || 0)) * Math.cos(((accumulation * 2.0 + value) / total_value - 0.5) * Math::PI),
+            chart_radius_y * (data_label_position + (dr || 0)) * Math.sin(((accumulation * 2.0 + value) / total_value - 0.5) * Math::PI))
+          label_border = Drawing::Pen.red_pen(:fill=>'white').draw_rectangle(canvas,
+                                                             Coordinate::ZERO,
+                                                             0,0,
+                                                             :rx => 4, :ry => 4,
+                                                             :id=>'labelrect_%02d' % index)
+          data_label = Drawing::Pen.black_pen(:font => data_label_font).draw_text(
+                                              canvas,
+                                              center_point + legend_point,
+                                              data_label_format.gsub(/\{name\}/, name).gsub(/\{value\}/, value.to_s).gsub(/\{percent\}/, '%.1f%' % (ratio * 100.0).to_s),
+                                              :text_anchor => 'middle',
+                                              :pointer_events => 'none',
+                                              :id => 'labeltxt_%02d' % index)
+          canvas.add_painting_animation(:to => {:fill_opacity => 1}, :duration => 1, :fill => 'freeze', :begin_event => Event.mouseover(pie_sector))
+          canvas.add_painting_animation(:to => {:stroke_opacity => 1}, :duration => 1, :fill => 'freeze', :begin_event => Event.mouseover(pie_sector))
+          canvas.add_painting_animation(:to => {:fill_opacity => 0}, :duration => 1, :fill => 'freeze', :begin_event => Event.mouseout(pie_sector))
+          canvas.add_painting_animation(:to => {:stroke_opacity => 0}, :duration => 1, :fill => 'freeze', :begin_event => Event.mouseout(pie_sector))
+          translate_values = [
+            chart_radius_x * 0.3 * Math.cos(((accumulation * 2.0 + value) / total_value - 0.5) * Math::PI),
+            chart_radius_y * 0.3 * Math.sin(((accumulation * 2.0 + value) / total_value - 0.5) * Math::PI)
+          ]
+          pie_sector.add_transform_animation(:translate, :to => translate_values, :duration => 2, :fill => 'freeze', :begin_event => Event.click(pie_sector), :restart => 'never')
+          canvas.add_transform_animation(:translate, :to => translate_values, :duration => 3, :fill => 'freeze', :begin_event => Event.click(pie_sector))
         end if hide_data_label_ratio < ratio
       end
     end

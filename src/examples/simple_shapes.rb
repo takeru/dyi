@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'dyi'
 
-canvas = DYI::Drawing::Canvas.new(500, 500)
+canvas = DYI::Canvas.new(500, 500)
 
 pen = DYI::Drawing::Pen.new(:color => 'blue')
 pen.draw_rectangle(canvas, [30, 30], 30, 30)

@@ -156,20 +156,20 @@ module DYI #:nodoc:
     end
   end
 
-  module Drawing #:nodoc:
-    class Canvas #:nodoc:
-      private
-      def get_formatter(format=nil)
-        case format
-          when :svg, nil then Formatter::SvgFormatter.new(self, 2)
-          when :xaml then Formatter::XamlFormatter.new(self, 2)
-          when :eps then Formatter::EpsFormatter.new(self)
-          when :emf then Formatter::EmfFormatter.new(self)     # added 'Windows Meta File'
-          else raise ArgumentError, "`#{format}' is unknown format"
-        end
+  class Canvas #:nodoc:
+    private
+    def get_formatter(format=nil)
+      case format
+        when :svg, nil then Formatter::SvgFormatter.new(self, 2)
+        when :xaml then Formatter::XamlFormatter.new(self, 2)
+        when :eps then Formatter::EpsFormatter.new(self)
+        when :emf then Formatter::EmfFormatter.new(self)     # added 'Windows Meta File'
+        else raise ArgumentError, "`#{format}' is unknown format"
       end
     end
+  end
 
+  module Drawing #:nodoc:
     module ColorEffect #:nodoc:
       class LinearGradient
         def create_cls_brush(opacity=nil, shape=nil)

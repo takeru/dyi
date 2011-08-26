@@ -64,13 +64,13 @@ module DYI #:nodoc:
 
       def puts(io=$>)
         StringFormat.set_default_formats(:color=>['%.3f %.3f %.3f', true], :length=>'0.### U', :coordinate=>'x y') {
-          if @canvas.root_node?
+          if @canvas.root_element?
             io << header_comment
             io << prolog
             io << base_transform
           end
           @canvas.write_as(self, io)
-          if @canvas.root_node?
+          if @canvas.root_element?
             io << footer_comment
           end
         }
