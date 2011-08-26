@@ -21,8 +21,7 @@
 
 module DYI #:nodoc:
 
-  class Canvas
-    extend AttributeCreator
+  class Canvas < Element
     IMPLEMENT_ATTRIBUTES = [:view_box, :preserve_aspect_ratio]
     attr_length :width, :height
     attr_reader *IMPLEMENT_ATTRIBUTES
@@ -41,7 +40,7 @@ module DYI #:nodoc:
       @scripts = []
       @event_listeners = {}
       @seed_of_id = -1
-      @accept_event = false
+      @receive_event = false
       @has_reference = false
       self.real_width = real_width
       self.real_height = real_height
@@ -75,6 +74,13 @@ module DYI #:nodoc:
     # @since 1.0.0
     def root_element?
       true
+    end
+
+    # Returns the canvas where the shape is drawn
+    # @return [Canvas] the canvas where the shape is drawn
+    # @since 1.0.0
+    def canvas
+      self
     end
 
     # @since 1.0.0
@@ -116,14 +122,14 @@ module DYI #:nodoc:
 
     # @since 1.0.0
     def set_event(event)
-      @accept_event = true
-      event
+      super
+      @receive_event = true
     end
 
     # @return [Boolean] whether event is set to the shape
     # @since 1.0.0
-    def accept_event?
-      @accept_event
+    def receive_event?
+      @receive_event
     end
 
     # @since 1.0.0

@@ -36,6 +36,7 @@ dyi/font
 dyi/matrix
 dyi/type
 dyi/svg_element
+dyi/element
 dyi/canvas
 dyi/shape
 dyi/drawing

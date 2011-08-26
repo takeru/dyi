@@ -58,7 +58,7 @@ module DYI #:nodoc:
         if canvas.has_reference?
           attrs[:'xmlns:xlink'] = "http://www.w3.org/1999/xlink"
         end
-        attrs[:'pointer-events'] = 'none' if canvas.accept_event?
+        attrs[:'pointer-events'] = 'none' if canvas.receive_event?
         canvas.event_listeners.each do |event_name, listeners|
           unless listeners.empty?
             methods = listeners.map do |listener|
@@ -427,7 +427,7 @@ module DYI #:nodoc:
         attributes[:transform] = transform if transform
         attributes[:'clip-path'] = clip_path if clip_path
         attributes[:id] = shape.id if shape.inner_id
-        attributes[:'pointer-events'] = 'all' if shape.accept_event?
+        attributes[:'pointer-events'] = 'all' if shape.event_target?
         attributes
       end
 
