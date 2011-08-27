@@ -47,7 +47,7 @@ module DYI
 
       # Returns this script includes reference of external script file.
       # @return [Boolean] always returns false
-      def has_reference?
+      def has_uri_reference?
         false
       end
 
@@ -76,7 +76,7 @@ module DYI
 
       # Returns whether this script contains reference of external script file.
       # @return [Boolean] always returns true
-      def has_reference?
+      def has_uri_reference?
         true
       end
 

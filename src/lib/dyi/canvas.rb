@@ -21,7 +21,7 @@
 
 module DYI #:nodoc:
 
-  class Canvas < Element
+  class Canvas < GraphicalElement
     IMPLEMENT_ATTRIBUTES = [:view_box, :preserve_aspect_ratio]
     attr_length :width, :height
     attr_reader *IMPLEMENT_ATTRIBUTES
@@ -41,7 +41,6 @@ module DYI #:nodoc:
       @event_listeners = {}
       @seed_of_id = -1
       @receive_event = false
-      @has_reference = false
       self.real_width = real_width
       self.real_height = real_height
     end
@@ -117,7 +116,7 @@ module DYI #:nodoc:
     # @return [String] new id for a descendant element
     # @since 1.0.0
     def publish_shape_id
-      'shape%04d' % (@seed_of_id += 1)
+      'elm%04d' % (@seed_of_id += 1)
     end
 
     # @since 1.0.0
@@ -133,14 +132,8 @@ module DYI #:nodoc:
     end
 
     # @since 1.0.0
-    def has_reference?
-      @has_reference
-    end
-
-    # @since 1.0.0
     def add_script(script)
       @scripts << script
-      @has_reference ||= script.has_reference?
     end
 
     # @since 1.0.0

@@ -22,13 +22,26 @@
 module DYI #:nodoc:
   module Drawing #:nodoc:
 
-    class Clipping
+    class Clipping < Element
       RULES = ['nonzero', 'evenodd']
       attr_reader :rule, :shapes
+      attr_reader :canvas
 
       def initialize(*shapes)
         @shapes = shapes
         @rules = Array.new(shapes.size)
+      end
+
+      def child_elements
+        @shapes
+      end
+
+      def set_canvas(canvas)
+        if @canvas.nil?
+          @canvas = canvas
+        elsif @canvas != canvas
+          raise Arguments, "the clipping is registered to another canvas"
+        end
       end
 
       def add_shape(shape, rule=nil)

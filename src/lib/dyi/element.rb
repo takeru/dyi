@@ -32,23 +32,23 @@ module DYI #:nodoc:
     extend AttributeCreator
     ID_REGEXP = /\A[:A-Z_a-z][0-9:A-Z_a-z]*\z/
 
-    # Returns id for the shape. If the shape has no id yet, makes id and
+    # Returns id for the element. If the element has no id yet, makes id and
     # returns it.
-    # @return [String] id for the shape
+    # @return [String] id for the element
     def id
       @id ||= canvas && canvas.publish_shape_id
     end
 
     alias publish_id id
 
-    # Returns id of the shape. If the shape has no id yet, returns nil.
-    # @return [String] id for the shape if it has id, nil if not
+    # Returns id of the element. If the element has no id yet, returns nil.
+    # @return [String] id for the element if it has id, nil if not
     def inner_id
       @id
     end
 
-    # Sets id for the shape.
-    # @param [String] value id for the shape
+    # Sets id for the element.
+    # @param [String] value id for the element
     # @return [String] id that is given
     # @raise [ArgumentError] value is empty or illegal format
     def id=(value)
@@ -58,29 +58,52 @@ module DYI #:nodoc:
       @id = value.to_s
     end
 
+    # Returns the canvas where the shape is drawn
+    # @return [Canvas] the canvas where the shape is drawn
     # @since 1.0.0
+    def canvas
+      current_node = self
+      loop do
+        return current_node if current_node.nil? || current_node.root_element?
+        current_node = current_node.parent
+      end
+    end
+
+    def child_elements
+      []
+    end
+
+    # @return [Boolean] whether the element has a URI reference
+    def has_uri_reference?
+      false
+    end
+  end
+
+  class GraphicalElement < Element
+
+    # Returns event listeners that is associated with the element
     def event_listeners
       @event_listeners ||= {}
     end
 
-    # Add animation of painting to the shape
-    #
-    # @param [Event] an event that is set to the shape
+    # Adds a animation of painting to the element
+    # @param [Event] an event that is set to the element
     # @return [void]
-    # @since 1.0.0
     def set_event(event)
       @events ||= []
       @events << event
       publish_id
     end
 
-    # @return [Boolean] whether event is set to the shape
-    # @since 1.0.0
+    # @return [Boolean] whether event is set to the element
     def event_target?
       !(@events.nil? || @events.empty?)
     end
 
-    # @since 1.0.0
+    # Associates the element with a event listener
+    # @param [Symbol] event_name a event name
+    # @param [Script::InlineScript|String] event_listener a event listener
+    # @return [void]
     def add_event_listener(event_name, event_listener)
       if event_listeners.key?(event_name)
         unless event_listeners[event_name].include?(event_listener)
@@ -91,7 +114,10 @@ module DYI #:nodoc:
       end
     end
 
-    # @since 1.0.0
+    # Removes asociation with given event listener
+    # @param [Symbol] event_name a event name
+    # @param [Script::InlineScript|String] event_listener a event listener
+    # @return [void]
     def remove_event_listener(event_name, event_listener)
       if event_listeners.key?(event_name)
         event_listeners[event_name].delete(event_listener)

@@ -49,15 +49,16 @@ module DYI #:nodoc:
 
       def write_canvas(canvas, io)
         @defs = {}
-        attrs = {:xmlns => "http://www.w3.org/2000/svg",
-                 :version => @version,
-                 :width => canvas.real_width,
-                 :height => canvas.real_height,
-                 :viewBox => canvas.view_box,
-                 :preserveAspectRatio => canvas.preserve_aspect_ratio}
-        if canvas.has_reference?
-          attrs[:'xmlns:xlink'] = "http://www.w3.org/1999/xlink"
-        end
+        @xmlns = {:xmlns => "http://www.w3.org/2000/svg"}
+        pre_write
+        attrs = @xmlns.merge(:version => @version,
+                             :width => canvas.real_width,
+                             :height => canvas.real_height,
+                             :viewBox => canvas.view_box,
+                             :preserveAspectRatio => canvas.preserve_aspect_ratio)
+#        if canvas.has_reference?
+#          attrs[:'xmlns:xlink'] = "http://www.w3.org/1999/xlink"
+#        end
         attrs[:'pointer-events'] = 'none' if canvas.receive_event?
         canvas.event_listeners.each do |event_name, listeners|
           unless listeners.empty?
@@ -76,7 +77,7 @@ module DYI #:nodoc:
           length = canvas.scripts.size
           while i < length
             script = canvas.scripts[i]
-            if script.has_reference?
+            if script.has_uri_reference?
               create_leaf_node(sio, 'script',
                                :'xlink:href' => script.href,
                                :type => script.content_type)
@@ -89,7 +90,7 @@ module DYI #:nodoc:
                 sio << script.substance
                 if (i += 1) < length
                   script = canvas.scripts[i]
-                  while !script.has_reference? && content_type == script.content_type
+                  while !script.has_uri_reference? && content_type == script.content_type
                     sio << script.substance
                     break if length <= (i += 1)
                     script = canvas.scripts[i]
@@ -130,12 +131,23 @@ module DYI #:nodoc:
         attrs.merge!(common_attributes(shape))
         attrs[:rx] = shape.attributes[:rx] if shape.attributes[:rx]
         attrs[:ry] = shape.attributes[:ry] if shape.attributes[:ry]
-        if shape.animate?
-          create_node(io, 'rect', attrs) {
-            write_animations(shape, io)
+        node_creator = proc {
+          if shape.animate?
+            create_node(io, 'rect', attrs) {
+              write_animations(shape, io)
+            }
+          else
+            create_leaf_node(io, 'rect', attrs)
+          end
+        }
+        if shape.link_href
+          link_attrs = {:'xlink:href' => shape.link_href}
+          link_attrs[:target] = shape.link_target if shape.link_target
+          create_node(io, 'a', link_attrs) {
+            node_creator.call
           }
         else
-          create_leaf_node(io, 'rect', attrs)
+          node_creator.call
         end
       end
 
@@ -302,7 +314,7 @@ module DYI #:nodoc:
       end
 
       def write_clipping(clipping, io)
-        attrs = {:id => @defs.find{|key, value| value==clipping}[0]}
+        attrs = {:id => clipping.id}
         create_node(io, 'clipPath', attrs) {
           clipping.shapes.each_with_index do |shape, i|
             shape.write_as(self, io)
@@ -368,6 +380,33 @@ module DYI #:nodoc:
 
       private
 
+      # Examines the descendant elements of the canvas to collect the
+      # information of the elements.
+      # @return [void]
+      # @since 1.0.0
+      def pre_write
+        if @canvas.scripts.any?{|script| script.has_uri_reference?}
+          @xmlns[:'xmlns:xlink'] = "http://www.w3.org/1999/xlink"
+        end
+        examin_descendant_elements(@canvas)
+      end
+
+      # @since 1.0.0
+      def examin_descendant_elements(element)
+        if element.has_uri_reference?
+          @xmlns[:'xmlns:xlink'] = "http://www.w3.org/1999/xlink"
+        end
+        if element.respond_to?(:clipping) && element.clipping
+          unless @defs.value?(element.clipping)
+            def_id = element.clipping.id
+            @defs[def_id] = element.clipping
+          end
+        end
+        element.child_elements.each do |child_element|
+          examin_descendant_elements(child_element)
+        end
+      end
+
       # @since 1.0.0
       def anim_duration(timecount)
         return nil if timecount.nil? || timecount < 0
@@ -423,9 +462,8 @@ module DYI #:nodoc:
         attributes = {}
         create_style(shape, attributes)
         transform = create_transform(shape)
-        clip_path = create_clip_path(shape)
         attributes[:transform] = transform if transform
-        attributes[:'clip-path'] = clip_path if clip_path
+        attributes[:'clip-path'] = "url(##{shape.clipping.id})" if shape.clipping
         attributes[:id] = shape.id if shape.inner_id
         attributes[:'pointer-events'] = 'all' if shape.event_target?
         attributes
@@ -457,12 +495,6 @@ module DYI #:nodoc:
       def create_transform(shape) #:nodoc:
         if shape.respond_to?(:transform) && !shape.transform.empty?
           shape.transform.map{|item| "#{item[0]}(#{item[1...item.size].join(',')})"}.join(' ')
-        end
-      end
-
-      def create_clip_path(shape) #:nodoc:
-        if shape.respond_to?(:clipping) && shape.clipping
-          "url(##{add_defs(shape.clipping)})"
         end
       end
 

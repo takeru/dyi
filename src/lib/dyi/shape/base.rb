@@ -24,11 +24,13 @@ require 'enumerator'
 module DYI #:nodoc:
   module Shape #:nodoc:
 
-    class Base < Element
+    class Base < GraphicalElement
       attr_painting :painting
       attr_font :font
       attr_reader :attributes, :clipping
       attr_reader :parent
+      attr_accessor :link_href
+      attr_accessor :link_target
 
       ID_REGEXP = /\A[:A-Z_a-z][0-9:A-Z_a-z]*\z/
 
@@ -63,17 +65,6 @@ module DYI #:nodoc:
       # @since 1.0.0
       def root_element?
         false
-      end
-
-      # Returns the canvas where the shape is drawn
-      # @return [Canvas] the canvas where the shape is drawn
-      # @since 1.0.0
-      def canvas
-        current_node = self
-        loop do
-          return current_node if current_node.nil? || current_node.root_element?
-          current_node = current_node.parent
-        end
       end
 
       def transform
@@ -145,6 +136,7 @@ module DYI #:nodoc:
       end
 
       def set_clipping(clipping)
+        clipping.set_canvas(canvas)
         @clipping = clipping
       end
 
@@ -218,7 +210,6 @@ module DYI #:nodoc:
       end
 
       # Add animation of painting to the shape
-      #
       # @param [Event] an event that is set to the shape
       # @return [void]
       # @since 1.0.0
@@ -227,12 +218,23 @@ module DYI #:nodoc:
         canvas.set_event(event)
       end
 
+      def link_href=(href)
+        @link_href = href.strip
+      end
+
+      # @return [Boolean] whether the element has a URI reference
+      def has_uri_reference?
+        !(@link_href.nil? || @link_href.empty?)
+      end
+
       private
 
       def init_attributes(options)
         options = options.clone
         @font = Font.new_or_nil(options.delete(:font))
         @painting = Painting.new_or_nil(options.delete(:painting))
+        @link_href = options.delete(:link_href)
+        @link_target = options.delete(:link_target)
         self.id = options.delete(:id) if options[:id]
         options
       end

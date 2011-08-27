@@ -40,7 +40,7 @@ module DYI
     # @return [Symbol] event name
     attr_reader :event_name
 
-    # @return [Element] an element to which the event applied
+    # @return [GraphicalElement] an element to which the event applied
     attr_reader :target
 
     # @return [Array] a list of event listener
@@ -49,7 +49,7 @@ module DYI
     # @param [Symbol] event_name event name, one of followings: focusin,
     #                            focusout, click, mousedown, mouseup, mouseover,
     #                            mousemove, mouseout, load
-    # @param [Element] target a element to which the event applied
+    # @param [GraphicalElement] target a element to which the event applied
     # @raise [ArgumentError] unknown event name is given
     def initialize(event_name, target)
       event_name = event_name.to_sym
