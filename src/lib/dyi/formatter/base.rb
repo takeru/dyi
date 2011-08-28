@@ -75,6 +75,10 @@ module DYI #:nodoc:
         raise NotImplementedError
       end
 
+      # @since 1.0.0
+      def write_image(shape, io)
+      end
+
       def write_text(shape, io)
         raise NotImplementedError
       end

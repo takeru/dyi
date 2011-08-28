@@ -104,6 +104,16 @@ module DYI #:nodoc:
         Shape::Ellipse.create_on_center_radius(center_point, radius_x, radius_y, merge_option(options)).draw_on(canvas)
       end
 
+      # @since 1.0.0
+      def draw_image(canvas, left_top_point, width, height, file_path, options={})
+        Shape::Image.reference(left_top_point, width, height, file_path, merge_option(options)).draw_on(canvas)
+      end
+
+      # @since 1.0.0
+      def draw_inline_image(canvas, left_top_point, width, height, file_path, options={})
+        Shape::Image.inline(left_top_point, width, height, file_path, merge_option(options)).draw_on(canvas)
+      end
+
       def draw_sector(canvas, center_point, radius_x, radius_y, start_angle, center_angle, options={})
         raise ArgumentError, "center_angle is out of range: #{center_angle}" if center_angle.abs > 360
         center_point = Coordinate.new(center_point)

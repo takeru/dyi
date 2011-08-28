@@ -495,6 +495,70 @@ module DYI #:nodoc:
       end
     end
 
+    # @since 1.0.0
+    class Image < Base
+      attr_length :width, :height, :file_path
+
+      def initialize(left_top, width, height, file_path, refer, options={})
+        width = Length.new(width)
+        height = Length.new(height)
+        @lt_pt = Coordinate.new(left_top)
+        @lt_pt += Coordinate.new(width, 0) if width < Length::ZERO
+        @lt_pt += Coordinate.new(0, height) if height < Length::ZERO
+        @width = width.abs
+        @height = height.abs
+        @file_path = file_path
+        @refer = refer
+        @attributes = init_attributes(options)
+      end
+
+      def left
+        @lt_pt.x
+      end
+
+      def right
+        @lt_pt.x + width
+      end
+
+      def top
+        @lt_pt.y
+      end
+
+      def bottom
+        @lt_pt.y + height
+      end
+
+      def center
+        @lt_pt + Coordinate.new(width.quo(2), height.quo(2))
+      end
+
+      def refer?
+        @refer ? true : false
+      end
+
+      # @return [Boolean] whether the element has a URI reference
+      def has_uri_reference?
+        true
+      end
+
+      def write_as(formatter, io=$>)
+        formatter.write_image(self, io, &(block_given? ? Proc.new : nil))
+      end
+
+      class << self
+
+        public
+
+        def reference(left_top, width, height, file_path, options={})
+          new(left_top, width, height, file_path, true, options)
+        end
+
+        def inline(left_top, width, height, file_path, options={})
+          new(left_top, width, height, file_path, false, options)
+        end
+      end
+    end
+
     class Text < Base
       UNPRIMITIVE_OPTIONS = [:line_height, :alignment_baseline, :format]
       BASELINE_VALUES = ['baseline', 'top', 'middle', 'bottom']

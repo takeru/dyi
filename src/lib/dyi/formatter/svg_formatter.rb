@@ -176,6 +176,48 @@ module DYI #:nodoc:
         write_node(shape, io, attrs, 'path')
       end
 
+      # @since 1.0.0
+      def write_image(shape, io)
+        attrs = {:x=>shape.left,
+                 :y=>shape.top,
+                 :width=>shape.width,
+                 :height=>shape.height}
+        if shape.refer?
+          attrs[:'xlink:href'] = shape.file_path
+        else
+          format = shape.attributes[:format].to_s
+          content_type = if format.empty?
+                           shape.file_path =~ /\.([^\.]+)\z/
+                           case $1
+                           when 'png'
+                             'image/png'
+                           when 'jpg', 'jpeg'
+                             'image/jpeg'
+                           else
+                             'image/svg+xml'
+                           end
+                         else
+                           case format
+                           when 'svg'
+                             'image/svg+xml'
+                           when 'png'
+                             'image/png'
+                           when 'jpeg'
+                             'image/jpeg'
+                           else
+                             format
+                           end
+                         end
+          open(shape.file_path, 'rb') {|f|
+            content = f.read
+            attrs[:'xlink:href'] = 
+                ['data:', content_type, ";base64,\n", [content].pack('m')[0..-2]].join
+          }
+        end
+        attrs.merge!(common_attributes(shape))
+        write_node(shape, io, attrs, 'image')
+      end
+
       def write_text(shape, io)
         attrs = common_attributes(shape)
         if shape.attributes[:text_decoration]
