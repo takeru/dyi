@@ -131,36 +131,13 @@ module DYI #:nodoc:
         attrs.merge!(common_attributes(shape))
         attrs[:rx] = shape.attributes[:rx] if shape.attributes[:rx]
         attrs[:ry] = shape.attributes[:ry] if shape.attributes[:ry]
-        node_creator = proc {
-          if shape.animate?
-            create_node(io, 'rect', attrs) {
-              write_animations(shape, io)
-            }
-          else
-            create_leaf_node(io, 'rect', attrs)
-          end
-        }
-        if shape.link_href
-          link_attrs = {:'xlink:href' => shape.link_href}
-          link_attrs[:target] = shape.link_target if shape.link_target
-          create_node(io, 'a', link_attrs) {
-            node_creator.call
-          }
-        else
-          node_creator.call
-        end
+        write_node(shape, io, attrs, 'rect')
       end
 
       def write_circle(shape, io)
         attrs = {:cx=>shape.center.x, :cy=>shape.center.y, :r=>shape.radius}
         attrs.merge!(common_attributes(shape))
-        if shape.animate?
-          create_node(io, 'circle', attrs) {
-            write_animations(shape, io)
-          }
-        else
-          create_leaf_node(io, 'circle', attrs)
-        end
+        write_node(shape, io, attrs, 'circle')
       end
 
       def write_ellipse(shape, io)
@@ -169,13 +146,7 @@ module DYI #:nodoc:
                  :rx=>shape.radius_x,
                  :ry=>shape.radius_y}
         attrs.merge!(common_attributes(shape))
-        if shape.animate?
-          create_node(io, 'ellipse', attrs) {
-            write_animations(shape, io)
-          }
-        else
-          create_leaf_node(io, 'ellipse', attrs)
-        end
+        write_node(shape, io, attrs, 'ellipse')
       end
 
       def write_line(shape, io)
@@ -184,49 +155,25 @@ module DYI #:nodoc:
                  :x2 => shape.end_point.x,
                  :y2 => shape.end_point.y}
         attrs.merge!(common_attributes(shape))
-        if shape.animate?
-          create_node(io, 'line', attrs) {
-            write_animations(shape, io)
-          }
-        else
-          create_leaf_node(io, 'line', attrs)
-        end
+        write_node(shape, io, attrs, 'line')
       end
 
       def write_polyline(shape, io)
         attrs = {:points => shape.points.join(' ')}
         attrs.merge!(common_attributes(shape))
-        if shape.animate?
-          create_node(io, 'polyline', attrs) {
-            write_animations(shape, io)
-          }
-        else
-          create_leaf_node(io, 'polyline', attrs)
-        end
+        write_node(shape, io, attrs, 'polyline')
       end
 
       def write_polygon(shape, io)
         attrs = {:points => shape.points.join(' ')}
         attrs.merge!(common_attributes(shape))
-        if shape.animate?
-          create_node(io, 'polygon', attrs) {
-            write_animations(shape, io)
-          }
-        else
-          create_leaf_node(io, 'polygon', attrs)
-        end
+        write_node(shape, io, attrs, 'polygon')
       end
 
       def write_path(shape, io)
         attrs = {:d => shape.concise_path_data}
         attrs.merge!(common_attributes(shape))
-        if shape.animate?
-          create_node(io, 'path', attrs) {
-            write_animations(shape, io)
-          }
-        else
-          create_leaf_node(io, 'path', attrs)
-        end
+        write_node(shape, io, attrs, 'path')
       end
 
       def write_text(shape, io)
@@ -249,43 +196,63 @@ module DYI #:nodoc:
 
         text = shape.formated_text
         if text =~ /(\r\n|\n|\r)/ ||  shape.animate?
-          create_node(io, 'g', attrs) {
-            line_number = 0
-            attrs = {:x => shape.point.x, :y => shape.point.y}
+          create_text_group = proc {|tag_name, g_attrs|
+            create_node(io, tag_name, g_attrs) {
+              line_number = 0
+              g_attrs = {:x => shape.point.x, :y => shape.point.y}
+              # FIXME: Implementation of baseline attribute are not suitable
+              case shape.attributes[:alignment_baseline]
+                when 'top' then g_attrs[:y] += shape.font_height * 0.85
+                when 'middle' then g_attrs[:y] += shape.font_height * 0.35
+                when 'bottom' then g_attrs[:y] -= shape.font_height * 0.15
+              end
+              g_attrs[:id] = shape.id + '_%02d' % line_number if shape.inner_id
+              create_leaf_node(io, 'text', $`.strip, g_attrs)
+              $'.each_line do |line|
+                line_number += 1
+                g_attrs = {:x => g_attrs[:x], :y => g_attrs[:y] + shape.dy}
+                g_attrs[:id] = shape.id + '_%02d' % line_number if shape.inner_id
+                create_leaf_node(io, 'text', line.strip, g_attrs)
+              end
+              write_animations(shape, io)
+            }
+          }
+          if shape.anchor_href
+            attrs[:'xlink:href'] = shape.anchor_href
+            attrs[:target] = shape.anchor_target if shape.anchor_target
+            create_text_group.call('a', attrs)
+          else
+            create_text_group.call('g', attrs)
+          end
+        else
+          create_text_group = proc {
+            attrs.merge!(:x => shape.point.x, :y => shape.point.y)
             # FIXME: Implementation of baseline attribute are not suitable
             case shape.attributes[:alignment_baseline]
               when 'top' then attrs[:y] += shape.font_height * 0.85
               when 'middle' then attrs[:y] += shape.font_height * 0.35
               when 'bottom' then attrs[:y] -= shape.font_height * 0.15
             end
-            attrs[:id] = shape.id + '_%02d' % line_number if shape.inner_id
-            create_leaf_node(io, 'text', $`.strip, attrs)
-            $'.each_line do |line|
-              line_number += 1
-              attrs = {:x => attrs[:x], :y => attrs[:y] + shape.dy}
-              attrs[:id] = shape.id + '_%02d' % line_number if shape.inner_id
-              create_leaf_node(io, 'text', line.strip, attrs)
-            end
-            write_animations(shape, io)
+            create_leaf_node(io, 'text', text, attrs)
           }
-        else
-          attrs.merge!(:x => shape.point.x, :y => shape.point.y)
-          # FIXME: Implementation of baseline attribute are not suitable
-          case shape.attributes[:alignment_baseline]
-            when 'top' then attrs[:y] += shape.font_height * 0.85
-            when 'middle' then attrs[:y] += shape.font_height * 0.35
-            when 'bottom' then attrs[:y] -= shape.font_height * 0.15
+          if shape.anchor_href
+            link_attrs = {:'xlink:href' => shape.anchor_href}
+            link_attrs[:target] = shape.anchor_target if shape.anchor_target
+            create_node(io, 'a', link_attrs) {
+              create_text_group.call
+            }
+          else
+            create_text_group.call
           end
-          create_leaf_node(io, 'text', text, attrs)
         end
       end
 
       def write_group(shape, io)
         unless shape.child_elements.empty?
-          create_node(io, 'g', common_attributes(shape)) {
+          attrs = common_attributes(shape)
+          write_node(shape, io, attrs, 'g') {
             shape.child_elements.each do |element|
               element.write_as(self, io)
-              write_animations(shape, io)
             end
           }
         end
@@ -379,6 +346,31 @@ module DYI #:nodoc:
       end
 
       private
+
+      # @since 1.0.0
+      def write_node(shape, io, attrs, tag_name, &create_child_node)
+        if shape.anchor_href
+          link_attrs = {:'xlink:href' => shape.anchor_href}
+          link_attrs[:target] = shape.anchor_target if shape.anchor_target
+          create_node(io, 'a', link_attrs) {
+             write_shape_node(shape, io, attrs, tag_name, &create_child_node)
+          }
+        else
+           write_shape_node(shape, io, attrs, tag_name, &create_child_node)
+        end
+      end
+
+      # @since 1.0.0
+      def write_shape_node(shape, io, attrs, tag_name, &create_child_node)
+        if shape.animate? || block_given?
+          create_node(io, tag_name, attrs) {
+            yield if block_given?
+            write_animations(shape, io)
+          }
+        else
+          create_leaf_node(io, tag_name, attrs)
+        end
+      end
 
       # Examines the descendant elements of the canvas to collect the
       # information of the elements.

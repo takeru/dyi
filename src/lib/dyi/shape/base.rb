@@ -29,8 +29,8 @@ module DYI #:nodoc:
       attr_font :font
       attr_reader :attributes, :clipping
       attr_reader :parent
-      attr_accessor :link_href
-      attr_accessor :link_target
+      attr_accessor :anchor_href
+      attr_accessor :anchor_target
 
       ID_REGEXP = /\A[:A-Z_a-z][0-9:A-Z_a-z]*\z/
 
@@ -218,13 +218,14 @@ module DYI #:nodoc:
         canvas.set_event(event)
       end
 
-      def link_href=(href)
-        @link_href = href.strip
+      def anchor_href=(href)
+        anchor_href = href.strip
+        @anchor_href = anchor_href.empty? ? nil : anchor_href
       end
 
       # @return [Boolean] whether the element has a URI reference
       def has_uri_reference?
-        !(@link_href.nil? || @link_href.empty?)
+        @anchor_href ? true : false
       end
 
       private
@@ -233,8 +234,8 @@ module DYI #:nodoc:
         options = options.clone
         @font = Font.new_or_nil(options.delete(:font))
         @painting = Painting.new_or_nil(options.delete(:painting))
-        @link_href = options.delete(:link_href)
-        @link_target = options.delete(:link_target)
+        @anchor_href = options.delete(:anchor_href)
+        @anchor_target = options.delete(:anchor_target)
         self.id = options.delete(:id) if options[:id]
         options
       end
