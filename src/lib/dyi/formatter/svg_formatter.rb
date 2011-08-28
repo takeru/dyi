@@ -507,5 +507,26 @@ module DYI #:nodoc:
         key.to_s.gsub(/_/,'-')
       end
     end
+
+    class PngFormatter
+      def save(file_name, options={})
+        tmp_svg_file = [file_name, Time.now.strftime('%Y%m%d%H%M%S'), 'tmp'].join('.')
+        @svg_formatter.save(tmp_svg_file, options)
+        `rsvg-convert -o #{file_name} #{tmp_svg_file}`
+        File.delete(tmp_svg_file)
+      end
+
+      def string
+        tmp_svg_file = [Time.now.strftime('%Y%m%d%H%M%S'), 'tmp'].join('.')
+        @svg_formatter.save(tmp_svg_file)
+        png_data = `rsvg-convert #{tmp_svg_file}`
+        File.delete(tmp_svg_file)
+        png_date
+      end
+
+      def initialize(*args)
+        @svg_formatter = SvgFormatter.new(*args)
+      end
+    end
   end
 end

@@ -161,6 +161,7 @@ module DYI #:nodoc:
         when :svg, nil then Formatter::SvgFormatter.new(self, 2)
         when :xaml then Formatter::XamlFormatter.new(self, 2)
         when :eps then Formatter::EpsFormatter.new(self)
+        when :png then Formatter::PngFormatter.new(self)
         else raise ArgumentError, "`#{format}' is unknown format"
       end
     end
