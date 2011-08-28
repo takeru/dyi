@@ -218,12 +218,14 @@ module DYI #:nodoc:
         canvas.set_event(event)
       end
 
+      # @since 1.0.0
       def anchor_href=(href)
         anchor_href = href.strip
         @anchor_href = anchor_href.empty? ? nil : anchor_href
       end
 
       # @return [Boolean] whether the element has a URI reference
+      # @since 1.0.0
       def has_uri_reference?
         @anchor_href ? true : false
       end
