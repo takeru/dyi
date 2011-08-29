@@ -152,7 +152,7 @@ module DYI #:nodoc:
       #:stopdoc:
       ALIAS_ATTRIBUTES =
         Painting::IMPLEMENT_ATTRIBUTES.inject({}) do |hash, key|
-          hash[$'.empty? ? :color : $'.to_sym] = key if key.to_s =~ /^(stroke_|stroke$)/
+          hash[$'.empty? ? :color : $'.to_sym] = key if key.to_s =~ /^(stroke_|stroke$)/ && key != :stroke_opacity
           hash
         end
       #:startdoc:
@@ -203,7 +203,7 @@ module DYI #:nodoc:
       #:stopdoc:
       ALIAS_ATTRIBUTES =
         Painting::IMPLEMENT_ATTRIBUTES.inject({}) do |hash, key|
-          hash[$'.empty? ? :color : $'.to_sym] = key if key.to_s =~ /^(fill_|fill$)/
+          hash[$'.empty? ? :color : $'.to_sym] = key if key.to_s =~ /^(fill_|fill$)/ && key != :fill_opacity
           hash
         end
       #:startdoc:

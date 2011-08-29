@@ -22,7 +22,7 @@
 module DYI #:nodoc:
 
   class Painting
-    IMPLEMENT_ATTRIBUTES = [:fill,:fill_opacity,:fill_rule,:stroke,:stroke_dasharray,:stroke_dashoffset,:stroke_linecap,:stroke_linejoin,:stroke_miterlimit,:stroke_opacity,:stroke_width]
+    IMPLEMENT_ATTRIBUTES = [:opacity,:fill,:fill_opacity,:fill_rule,:stroke,:stroke_dasharray,:stroke_dashoffset,:stroke_linecap,:stroke_linejoin,:stroke_miterlimit,:stroke_opacity,:stroke_width]
     VALID_VALUES = {
       :fill_rule => ['nonzero','evenodd'],
       :stroke_linecap => ['butt','round','square'],
@@ -119,6 +119,11 @@ module DYI #:nodoc:
 
     def stroke=(color)
       @stroke = color.respond_to?(:color?) && color.color? ? color : Color.new_or_nil(color)
+    end
+
+    # @since 1.0.0
+    def opacity=(opacity)
+      @opacity = opacity.nil? ? nil : opacity.to_f
     end
 
     def fill_opacity=(opacity)
