@@ -132,8 +132,24 @@ module DYI #:nodoc:
     end
 
     # @since 1.0.0
+    def scripts
+      @init_script ? [@init_script].push(*@scripts) : @scripts
+    end
+
+    # @since 1.0.0
     def add_script(script)
       @scripts << script
+    end
+
+    # @since 1.0.0
+    def add_initialize_script(script_substance)
+      if @init_script
+        @init_script = Script::EcmaScript::EventListener.new(
+            @init_script.instance_variable_get(@substance) + script_substance, 'init')
+      else
+        @init_script = Script::EcmaScript::EventListener.new(script_substance, 'init')
+        add_event_listener(:load, @init_script)
+      end
     end
 
     # @since 1.0.0
