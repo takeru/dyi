@@ -106,12 +106,12 @@ module DYI #:nodoc:
 
       # @since 1.0.0
       def draw_image(canvas, left_top_point, width, height, file_path, options={})
-        Shape::Image.reference(left_top_point, width, height, file_path, merge_option(options)).draw_on(canvas)
+        Shape::Image.new(left_top_point, width, height, file_path, merge_option(options)).draw_on(canvas)
       end
 
       # @since 1.0.0
-      def draw_inline_image(canvas, left_top_point, width, height, file_path, options={})
-        Shape::Image.inline(left_top_point, width, height, file_path, merge_option(options)).draw_on(canvas)
+      def import_image(canvas, left_top_point, width, height, image_uri, options={})
+        Shape::ImageReference.new(left_top_point, width, height, image_uri, merge_option(options)).draw_on(canvas)
       end
 
       def draw_sector(canvas, center_point, radius_x, radius_y, start_angle, center_angle, options={})

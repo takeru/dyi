@@ -500,6 +500,7 @@ module DYI #:nodoc:
       attr_reader :file_path
 
       def initialize(left_top, width, height, file_path, options={})
+        super(left_top, width, height, options)
         @file_path = file_path
       end
 
@@ -514,7 +515,7 @@ module DYI #:nodoc:
     end
 
     # @since 1.0.0
-    class ImageRef < Image
+    class ImageReference < Image
       def include_external_file?
         true
       end

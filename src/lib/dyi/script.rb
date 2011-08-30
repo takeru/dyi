@@ -21,7 +21,7 @@
 
 %w(
 
-base
+simple_script
 ecmascript
 
 ).each do |file_name|

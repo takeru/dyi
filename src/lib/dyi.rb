@@ -43,6 +43,7 @@ dyi/drawing
 dyi/event
 dyi/animation
 dyi/script
+dyi/stylesheet
 dyi/formatter
 dyi/chart
 

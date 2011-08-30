@@ -68,7 +68,7 @@ module DYI
 
     # Class representing a referenct of external client-script-file.
     # The scripting becomes effective only when it is output by SVG format.
-    class ScriptReference < Script
+    class ScriptReference < SimpleScript
 
       # @return [String] a path of external script file
       attr_reader :href
