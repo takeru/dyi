@@ -27,11 +27,11 @@ module DYI #:nodoc:
     attr_reader *IMPLEMENT_ATTRIBUTES
     attr_reader :child_elements
     # @since 1.0.0
-    attr_reader :scripts, :event_listeners
+    attr_reader :event_listeners, :stylesheets
 
     def initialize(width, height,
                    real_width = nil, real_height = nil,
-                   preserve_aspect_ratio='none')
+                   preserve_aspect_ratio='none', options={})
       self.width = width
       self.height = height
       @view_box = "0 0 #{width} #{height}"
@@ -39,8 +39,10 @@ module DYI #:nodoc:
       @child_elements = []
       @scripts = []
       @event_listeners = {}
+      @stylesheets = []
       @seed_of_id = -1
       @receive_event = false
+      self.css_class = options[:class]
       self.real_width = real_width
       self.real_height = real_height
     end
@@ -139,6 +141,11 @@ module DYI #:nodoc:
     # @since 1.0.0
     def add_script(script)
       @scripts << script
+    end
+
+    # @since 1.0.0
+    def add_style_sheet(ss)
+      @stylesheets << ss
     end
 
     # @since 1.0.0

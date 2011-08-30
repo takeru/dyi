@@ -105,8 +105,7 @@ module DYI #:nodoc:
             element.write_as(self, sio)
           end
         }
-
-        if @defs.empty?
+        if @defs.empty? && !@canvas.stylesheets.any?{|style| !style.include_external_file?}
           io << sio.string
         else
           sio.rewind
@@ -115,6 +114,9 @@ module DYI #:nodoc:
           _level = @level
           @level = @root_info[1]
           create_node(io, 'defs') {
+            @canvas.stylesheets.each do |stylesheet|
+              stylesheet.write_as(self, io)
+            end
             @defs.each do |def_id, def_item|
               def_item.write_as(self, io)
             end
@@ -377,12 +379,24 @@ module DYI #:nodoc:
 
       # @since 1.0.0
       def write_script(script, io)
-        if include_external_file?
+        if script.include_external_file?
           create_leaf_node(io, 'script',
                            :'xlink:href' => script.href,
                            :type => script.content_type)
         else
           io << script.substance
+        end
+      end
+
+      # @since 1.0.0
+      def write_style(stylesheet, io)
+        unless stylesheet.include_external_file?
+          attrs = {:type => stylesheet.content_type}
+          attrs[:media] = stylesheet.media if stylesheet.media
+          attrs[:title] = stylesheet.title if stylesheet.title
+          create_cdata_node(io, 'style', attrs){
+            io << stylesheet.substance
+          }
         end
       end
 
@@ -487,7 +501,7 @@ module DYI #:nodoc:
         if shape && shape == event.target
           event.event_name.to_s
         else
-          [event.target.id, event.event_name.to_s].join('.')
+          [event.target.id.gsub(/([\.\-\:])/, '\\\\\\1'), event.event_name.to_s].join('.')
         end
       end
 
@@ -520,6 +534,7 @@ module DYI #:nodoc:
       def common_attributes(shape) #:nodoc:
         attributes = {}
         create_style(shape, attributes)
+        attributes[:class] = shape.css_class unless shape.css_class.empty?
         transform = create_transform(shape)
         attributes[:transform] = transform if transform
         attributes[:'clip-path'] = "url(##{shape.clipping.id})" if shape.clipping

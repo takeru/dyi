@@ -174,8 +174,26 @@ module DYI #:nodoc:
         @level = level
       end
 
-      def instruction
+      def xml_instruction
         %Q{<?xml version="1.0" encoding="UTF-8"?>}
+      end
+
+      def stylesheet_instruction(stylesheet)
+        styles = []
+        styles << '<?xml-stylesheet href="'
+        styles << stylesheet.href
+        styles << '" type="'
+        styles << stylesheet.content_type
+        if stylesheet.title
+          styles << '" title="'
+          styles << stylesheet.title
+        end
+        if stylesheet.media
+          styles << '" media="'
+          styles << stylesheet.media
+        end
+        styles << '"?>'
+        styles.join
       end
 
       def generator_comment
@@ -188,7 +206,12 @@ module DYI #:nodoc:
 
       def puts(io=$>)
         if @canvas.root_element?
-          puts_line(io) {io << instruction}
+          puts_line(io) {io << xml_instruction}
+          @canvas.stylesheets.each do |stylesheet|
+            if stylesheet.include_external_file?
+              puts_line(io) {io << stylesheet_instruction(stylesheet)}
+            end
+          end
           puts_line(io) {io << generator_comment}
           declaration.each_line do |dec|
             puts_line(io) {io << dec}

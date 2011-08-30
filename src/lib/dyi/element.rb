@@ -30,7 +30,7 @@ module DYI #:nodoc:
 
   class Element
     extend AttributeCreator
-    ID_REGEXP = /\A[:A-Z_a-z][0-9:A-Z_a-z]*\z/
+    ID_REGEXP = /\A[:A-Z_a-z][\-\.0-9:A-Z_a-z]*\z/
 
     # Returns id for the element. If the element has no id yet, makes id and
     # returns it.
@@ -83,6 +83,43 @@ module DYI #:nodoc:
   end
 
   class GraphicalElement < Element
+    attr_reader :css_class
+    CLASS_REGEXP = /\A[A-Z_a-z][\-0-9A-Z_a-z]*\z/
+
+    def css_class=(css_class)
+      classes = css_class.to_s.split(/\s+/)
+      classes.each do |c|
+        if c.to_s !~ CLASS_REGEXP
+          raise ArgumentError, "`#{c}' is a illegal class-name"
+        end
+      end
+      @css_class = classes.join(' ')
+    end
+
+    def css_classes
+      css_class.split(/\s+/)
+    end
+
+    def add_css_class(css_class)
+      if css_class.to_s !~ CLASS_REGEXP
+        raise ArgumentError, "`#{css_class}' is a illegal class-name"
+      end
+      unless css_classes.include?(css_class.to_s)
+        @css_class += " #{css_class}"
+        css_class
+      end
+      nil
+    end
+
+    def remove_css_class(css_class)
+      classes = css_classes
+      if classes.delete(css_class.to_s)
+        @css_class = classes.join(' ')
+        css_class
+      else
+        nil
+      end
+    end
 
     # Returns event listeners that is associated with the element
     def event_listeners
