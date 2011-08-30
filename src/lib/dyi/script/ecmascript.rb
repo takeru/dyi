@@ -21,7 +21,7 @@
 #
 # == Overview
 #
-# This file provides the classes of client side scripting.  The event becomes
+# This file provides the classes of client side scripting.  The script becomes
 # effective only when it is output by SVG format.
 #
 # @since 1.0.0
@@ -37,9 +37,10 @@ module DYI
       module DomLevel2
         def get_element(element)
           parts = []
-          parts << 'getElementById("' << element.id << '")'
+          parts << 'document.getElementById("' << (element.respond_to?(:publish_id) ? element.id : element) << '")'
           parts.join
         end
+
         def add_event_listener(event, listener)
           parts = []
           parts << get_element(event.target)
@@ -49,21 +50,67 @@ module DYI
           parts << '})'
           parts.join
         end
+
         def dispatch_evnet(event)
           parts = []
           parts << get_element(event.target)
           parts << '.dispatchEvent("' << event.event_name << '")'
           parts.join
         end
-        def children_each(element, script, arg_name='elem', tag_name=nil)
-        end
-        def elements_each(element, script, arg_name='elem')
+
+        def draw_text_border(*elements)
+          parts = []
+          parts << "  (function(){\n"
+          parts << "    var elms = ["
+          script_elements =
+              elements.map do |element|
+                el_parts = []
+                el_parts << '{el:'
+                el_parts << get_element(element)
+                el_parts << ',hp:'
+                el_parts << (element.attributes[:horizontal_padding] || 
+                             element.attributes[:padding] || 0)
+                el_parts << ',vp:'
+                el_parts << (element.attributes[:vertical_padding] ||
+                             element.attributes[:padding] || 0)
+                el_parts << '}'
+                el_parts.join
+              end
+          parts << script_elements.join(",\n                ")
+          parts << "];\n"
+          parts << "    for(var i=0; i<#{elements.size}; i++){\n"
+          parts << "      var elm = elms[i];\n"
+          parts << "      var top=null,right=null,bottom=null,left=null,rect=null;\n"
+          parts << "      for(var j=0, len=elm.el.childNodes.length; j<len; j++){\n"
+          parts << "        var node = elm.el.childNodes.item(j);\n"
+          parts << "        if(node.nodeName == \"text\") {\n"
+          parts << "          var text_width = node.getComputedTextLength();\n"
+          parts << "          var ext = node.getExtentOfChar(0);\n"
+          parts << "          if(top == null || ext.y < top)\n"
+          parts << "            top = ext.y;\n"
+          parts << "          if(right == null || right < ext.x + text_width)\n"
+          parts << "            right = ext.x + text_width;\n"
+          parts << "          if(bottom == null || bottom < ext.y + ext.height)\n"
+          parts << "            bottom = ext.y + ext.height;\n"
+          parts << "          if(left == null || ext.x < left)\n"
+          parts << "            left = ext.x;\n"
+          parts << "        }\n"
+          parts << "        else if(node.nodeName == \"rect\")\n"
+          parts << "          rect = node;\n"
+          parts << "      }\n"
+          parts << "      rect.setAttribute(\"x\", left - elm.hp);\n"
+          parts << "      rect.setAttribute(\"y\", top - elm.vp);\n"
+          parts << "      rect.setAttribute(\"width\", right - left + elm.hp * 2);\n"
+          parts << "      rect.setAttribute(\"height\", bottom - top + elm.vp * 2);\n"
+          parts << "    }\n"
+          parts << "  })();\n"
+          parts.join
         end
       end
 
       # Class representing a function of ECMAScript.  The scripting becomes
       # effective only when it is output by SVG format.
-      class Function < InlineScript
+      class Function < SimpleScript
         attr_reader :name, :arguments
 
         # @param [String] substance substance of client scripting
@@ -83,7 +130,7 @@ module DYI
           end
         end
 
-        # (see InlineScript#substance)
+        # (see SimpleScript#substance)
         def substance
           parts = []
           parts << 'function'
@@ -123,7 +170,7 @@ module DYI
           @events.delete(event)
         end
 
-        # (see InlineScript#substance)
+        # (see SimpleScript#substance)
         def substance
           if name
             super

@@ -31,7 +31,7 @@ module DYI
 
     # Class representing a inline-client-script.  The scripting becomes
     # effective only when it is output by SVG format.
-    class InlineScript
+    class SimpleScript
 
       # @return [String] content-type of script
       attr_reader :content_type
@@ -56,33 +56,30 @@ module DYI
       # @param [IO] io a buffer that is written
       # @return [void]
       def write_as(formatter, io=$>)
-        formatter.write_inline_script(self, io)
+        formatter.write_script(self, io)
       end
     end
 
     # Class representing a referenct of external client-script-file.
     # The scripting becomes effective only when it is output by SVG format.
-    class ExternalScript
+    class ScriptReference < Script
 
-      # @return [String] content-type of script
-      attr_reader :content_type
       # @return [String] a path of external script file
       attr_reader :href
 
       def initialize(href, content_type = 'application/ecmascript')
-        @content_type = content_type
+        super(nil, content_type)
         @href = href
+      end
+
+      def include_external_file?
+        true
       end
 
       # Returns whether this script contains reference of external script file.
       # @return [Boolean] always returns true
       def has_uri_reference?
         true
-      end
-
-      # (see InlineScript#write_as)
-      def write_as(formatter, io=$>)
-        formatter.write_external_script(self, io)
       end
     end
   end

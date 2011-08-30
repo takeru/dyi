@@ -60,7 +60,6 @@ module DYI #:nodoc:
 
     # Returns the canvas where the shape is drawn
     # @return [Canvas] the canvas where the shape is drawn
-    # @since 1.0.0
     def canvas
       current_node = self
       loop do
@@ -71,6 +70,10 @@ module DYI #:nodoc:
 
     def child_elements
       []
+    end
+
+    def include_external_file?
+      false
     end
 
     # @return [Boolean] whether the element has a URI reference
@@ -102,7 +105,7 @@ module DYI #:nodoc:
 
     # Associates the element with a event listener
     # @param [Symbol] event_name a event name
-    # @param [Script::InlineScript|String] event_listener a event listener
+    # @param [Script::SimpleScript|String] event_listener a event listener
     # @return [void]
     def add_event_listener(event_name, event_listener)
       if event_listeners.key?(event_name)
@@ -116,7 +119,7 @@ module DYI #:nodoc:
 
     # Removes asociation with given event listener
     # @param [Symbol] event_name a event name
-    # @param [Script::InlineScript|String] event_listener a event listener
+    # @param [Script::SimpleScript|String] event_listener a event listener
     # @return [void]
     def remove_event_listener(event_name, event_listener)
       if event_listeners.key?(event_name)

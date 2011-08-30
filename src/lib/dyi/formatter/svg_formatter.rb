@@ -25,6 +25,7 @@ module DYI #:nodoc:
   module Formatter #:nodoc:
 
     class SvgFormatter < XmlFormatter
+      include DYI::Script::EcmaScript::DomLevel2
 
       def initialize(canvas, indent=0, level=0, version='1.1')
         super(canvas, indent, level)
@@ -32,6 +33,7 @@ module DYI #:nodoc:
           raise ArgumentError, "version `#{version}' is unknown version"
         end
         @defs = {}
+        @text_border_elements = []
       end
 
       def declaration
@@ -51,14 +53,14 @@ module DYI #:nodoc:
         @defs = {}
         @xmlns = {:xmlns => "http://www.w3.org/2000/svg"}
         pre_write
+        unless @text_border_elements.empty?
+          @canvas.add_initialize_script(draw_text_border(*@text_border_elements))
+        end
         attrs = @xmlns.merge(:version => @version,
                              :width => canvas.real_width,
                              :height => canvas.real_height,
                              :viewBox => canvas.view_box,
                              :preserveAspectRatio => canvas.preserve_aspect_ratio)
-#        if canvas.has_reference?
-#          attrs[:'xmlns:xlink'] = "http://www.w3.org/1999/xlink"
-#        end
         attrs[:'pointer-events'] = 'none' if canvas.receive_event?
         canvas.event_listeners.each do |event_name, listeners|
           unless listeners.empty?
@@ -77,7 +79,7 @@ module DYI #:nodoc:
           length = canvas.scripts.size
           while i < length
             script = canvas.scripts[i]
-            if script.has_uri_reference?
+            if script.include_external_file?
               create_leaf_node(sio, 'script',
                                :'xlink:href' => script.href,
                                :type => script.content_type)
@@ -182,11 +184,11 @@ module DYI #:nodoc:
                  :y=>shape.top,
                  :width=>shape.width,
                  :height=>shape.height}
-        if shape.refer?
+        if shape.include_external_file?
           attrs[:'xlink:href'] = shape.file_path
         else
-          format = shape.attributes[:format].to_s
-          content_type = if format.empty?
+          content_type = shape.attributes[:content_type].to_s
+          content_type = if content_type.empty?
                            shape.file_path =~ /\.([^\.]+)\z/
                            case $1
                            when 'png'
@@ -197,7 +199,7 @@ module DYI #:nodoc:
                              'image/svg+xml'
                            end
                          else
-                           case format
+                           case content_type
                            when 'svg'
                              'image/svg+xml'
                            when 'png'
@@ -205,7 +207,7 @@ module DYI #:nodoc:
                            when 'jpeg'
                              'image/jpeg'
                            else
-                             format
+                             content_type
                            end
                          end
           open(shape.file_path, 'rb') {|f|
@@ -215,6 +217,10 @@ module DYI #:nodoc:
           }
         end
         attrs.merge!(common_attributes(shape))
+        attrs.reject! do |key, value|
+          key.to_s =~ /^(fill|stroke)/
+        end
+        attrs[:preserveAspectRatio] = shape.attributes[:preserve_aspect_ratio] || 'none'
         write_node(shape, io, attrs, 'image')
       end
 
@@ -237,25 +243,28 @@ module DYI #:nodoc:
         end
 
         text = shape.formated_text
-        if text =~ /(\r\n|\n|\r)/ ||  shape.animate?
-          create_text_group = proc {|tag_name, g_attrs|
-            create_node(io, tag_name, g_attrs) {
+        if text =~ /(\r\n|\n|\r)/ ||  shape.animate? || shape.attributes[:show_border]
+          shape.publish_id if shape.attributes[:show_border]
+          create_text_group = proc {|tag_name, attrs|
+            create_node(io, tag_name, attrs) {
+              create_border_node(shape, io)
               line_number = 0
-              g_attrs = {:x => shape.point.x, :y => shape.point.y}
+              txt_attrs = {:x => shape.point.x, :y => shape.point.y}
               # FIXME: Implementation of baseline attribute are not suitable
               case shape.attributes[:alignment_baseline]
-                when 'top' then g_attrs[:y] += shape.font_height * 0.85
-                when 'middle' then g_attrs[:y] += shape.font_height * 0.35
-                when 'bottom' then g_attrs[:y] -= shape.font_height * 0.15
+                when 'top' then txt_attrs[:y] += shape.font_height * 0.85
+                when 'middle' then txt_attrs[:y] += shape.font_height * 0.35
+                when 'bottom' then txt_attrs[:y] -= shape.font_height * 0.15
               end
-              g_attrs[:id] = shape.id + '_%02d' % line_number if shape.inner_id
-              create_leaf_node(io, 'text', $`.strip, g_attrs)
+              txt_attrs[:id] = shape.id + '_%02d' % line_number if shape.inner_id
+              current_line = $` || text
+              create_leaf_node(io, 'text', current_line.strip, txt_attrs)
               $'.each_line do |line|
                 line_number += 1
-                g_attrs = {:x => g_attrs[:x], :y => g_attrs[:y] + shape.dy}
-                g_attrs[:id] = shape.id + '_%02d' % line_number if shape.inner_id
-                create_leaf_node(io, 'text', line.strip, g_attrs)
-              end
+                txt_attrs = {:x => txt_attrs[:x], :y => txt_attrs[:y] + shape.dy}
+                txt_attrs[:id] = shape.id + '_%02d' % line_number if shape.inner_id
+                create_leaf_node(io, 'text', line.strip, txt_attrs)
+              end if $'
               write_animations(shape, io)
             }
           }
@@ -332,15 +341,6 @@ module DYI #:nodoc:
       end
 
       # @since 1.0.0
-      def write_animations(shape, io)
-        if shape.animate?
-          shape.animations.each do |anim|
-            anim.write_as(self, shape, io)
-          end
-        end
-      end
-
-      # @since 1.0.0
       def write_painting_animation(anim, shape, io)
         anim.animation_attributes.each do |anim_attr, (from_value, to_value)|
           attrs = {:attributeName => name_to_attribute(anim_attr),
@@ -376,15 +376,14 @@ module DYI #:nodoc:
       end
 
       # @since 1.0.0
-      def write_inline_script(script, io)
-        io << script.substance
-      end
-
-      # @since 1.0.0
-      def write_external_script(script, io)
-        create_leaf_node(io, 'script',
-                         :'xlink:href' => script.href,
-                         :type => script.content_type)
+      def write_script(script, io)
+        if include_external_file?
+          create_leaf_node(io, 'script',
+                           :'xlink:href' => script.href,
+                           :type => script.content_type)
+        else
+          io << script.substance
+        end
       end
 
       private
@@ -414,6 +413,28 @@ module DYI #:nodoc:
         end
       end
 
+      # @since 1.0.0
+      def write_animations(shape, io)
+        if shape.animate?
+          shape.animations.each do |anim|
+            anim.write_as(self, shape, io)
+          end
+        end
+      end
+
+      # @since 1.0.0
+      def create_border_node(shape, io)
+        if shape.attributes[:show_border]
+          attrs = {:id => shape.id + '_bd', :x => 0, :y => 0, :width => 0, :height => 0}
+          attrs[:rx] = shape.attributes[:border_rx] if shape.attributes[:border_rx]
+          attrs[:ry] = shape.attributes[:border_ry] if shape.attributes[:border_ry]
+          attrs[:fill] = shape.attributes[:background_color] || Color.new('white')
+          attrs[:stroke] = shape.attributes[:border_color] || Color.new('black')
+          attrs[:'stroke-width'] = shape.attributes[:border_width] || 1
+          create_leaf_node(io, 'rect', attrs)
+        end
+      end
+
       # Examines the descendant elements of the canvas to collect the
       # information of the elements.
       # @return [void]
@@ -435,6 +456,9 @@ module DYI #:nodoc:
             def_id = element.clipping.id
             @defs[def_id] = element.clipping
           end
+        end
+        if element.respond_to?(:attributes) && element.attributes[:show_border]
+          @text_border_elements << element
         end
         element.child_elements.each do |child_element|
           examin_descendant_elements(child_element)
@@ -467,6 +491,7 @@ module DYI #:nodoc:
         end
       end
 
+      # @since 1.0.0
       def anim_period(shape, event, offset)
         [amin_event(shape, event), anim_duration(offset)].compact.join('+')
       end
