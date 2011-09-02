@@ -23,95 +23,94 @@ module DYI #:nodoc:
   module Chart #:nodoc:
 
     class ArrayReader
+      include Enumerable
 
       def [](i, j)
-        @data[i][j]
+        @records[i].values[j]
       end
 
-      def row_title(i)
-        @row_titles[i]
+      # @return [Array] array of a struct
+      # @since 1.0.0
+      def records
+        @records.dup
       end
 
-      def column_title(j)
-        @col_titles[j]
+      # @return [Integer] number of the records
+      # @since 1.0.0
+      def records_size
+        @records.size
       end
 
-      def row_values(i)
-        @data[i].dup
-      end
-
-      def column_values(j)
-        @data.map{|r| r[j]}
-      end
-
-      def row_count
-        @data.size
-      end
-
-      def column_count
-        @data.first.size
+      # @return [Integer] number of the values
+      # @since 1.0.0
+      def values_size
+        @records.first.values.size rescue 0
       end
 
       def clear_data
-        @data.clear
-        @col_titles.clear
-        @row_titles.clear
+        @records.clear
       end
 
-      def values
-        @data.dup
+      # @return [void]
+      # @since 1.0.0
+      def values_each(&block)
+        @records.each do |record|
+          yield record.values
+        end
       end
 
-      def column_titles
-        @col_titles.dup
+      # @param [Integer] index index of series
+      # @return [Array]
+      # @since 1.0.0
+      def series(index)
+        @records.map do |record|
+          record.values[index]
+        end
       end
 
-      def row_titles
-        @row_titles.dup
+      # @since 1.0.0
+      def has_field?(field_name)
+        @schema.members.include?(field_name.to_s)
+      end
+
+      # @return [void]
+      # @since 1.0.0
+      def each(&block)
+        @records.each(&block)
       end
 
       def initialize
-        @data = []
-        @col_titles = []
-        @row_titles = []
+        @records = []
       end
 
       def read(array_of_array, options={})
         clear_data
+        row_range = options[:row_range] || (0..-1)
+        col_range = options[:column_range] || (0..-1)
+        schema = options[:schema] || [:value]
         data_types = options[:data_types] || []
-        row_skip = (options[:row_skip].to_i rescue 0)
-        col_skip = (options[:column_skip].to_i rescue 0)
-        title_row = ((options[:title_row] ? options[:title_row].to_i : nil) rescue nil)
-        title_col = ((options[:title_column] ? options[:title_column].to_i : nil) rescue nil)
-        row_limit = ((options[:row_limit] ? options[:row_limit].to_i : nil) rescue nil)
-        row_proc = options[:row_proc]
-        array_of_array.each_with_index do |row, i|
-          unless options[:transposed]
-            if i == title_row
-              @col_titles.replace(row[col_skip..-1].map{|v| primitive_title_value(v)})
-            end
-            next if i < row_skip
-            break if row_limit && row_limit + row_skip <= i
-            next if row_proc.respond_to?(:call) && !row_proc.call(*row[col_skip..-1])
-            @row_titles << primitive_title_value(row[title_col]) if title_col
-            vals = []
-            row[col_skip..-1].each_with_index do |value, j|
-              vals << primitive_value(value, data_types[j])
-            end
-            @data << vals
-          else
-            row_limit_number = row_limit ? row_limit + row_skip - 1 : -1
-            if i == title_col
-              @row_titles.replace(row[row_skip..row_limit_number].map{|v| primitive_title_value(v)})
-            end
-            next if i < col_skip
-            vals = row[row_skip..row_limit_number]
-            @data.replace(vals.map{|value| []}) if @data.empty?
-            @col_titles << primitive_title_value(row[title_row]) if title_row
-            vals.each_with_index do |value, j|
-              @data[j] << primitive_value(value, data_types[i])
+#        row_proc = options[:row_proc]
+        @schema = record_schema(schema)
+        array_of_array = transpose(array_of_array) if options[:transposed]
+
+        array_of_array[row_range].each do |row|
+          record_source = []
+          values = []
+          has_set_value = false
+          row[col_range].each_with_index do |cell, i|
+            cell = primitive_value(cell, data_types[i])
+            if schema[i].nil? || schema[i].to_sym == :value
+              unless has_set_value
+                record_source << cell
+                has_set_value = true
+              end
+              values << cell
+            else
+              record_source << cell
             end
           end
+          record_source << values
+          @records << @schema.new(*record_source)
         end
         self
       end
@@ -122,8 +121,58 @@ module DYI #:nodoc:
         value
       end
 
-      def primitive_title_value(value, type=nil)
-        primitive_value(value, type)
+      # Transposes row and column of array-of-array.
+      # @example
+      #   transpose([[0,1,2],[3,4,5]]) => [[0,3],[1,4],[2,5]]
+      # @param [Array] array_of_array array of array
+      # @return [Array] transposed array
+      # @since 1.0.0
+      def transpose(array_of_array)
+        transposed_array = []
+        array_of_array.each_with_index do |row, i|
+          row.each_with_index do |cell, j|
+            transposed_array[j] ||= Array.new(i)
+            transposed_array[j] << cell
+          end
+        end
+        transposed_array
+      end
+
+      # @param [Array] schema of the record
+      # @return [Class] subclass of Struct class
+      # @since 1.0.0
+      def record_schema(schema)
+        struct_schema =
+            schema.inject([]) do |result, name|
+              if result.include?(name.to_sym)
+                if name.to_sym == :value
+                  next result
+                else
+                  raise ArgumentError, "schema option has a duplicate name: `#{name}'"
+                end
+              end
+              if name.to_sym == :values
+                raise ArgumentError, "schema option may not contain `:values'"
+              end
+              result << name.to_sym
+            end
+        struct_schema << :values
+        Struct.new(*struct_schema)
+      end
+
+      # Makes the instance respond to xxx_values method.
+      # @example
+      #   data = ArrayReader.read([['Smith', 20, 3432], ['Thomas', 25, 9721]],
+      #                           :schema => [:name, :age, :value])
+      #   data.name_vlaues  # => ['Smith', 'Thomas']
+      #   data.age_values   # => [20, 25]
+      # @since 1.0.0
+      def method_missing(name, *args)
+        if args.size == 0 && name.to_s =~ /_values\z/ && @schema.members.include?($`)
+          @records.map{|r| r.__send__($`)}
+        else
+          super
+        end
       end
 
       class << self

@@ -79,10 +79,6 @@ module DYI #:nodoc:
         end
       end
 
-      def primitive_title_value(value, type=nil)
-        value
-      end
-
       class << self
         def read(path, options={})
           new.read(path, options)

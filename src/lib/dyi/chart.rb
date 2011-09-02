@@ -22,6 +22,8 @@
 %w(
 
 base
+legend
+axis_util
 line_chart
 pie_chart
 table

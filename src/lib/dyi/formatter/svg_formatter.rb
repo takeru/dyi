@@ -350,7 +350,7 @@ module DYI #:nodoc:
           attrs[:from] = from_value if from_value
           attrs[:to] = to_value
           merge_anim_attributes(anim, shape, attrs)
-          if anim.duration
+          if anim.duration && anim.duration != 0
             create_leaf_node(io, 'animate', attrs)
           else
             create_leaf_node(io, 'set', attrs)
@@ -370,7 +370,7 @@ module DYI #:nodoc:
         end
         attrs[:to] = anim.to.is_a?(Array) ? anim.to.join(',') : anim.to.to_s
         merge_anim_attributes(anim, shape, attrs)
-        if anim.duration
+        if anim.duration && anim.duration != 0
           create_leaf_node(io, 'animateTransform', attrs)
         else
           create_leaf_node(io, 'set', attrs)
@@ -513,7 +513,7 @@ module DYI #:nodoc:
       # @return [void]
       # @since 1.0.0
       def merge_anim_attributes(anim, shape, attrs) #:nodoc:
-        attrs[:dur] = anim_duration(anim.duration) if anim.duration
+        attrs[:dur] = anim_duration(anim.duration) if anim.duration && anim.duration != 0
         if anim.begin_event || anim.begin_offset
           attrs[:begin] = anim_period(shape, anim.begin_event, anim.begin_offset)
         else

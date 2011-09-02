@@ -50,7 +50,7 @@ module DYI #:nodoc:
       opt_accessor :max_x_label_count, {:type => :integer, :default_proc => proc{|c| c.chart_width.div(Length.new(96))}}
       opt_accessor :show_x_labels, {:type => :boolean, :default => true}
       opt_accessor :legend_texts, {:type => :array, :item_type => :string}
-      opt_accessor :data_columns, {:type => :array, :item_type => :integer}
+#      opt_accessor :data_columns, {:type => :array, :item_type => :integer}
       opt_accessor :use_effect, {:type => :boolean, :default => true}
       opt_accessor :bar_seriese_interval, {:type => :float, :default => 0.3}
       opt_accessor :color_columns, {:type => :array, :item_type => :integer}
@@ -130,7 +130,7 @@ module DYI #:nodoc:
 
       def bar_chart_brush(color, bar_width=nil)
         if represent_3d?
-          bar_width ||= chart_width * bar_width_ratio / data.column_values(data_columns[0]).size
+          bar_width ||= chart_width * bar_width_ratio / data.records_size
           Drawing::CylinderBrush.new(:color => color, :ry => bar_width * (back_translate_value[:dy] * bar_width_ratio).quo(back_translate_value[:dx] * 2))
         else
           Drawing::Brush.new(:color => color)
@@ -153,9 +153,9 @@ module DYI #:nodoc:
         main_series_data = []
         sub_series_data = []
         @bar_series = []
-        data_columns.size.times do |i|
-          main_series_data.push(*data.column_values(data_columns[i])) unless use_y_second_axis?(i)
-          sub_series_data.push(*data.column_values(data_columns[i])) if use_y_second_axis?(i)
+        data.values_size.times do |i|
+          main_series_data.push(*data.series(i)) unless use_y_second_axis?(i)
+          sub_series_data.push(*data.series(i)) if use_y_second_axis?(i)
           @bar_series.push(i) if chart_type(i) == :bar
         end
         settings =
@@ -172,15 +172,15 @@ module DYI #:nodoc:
             second_axis_settings[:min],
             second_axis_settings[:max]) if use_y_second_axis?
 
-        data_columns.size.times do |i|
-          draw_chart(data_columns[i], chart_type(i), chart_color(i), use_y_second_axis?(i) ? sub_settings : settings) if chart_type(i) == :stackedbar
+        data.values_size.times do |i|
+          draw_chart(i, chart_type(i), chart_color(i), use_y_second_axis?(i) ? sub_settings : settings) if chart_type(i) == :stackedbar
         end
-        (data_columns.size-1).downto(0) do |i|
-          draw_chart(data_columns[i], chart_type(i), chart_color(i), use_y_second_axis?(i) ? sub_settings : settings) if chart_type(i) != :stackedbar
+        (data.values_size - 1).downto(0) do |i|
+          draw_chart(i, chart_type(i), chart_color(i), use_y_second_axis?(i) ? sub_settings : settings) if chart_type(i) != :stackedbar
         end
 
         draw_axis(settings, sub_settings)
-        texts = legend_texts || data_columns.map{|i| data.column_title(i)}
+        texts = legend_texts # || data_columns.map{|i| data.column_title(i)}
         draw_legend(texts, legend_shapes)
       end
 
@@ -314,28 +314,28 @@ module DYI #:nodoc:
       end
 
       def needs_x_scale?(i)
-        return true if data.row_count < max_x_label_count
-        i % ((data.row_count - 1) / [max_x_label_count - 1, 1].max) == 0
+        return true if data.records_size < max_x_label_count
+        i % ((data.records_size - 1) / [max_x_label_count - 1, 1].max) == 0
       end
 
       def draw_x_axis(main_pen, sub_pen, text_pen, text_margin) #:nodoc:
         main_pen.draw_line(represent_3d? ? @axis_back_canvas : @axis_front_canvas, [margin_left, height - margin_bottom], [width - margin_right, height - margin_bottom])
 
-        data.row_count.times do |i|
+        data.records_size.times do |i|
           next unless needs_x_scale?(i)
-          text_x = order_position_on_chart(margin_left, chart_width, data.row_count, i, x_axis_type)
-          scale_x = x_axis_type == :range ? order_position_on_chart(margin_left, chart_width, data.row_count + 1, i) : text_x
+          text_x = order_position_on_chart(margin_left, chart_width, data.records_size, i, x_axis_type)
+          scale_x = x_axis_type == :range ? order_position_on_chart(margin_left, chart_width, data.records_size + 1, i) : text_x
           text_pen.draw_text(
             @axis_front_canvas,
             [text_x, height - margin_bottom + text_margin],
-            format_x_label(data.row_title(i)),
+            format_x_label(data.name_values[i]),
             :text_anchor => 'middle', :alignment_baseline => 'top') if show_x_labels?
 
           sub_pen.draw_line_on_direction(
             @axis_front_canvas,
             [scale_x, height - margin_bottom],
             0,
-            -(axis_font ? axis_font.draw_size : Font::DEFAULT_SIZE) * 0.5) if i > 0 && i < data.row_count - (x_axis_type == :range ? 0 : 1)
+            -(axis_font ? axis_font.draw_size : Font::DEFAULT_SIZE) * 0.5) if i > 0 && i < data.records_size - (x_axis_type == :range ? 0 : 1)
         end
       end
 
@@ -349,7 +349,7 @@ module DYI #:nodoc:
       end
 
       def draw_line(id, color, settings) #:nodoc:
-        values = data.column_values(id)
+        values = data.series(id)
         return if values.compact.size == 0
         first_index = values.each_with_index {|value, i| break i if value}
         pen_options = {:color => color, :width => line_width}
@@ -369,7 +369,7 @@ module DYI #:nodoc:
       end
 
       def draw_area(id, color, settings) #:nodoc:
-        values = data.column_values(id)
+        values = data.series(id)
         return if values.compact.size == 0
         first_index = values.each_with_index {|value, i| break i if value}
         brush = area_chart_brush(color)
@@ -390,7 +390,7 @@ module DYI #:nodoc:
 
       def draw_bar(id, color, settings) #:nodoc:
         bar_group = Shape::ShapeGroup.new(@chart_options).draw_on(@chart_front_canvas)
-        values = data.column_values(id)
+        values = data.series(id)
         return if values.compact.size == 0
         bar_width = chart_width * bar_width_ratio / values.size / (@bar_series.size + (@bar_series.size - 1) * bar_seriese_interval)
 
@@ -400,7 +400,7 @@ module DYI #:nodoc:
           next if value.nil?
           x = order_position_on_chart(margin_left, chart_width, values.size, i, x_axis_type, bar_width_ratio) + bar_width * (1 + bar_seriese_interval) * @bar_series.index(id)
           y = value_position_on_chart(margin_top, settings, value, true)
-          brush = bar_chart_brush(data[i, color_columns[id]], bar_width) if color_columns && color_columns[id]
+          brush = bar_chart_brush(data.has_field?(:color) ? data.records[i].color : color, bar_width) if data.has_field?(:color)
           brush.draw_rectangle(bar_group, [x, y], bar_width, height - margin_bottom - y)
         end
         bar_group.translate(back_translate_value[:dx] / 2, back_translate_value[:dy] / 2) if represent_3d?
@@ -409,7 +409,7 @@ module DYI #:nodoc:
       def draw_stackedbar(id, color, settings) #:nodoc:
         bar_group = Shape::ShapeGroup.new(@chart_options).draw_on(@chart_front_canvas)
 
-        values = data.column_values(id)
+        values = data.series(id)
         return if values.compact.size == 0
         bar_width = chart_width * bar_width_ratio / values.size
 
@@ -429,9 +429,17 @@ module DYI #:nodoc:
         bar_group.translate(back_translate_value[:dx] / 2, back_translate_value[:dy] / 2) if represent_3d?
       end
 
+      # @since 1.0.0
+      def chart_color(index) #:nodoc:
+        if chart_colors
+          color = chart_colors[index]
+        end
+        color || DEFAULT_CHART_COLOR[index % DEFAULT_CHART_COLOR.size]
+      end
+
       def legend_shapes #:nodoc:
         result = []
-        data_columns.each_with_index do |id, index|
+        (0...data.values_size).each_with_index do |id, index|
           result <<
             case chart_type(index)
             when :line, nil
