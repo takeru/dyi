@@ -14,7 +14,6 @@ chart = DYI::Chart::PieChart.new 400,500,
 #  :moved_elements => [0.2,nil,nil,0.5],
 #  :chart_colors => ['blue', 'red', 'yellow', 'green'],
   :_3d_settings => {:dy => 30},
-  :background_image_file => {:path => 'data/background.png', :content_type=>'image/png'},
   :background_image_opacity => 0.1,
   :legend_format => "{?name}\t{!e}{?value:#,##0}\t{!e}({?percent:0.00%})",
   :chart_stroke_color => 'white'
