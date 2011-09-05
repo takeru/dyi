@@ -37,7 +37,9 @@ module DYI #:nodoc:
       opt_accessor :chart_stroke_color, {:type => :color}
       opt_accessor :chart_stroke_width, {:type => :float, :default => 1}
       opt_accessor :moved_elements, {:type => :array, :item_type => :float}
+      opt_accessor :pie_css_class, :type => :string
       opt_accessor :show_data_label, {:type => :boolean, :default => true}
+      opt_accessor :data_label_css_class, :type => :string
       opt_accessor :data_label_position, {:type => :float, :default => 0.8}
       opt_accessor :data_label_font, {:type => :font}
       opt_accessor :data_label_format, {:type => :string, :default => "{?name}"}
@@ -53,8 +55,8 @@ module DYI #:nodoc:
       opt_accessor :baloon_border_color, :type => :color
       opt_accessor :baloon_border_colors, :type => :array, :item_type => :color
       opt_accessor :baloon_border_width, :type => :length, :default => 2
+      opt_accessor :baloon_css_class, :type => :string
       opt_accessor :animation_duration, :type => :float, :default => 0.5
-#      opt_accessor :baloon_opacity, :type => :float, :default => 1
 
       def back_translate_value
         {:dy => (Length.new_or_nil(_3d_settings[:dy]) || chart_radius_y.quo(2))}
@@ -108,9 +110,24 @@ module DYI #:nodoc:
         else
           brush = Drawing::Brush.new(chart_stroke_color ? {:stroke_width => chart_stroke_width, :stroke => chart_stroke_color, :stroke_miterlimit => chart_stroke_width} : {})
         end
+        attrs = if pie_css_class && !pie_css_class.empty?
+                  {:css_class => pie_css_class}
+                else
+                  {}
+                end
         @chart_canvas = Shape::ShapeGroup.draw_on(@canvas)
-        @data_label_canvas = Shape::ShapeGroup.draw_on(@canvas)
-        @legend_canvas = Shape::ShapeGroup.draw_on(@canvas)
+        attrs = if data_label_css_class && !data_label_css_class.empty?
+                  {:css_class => data_label_css_class}
+                else
+                  {}
+                end
+        @data_label_canvas = Shape::ShapeGroup.draw_on(@canvas, attrs)
+        attrs = if legend_css_class && !legend_css_class.empty?
+                  {:css_class => legend_css_class}
+                else
+                  {}
+                end
+        @legend_canvas = Shape::ShapeGroup.draw_on(@canvas, attrs)
         @legends = []
         @sectors = []
         draw_legend(data.records, nil)
@@ -153,6 +170,10 @@ module DYI #:nodoc:
 
       def draw_chart(brush, record, accumulation, total_value, index) #:nodoc:
         canvas = Shape::ShapeGroup.draw_on(@chart_canvas)
+        attrs = {}
+        if data.has_field?(:css_class) && (css_class = record.css_class)
+          attrs[:css_class] = record.css_class
+        end
         value = record.value
         pie_sector = brush.draw_sector(
           canvas,
@@ -160,7 +181,8 @@ module DYI #:nodoc:
           chart_radius_x,
           chart_radius_y,
           accumulation * 360.0 / total_value - 90,
-          value * 360.0 / total_value)
+          value * 360.0 / total_value,
+          attrs)
         @sectors[index] = pie_sector
 
         if moved_elements && (dr = moved_elements[index])
@@ -178,7 +200,7 @@ module DYI #:nodoc:
             @data_label_canvas,
             center_point + label_point,
             format_string(data_label_format, record, total_value),
-            :text_anchor => 'middle')
+            attrs.merge(:text_anchor => 'middle'))
         end if hide_data_label_ratio < ratio
         draw_baloon(brush, record, accumulation, total_value, index, ratio, pie_sector)
       end
@@ -194,13 +216,18 @@ module DYI #:nodoc:
               chart_radius_y * (baloon_position + (dr || 0)) *
                   Math.sin(((accumulation * 2.0 + value) / total_value - 0.5) * Math::PI))
           baloon_options = {:text_anchor => 'middle', :show_border => true}
+          if data.has_field?(:css_class) && (css_class = record.css_class)
+            baloon_options[:css_class] = record.css_class
+          end
           baloon_options[:vertical_padding] = baloon_padding[:vertical_padding] || 2
           baloon_options[:horizontal_padding] = baloon_padding[:horizontal_padding] || 5
           baloon_options[:background_color] = get_baloon_background_color(index)
           baloon_options[:border_color] = get_baloon_border_color(index)
           baloon_options[:border_width] = baloon_border_width
           baloon_options[:border_rx] = baloon_round
-#          baloon_options[:opacity] = baloon_opacity
+          if baloon_css_class && baloon_css_class.empty?
+            @data_label_canvas.add_css_class(baloon_css_class)
+          end
           text = Drawing::Pen.black_pen(:font => baloon_font, :opacity => 0.0).draw_text(
               @data_label_canvas,
               center_point + baloon_point,
@@ -251,7 +278,11 @@ module DYI #:nodoc:
           canvas.add_initialize_script(form_legend_labels(legend_canvas))
           records.each_with_index do |record, i|
             y = legend_font_size * (1.2 * (i + 1))
-            group = Shape::ShapeGroup.draw_on(legend_canvas)
+            attrs = {}
+            if data.has_field?(:css_class) && (css_class = record.css_class)
+              attrs[:css_class] = record.css_class
+            end
+            group = Shape::ShapeGroup.draw_on(legend_canvas, attrs)
             @legends << group
             case shapes && shapes[i]
             when Shape::Base
@@ -293,24 +324,24 @@ module DYI #:nodoc:
 
       def format_string(format, record, total_value)
         format = format.gsub(/\A\{!(\w)\}/, '')
-        result = format.gsub(/\{\?((?![0-9])\w+)(:[^}]*)?\}/){|m|
-                   fmt = $2 ? $2[1..-1] : nil
-                   if $1 == 'percent'
-                     value = record.value.quo(total_value)
-                     fmt ||= '0.0%'
-                   else
-                     value = record.__send__($1)
-                   end
-                   if fmt
-                     case value
-                       when Numeric then value.strfnum(fmt)
-                       when DateTime, Time then value.strftime(fmt)
-                       else fmt % value
-                     end
-                   else
-                     value
-                   end
-                 }
+        format.gsub(/\{\?((?![0-9])\w+)(:[^}]*)?\}/){|m|
+          fmt = $2 ? $2[1..-1] : nil
+          if $1 == 'percent'
+            value = record.value.quo(total_value)
+            fmt ||= '0.0%'
+          else
+            value = record.__send__($1)
+          end
+          if fmt
+            case value
+              when Numeric then value.strfnum(fmt)
+              when DateTime, Time then value.strftime(fmt)
+              else fmt % value
+            end
+          else
+            value
+          end
+        }
       end
     end
   end

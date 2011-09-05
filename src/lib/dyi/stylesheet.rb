@@ -33,15 +33,15 @@ module DYI
 
       # @return [String] content-type of script
       attr_reader :content_type
-      # @return [String] substance of client scripting
-      attr_reader :substance
+      # @return [String] body of client scripting
+      attr_reader :body
       attr_reader :media, :title
 
-      # @param [String] substance substance of client scripting
+      # @param [String] body body of client scripting
       # @param [String] content_type content-type of script
-      def initialize(substance, content_type='text/css', options={})
+      def initialize(body, content_type='text/css', options={})
         @content_type = content_type
-        @substance = substance
+        @body = body
         @media = options[:media]
         @title = options[:title]
       end

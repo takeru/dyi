@@ -46,7 +46,7 @@ module DYI
           parts << get_element(event.target)
           parts << '.addEventListener("' << event.event_name
           parts << '", function(' << listener.arguments.join(', ') << ") {\n"
-          parts << listener.substance
+          parts << listener.body
           parts << '})'
           parts.join
         end
@@ -180,11 +180,11 @@ module DYI
       class Function < SimpleScript
         attr_reader :name, :arguments
 
-        # @param [String] substance substance of client scripting
+        # @param [String] body body of client scripting
         # @param [String] name a function name
         # @param [Array] arguments a list of argument's name
-        def initialize(substance, name=nil, *arguments)
-          super(substance)
+        def initialize(body, name=nil, *arguments)
+          super(body)
           if name && name !~ /\A[\$A-Z_a-z][\$0-9A-Z_a-z]*\z/
             raise ArgumentError, "illegal identifier: `#{name}'"
           end
@@ -197,15 +197,15 @@ module DYI
           end
         end
 
-        # (see SimpleScript#substance)
-        def substance
+        # (see SimpleScript#body)
+        def body
           parts = []
           parts << 'function'
           parts << " #{name}" if name
           parts << '('
           parts << arguments.join(', ')
           parts << ") {\n"
-          parts << @substance
+          parts << @body
           parts << "}\n"
           parts.join
         end
@@ -215,10 +215,10 @@ module DYI
       # becomes effective only when it is output by SVG format.
       class EventListener < Function
 
-        # @param [String] substance substance of client scripting
+        # @param [String] body body of client scripting
         # @param [String] name a function name
         # @param [String] argument argument's name
-        def initialize(substance, name=nil, argument='evt')
+        def initialize(body, name=nil, argument='evt')
           super
           @events = []
         end
@@ -237,8 +237,8 @@ module DYI
           @events.delete(event)
         end
 
-        # (see SimpleScript#substance)
-        def substance
+        # (see SimpleScript#body)
+        def body
           if name
             super
           else
@@ -246,7 +246,7 @@ module DYI
             parts << "setTimeout(function() {\n"
             @events.each do |event|
               if event.event_name == :load
-                parts << @substance
+                parts << @body
               elsif
                 if event.target.root_element?
                   parts << '  document.rootElement.addEventListener("'
@@ -259,7 +259,7 @@ module DYI
                 parts << '", function('
                 parts << arguments.join(', ')
                 parts << ") {\n"
-                parts << @substance
+                parts << @body
                 parts << "  }, false);\n"
               end
             end

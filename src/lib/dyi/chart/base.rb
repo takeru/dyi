@@ -200,6 +200,12 @@ module DYI #:nodoc:
       opt_accessor :background_image_url, :type => :string
       opt_accessor :background_image_file, :type => :hash, :default => {}, :keys => [:path, :content_type], :item_type => :string
       opt_accessor :background_image_opacity, :type => :float, :default => 1.0
+      opt_accessor :script_body, :type => :string
+      opt_accessor :css_body, :type => :string
+      opt_accessor :script_files, :type => :array, :item_type => :string
+      opt_accessor :css_files, :type => :array, :item_type => :string
+      opt_accessor :xsl_files, :type => :array, :item_type => :string
+      opt_accessor :canvas_css_class, :type => :string
 
       def initialize(width, height, options={})
         @canvas = Canvas.new(width, height)
@@ -270,6 +276,18 @@ module DYI #:nodoc:
 
       # @since 1.0.0
       def create_vector_image #:nodoc:
+        @canvas.add_css_class(canvas_css_class) if canvas_css_class && !canvas_css_class.empty?
+        @canvas.add_script(script_body) if script_body && !script_body.empty?
+        @canvas.add_stylesheet(css_body) if css_body && !css_body.empty?
+        script_files && script_files.each do |script_file|
+          @canvas.reference_script_file(script_file)
+        end
+        css_files && css_files.each do |css_file|
+          @canvas.reference_stylesheet_file(css_file)
+        end
+        xsl_files && xsl_files.each do |xsl_file|
+          @canvas.reference_stylesheet_file(xsl_file, 'text/xsl')
+        end
         brush = Drawing::Brush.new
         brush.opacity = background_image_opacity if background_image_opacity != 1.0
         if background_image_url
@@ -277,7 +295,7 @@ module DYI #:nodoc:
         end 
         if background_image_file[:path]
           brush.draw_image(canvas, [0, 0], width, height, background_image_file[:path], :content_type=>background_image_file[:content_type])
-        end 
+        end
       end
     end
   end

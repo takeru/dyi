@@ -74,6 +74,7 @@ module DYI #:nodoc:
           klass.__send__(:opt_accessor, :legend_font, :type => :font)
           klass.__send__(:opt_accessor, :legend_format, :type => :string, :default_method => :default_legend_format)
           klass.__send__(:opt_accessor, :legend_point, :type => :point, :default_method => :default_legend_point)
+          klass.__send__(:opt_accessor, :legend_css_class, :type => :string)
         end
       end
     end

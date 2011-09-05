@@ -238,7 +238,7 @@ module DYI #:nodoc:
         @painting = Painting.new_or_nil(options.delete(:painting))
         @anchor_href = options.delete(:anchor_href)
         @anchor_target = options.delete(:anchor_target)
-        self.css_class = options.delete(:class)
+        self.css_class = options.delete(:css_class)
         self.id = options.delete(:id) if options[:id]
         options
       end

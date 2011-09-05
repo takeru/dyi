@@ -42,7 +42,7 @@ module DYI #:nodoc:
       @stylesheets = []
       @seed_of_id = -1
       @receive_event = false
-      self.css_class = options[:class]
+      self.css_class = options[:css_class]
       self.real_width = real_width
       self.real_height = real_height
     end
@@ -139,22 +139,32 @@ module DYI #:nodoc:
     end
 
     # @since 1.0.0
-    def add_script(script)
-      @scripts << script
+    def add_script(script_body, content_type = 'application/ecmascript')
+      @scripts << Script::SimpleScript.new(script_body, content_type)
     end
 
     # @since 1.0.0
-    def add_style_sheet(ss)
-      @stylesheets << ss
+    def reference_script_file(reference_path, content_type = 'application/ecmascript')
+      @scripts << Script::ScriptReference.new(reference_path, content_type)
     end
 
     # @since 1.0.0
-    def add_initialize_script(script_substance)
+    def add_stylesheet(style_body, content_type = 'text/css')
+      @stylesheets << Stylesheet::Style.new(style_body, content_type)
+    end
+
+    # @since 1.0.0
+    def reference_stylesheet_file(reference_path, content_type = 'text/css')
+      @stylesheets << Stylesheet::StyleReference.new(reference_path, content_type)
+    end
+
+    # @since 1.0.0
+    def add_initialize_script(script_body)
       if @init_script
         @init_script = Script::EcmaScript::EventListener.new(
-            @init_script.instance_variable_get(:@substance) + script_substance, 'init')
+            @init_script.instance_variable_get(:@body) + script_body, 'init')
       else
-        @init_script = Script::EcmaScript::EventListener.new(script_substance, 'init')
+        @init_script = Script::EcmaScript::EventListener.new(script_body, 'init')
         add_event_listener(:load, @init_script)
       end
     end

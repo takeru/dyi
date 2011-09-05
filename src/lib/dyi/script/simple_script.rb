@@ -35,14 +35,14 @@ module DYI
 
       # @return [String] content-type of script
       attr_reader :content_type
-      # @return [String] substance of client scripting
-      attr_reader :substance
+      # @return [String] body of client scripting
+      attr_reader :body
 
-      # @param [String] substance substance of client scripting
+      # @param [String] body body of client scripting
       # @param [String] content_type content-type of script
-      def initialize(substance, content_type = 'application/ecmascript')
+      def initialize(body, content_type = 'application/ecmascript')
         @content_type = content_type
-        @substance = substance
+        @body = body
       end
 
       # Returns this script includes reference of external script file.

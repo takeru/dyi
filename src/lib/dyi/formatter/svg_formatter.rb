@@ -62,6 +62,7 @@ module DYI #:nodoc:
                              :viewBox => canvas.view_box,
                              :preserveAspectRatio => canvas.preserve_aspect_ratio)
         attrs[:'pointer-events'] = 'none' if canvas.receive_event?
+        attrs[:class] = canvas.css_class if canvas.css_class
         canvas.event_listeners.each do |event_name, listeners|
           unless listeners.empty?
             methods = listeners.map do |listener|
@@ -89,11 +90,11 @@ module DYI #:nodoc:
               content_type = script.content_type
               create_cdata_node(sio, 'script',
                                 :type => content_type) {
-                sio << script.substance
+                sio << script.body
                 if (i += 1) < length
                   script = canvas.scripts[i]
                   while !script.has_uri_reference? && content_type == script.content_type
-                    sio << script.substance
+                    sio << script.body
                     break if length <= (i += 1)
                     script = canvas.scripts[i]
                   end
@@ -384,7 +385,7 @@ module DYI #:nodoc:
                            :'xlink:href' => script.href,
                            :type => script.content_type)
         else
-          io << script.substance
+          io << script.body
         end
       end
 
@@ -395,7 +396,7 @@ module DYI #:nodoc:
           attrs[:media] = stylesheet.media if stylesheet.media
           attrs[:title] = stylesheet.title if stylesheet.title
           create_cdata_node(io, 'style', attrs){
-            io << stylesheet.substance
+            io << stylesheet.body
           }
         end
       end
