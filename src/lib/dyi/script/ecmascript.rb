@@ -243,13 +243,13 @@ module DYI
             super
           else
             parts = []
-            parts << "setTimeout(function() {\n"
+            parts << "addEventListener(\"init\", function() {\n"
             @events.each do |event|
               if event.event_name == :load
                 parts << @body
               elsif
                 if event.target.root_element?
-                  parts << '  document.rootElement.addEventListener("'
+                  parts << '  document.documentElement.addEventListener("'
                 else
                   parts << '  document.getElementById("'
                   parts << event.target.id
@@ -263,7 +263,7 @@ module DYI
                 parts << "  }, false);\n"
               end
             end
-            parts << "}, 0);\n"
+            parts << "}, false);\n"
             parts.join
           end
         end

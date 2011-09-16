@@ -405,6 +405,17 @@ module DYI #:nodoc:
 
       # @since 1.0.0
       def write_node(shape, io, attrs, tag_name, &create_child_node)
+        shape.event_listeners.each do |event_name, listeners|
+          unless listeners.empty?
+            methods = listeners.inject([]) do |array, listener|
+                        if listener.name
+                          array << "#{listener.name}(#{listener.arguments.join(',')})"
+                        end
+                        array
+                      end
+            attrs["on#{event_name}"] = methods.join(';') unless methods.empty?
+          end
+        end
         if shape.anchor_href
           link_attrs = {:'xlink:href' => shape.anchor_href}
           link_attrs[:target] = shape.anchor_target if shape.anchor_target
