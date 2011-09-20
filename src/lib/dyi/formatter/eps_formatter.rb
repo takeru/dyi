@@ -384,7 +384,7 @@ module DYI #:nodoc:
       def clip_path(io, shape) #:nodoc:
         if shape.respond_to?(:clipping) && shape.clipping
           shape.clipping.each_shapes do |shape, rule|
-            s = shape.dup
+            s = shape.clone
             s.painting.fill = nil
             s.painting.stroke = nil
             s.write_as(self, io) {

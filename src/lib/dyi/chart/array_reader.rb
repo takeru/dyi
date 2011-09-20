@@ -32,7 +32,7 @@ module DYI #:nodoc:
       # @return [Array] array of a struct
       # @since 1.0.0
       def records
-        @records.dup
+        @records.clone
       end
 
       # @return [Integer] number of the records

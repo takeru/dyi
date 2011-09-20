@@ -217,7 +217,7 @@ module DYI #:nodoc:
       # all other characters:: The character is copied to the result string
       #                        unchanged.
       def default_format=(fromat)
-        @@default_format = fromat.dup
+        @@default_format = fromat.clone
       end
     end
   end

@@ -392,7 +392,7 @@ module DYI #:nodoc:
       # +U+:: (unit placeholder) Placeholder '+U+' is replaced as a unit. If
       #       the unit is user unit, '+U+' is replece as empty string.
       def default_format=(fromat)
-        @@default_format = fromat.dup
+        @@default_format = fromat.clone
       end
     end
   end

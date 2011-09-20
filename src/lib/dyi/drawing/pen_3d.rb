@@ -143,10 +143,10 @@ module DYI #:nodoc:
         radius_y = ry
 
         shape = Shape::ShapeGroup.draw_on(canvas)
-        top_painting = @painting.dup
+        top_painting = @painting.clone
         top_painting.fill = top_color
         Shape::Ellipse.create_on_center_radius(Coordinate.new(left_top_point) + [width.quo(2), 0], radius_x, radius_y, merge_option(:painting => top_painting)).draw_on(shape)
-        body_painting = @painting.dup
+        body_painting = @painting.clone
         body_painting.fill = body_gradient(canvas)
         Shape::Path.draw(left_top_point, merge_option(:painting => body_painting)) {|path|
           path.rarc_to([width, 0], radius_x, radius_y, 0, false, false)

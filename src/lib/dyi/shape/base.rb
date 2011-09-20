@@ -461,7 +461,7 @@ module DYI #:nodoc:
       end
 
       def points
-        @points.dup
+        @points.clone
       end
 
       def undo

@@ -45,7 +45,7 @@ module DYI #:nodoc:
       Painting::IMPLEMENT_ATTRIBUTES.each do |painting_attr|
         define_method(painting_attr) {| | @painting.__send__(painting_attr)}
         define_method("#{painting_attr}=".to_sym) {|value|
-          @painting = @painting.dup
+          @painting = @painting.clone
           @painting.__send__("#{painting_attr}=".to_sym, value)
         }
       end
@@ -158,7 +158,7 @@ module DYI #:nodoc:
       #:startdoc:
 
       def initialize(options={})
-        options = options.dup
+        options = options.clone
         ALIAS_ATTRIBUTES.each do |key, value|
           options[value] = options.delete(key) if options.key?(key) && !options.key?(value)
         end
@@ -209,7 +209,7 @@ module DYI #:nodoc:
       #:startdoc:
 
       def initialize(options={})
-        options = options.dup
+        options = options.clone
         ALIAS_ATTRIBUTES.each do |key, value|
           options[value] = options.delete(key) if options.key?(key) && !options.key?(value)
         end

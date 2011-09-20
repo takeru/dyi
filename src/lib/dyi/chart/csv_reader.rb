@@ -29,7 +29,7 @@ module DYI #:nodoc:
 
     class CsvReader < ArrayReader
       def read(path, options={})
-        options = options.dup
+        options = options.clone
         @date_format = options.delete(:date_format)
         @datetime_format = options.delete(:datetime_format)
         nkf_options =
