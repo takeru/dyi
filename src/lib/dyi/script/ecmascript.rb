@@ -227,7 +227,9 @@ module DYI
         # @param [Event] event an event that is related to
         # @return [void]
         def related_to(event)
-          @events << event
+          unless @events.include?(event)
+            @events << event
+          end
         end
 
         # Removes the relation to an event.

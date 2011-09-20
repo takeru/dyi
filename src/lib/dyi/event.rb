@@ -43,9 +43,6 @@ module DYI
     # @return [GraphicalElement] an element to which the event applied
     attr_reader :target
 
-    # @return [Array] a list of event listener
-    attr_reader :listeners
-
     # @param [Symbol] event_name event name, one of followings: focusin,
     #                            focusout, click, mousedown, mouseup, mouseover,
     #                            mousemove, mouseout, load
@@ -57,7 +54,6 @@ module DYI
         raise ArgumentError, "`#{event_name}' is unknown event"
       end
       @event_name = event_name
-      @listeners = []
       (@target = target).set_event(self)
     end
 
@@ -77,6 +73,21 @@ module DYI
     def remove_listener(event_listener)
       target.remove_event_listener(event_name, event_listener)
       event_listener.unrelated_to(self)
+    end
+
+    # @since 1.0.1
+    def ==(other)
+      event_name == other.event_name && target == other.target
+    end
+
+    # @since 1.0.1
+    def eql?(other)
+      self == other
+    end
+
+    # @since 1.0.1
+    def hash
+      event_name.hash ^ target.hash
     end
 
     class << self

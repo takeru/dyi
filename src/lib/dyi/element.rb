@@ -145,6 +145,7 @@ module DYI #:nodoc:
     # @param [Script::SimpleScript|String] event_listener a event listener
     # @return [void]
     def add_event_listener(event_name, event_listener)
+      event_listener.related_to(DYI::Event.new(event_name, self))
       if event_listeners.key?(event_name)
         unless event_listeners[event_name].include?(event_listener)
           event_listeners[event_name] << event_listener
