@@ -243,7 +243,7 @@ module DYI
             super
           else
             parts = []
-            parts << "addEventListener(\"init\", function() {\n"
+            parts << "addEventListener(\"load\", function() {\n"
             @events.each do |event|
               if event.event_name == :load
                 parts << @body

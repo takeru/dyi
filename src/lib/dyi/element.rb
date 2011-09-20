@@ -148,11 +148,11 @@ module DYI #:nodoc:
       if event_listeners.key?(event_name)
         unless event_listeners[event_name].include?(event_listener)
           event_listeners[event_name] << event_listener
-          canvas.instance_variable_get(:@scripts) << event_listener
+          canvas.add_script(event_listener)
         end
       else
         event_listeners[event_name] = [event_listener]
-        canvas.instance_variable_get(:@scripts) << event_listener
+        canvas.add_script(event_listener)
       end
     end
 

@@ -138,9 +138,21 @@ module DYI #:nodoc:
       @init_script ? [@init_script].push(*@scripts) : @scripts
     end
 
+    # @overload add_script(script)
+    #   Registers a script object with this canvas
+    #   @param [Script::SimpleScript] script a script that is registered
+    # @overload add_script(script_body, content_type='application/ecmascript')
+    #   Registers a script.  Create a script object and Registers it with this
+    #   canvas.
+    #   @param [String] script_body a string that is script body
+    #   @param [String] content_type a content-type of the script
     # @since 1.0.0
     def add_script(script_body, content_type = 'application/ecmascript')
-      @scripts << Script::SimpleScript.new(script_body, content_type)
+      if script_body.respond_to?(:include_external_file?)
+        @scripts << script_body unless @scripts.include?(script_body)
+      else
+        @scripts << Script::SimpleScript.new(script_body, content_type)
+      end
     end
 
     # @since 1.0.0
