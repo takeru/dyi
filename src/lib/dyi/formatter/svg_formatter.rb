@@ -546,7 +546,7 @@ module DYI #:nodoc:
       def common_attributes(shape) #:nodoc:
         attributes = {}
         create_style(shape, attributes)
-        attributes[:class] = shape.css_class unless shape.css_class.empty?
+        attributes[:class] = shape.css_class if shape.css_class
         transform = create_transform(shape)
         attributes[:transform] = transform if transform
         attributes[:'clip-path'] = "url(##{shape.clipping.id})" if shape.clipping

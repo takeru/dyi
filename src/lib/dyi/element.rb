@@ -87,6 +87,7 @@ module DYI #:nodoc:
     CLASS_REGEXP = /\A[A-Z_a-z][\-0-9A-Z_a-z]*\z/
 
     def css_class=(css_class)
+      return @css_class = nil if css_class.nil?
       classes = css_class.to_s.split(/\s+/)
       classes.each do |c|
         if c.to_s !~ CLASS_REGEXP
@@ -97,7 +98,7 @@ module DYI #:nodoc:
     end
 
     def css_classes
-      css_class.split(/\s+/)
+      css_class.to_s.split(/\s+/)
     end
 
     def add_css_class(css_class)
@@ -105,7 +106,7 @@ module DYI #:nodoc:
         raise ArgumentError, "`#{css_class}' is a illegal class-name"
       end
       unless css_classes.include?(css_class.to_s)
-        @css_class += " #{css_class}"
+        @css_class = css_classes.push(scc_class).join(' ')
         css_class
       end
       nil
@@ -114,7 +115,7 @@ module DYI #:nodoc:
     def remove_css_class(css_class)
       classes = css_classes
       if classes.delete(css_class.to_s)
-        @css_class = classes.join(' ')
+        @css_class = classes.empty? ? nil : classes.join(' ')
         css_class
       else
         nil
