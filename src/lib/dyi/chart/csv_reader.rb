@@ -56,7 +56,7 @@ module DYI #:nodoc:
         if type.is_a?(Symbol) || type.is_a?(String)
           case type.to_sym
           when :string
-            value || ''
+            value
           when :number, :decimal
             value ? BigDecimal.new(value) : nil
           when :float

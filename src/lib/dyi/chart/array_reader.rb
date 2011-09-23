@@ -70,7 +70,7 @@ module DYI #:nodoc:
 
       # @since 1.0.0
       def has_field?(field_name)
-        @schema.members.include?(field_name.to_s)
+        @schema.members.include?(RUBY_VERSION >= '1.9' ? field_name.to_sym : field_name.to_s)
       end
 
       # @return [void]

@@ -265,8 +265,8 @@ module DYI #:nodoc:
       end
 
       def chart_color(index) #:nodoc:
-        if data.has_field?(:color) && (color = data.records[index].color)
-          color
+        if data.has_field?(:color)
+          color = Color.new_or_nil(data.records[index].color)
         end
         if color.nil? && respond_to?(:chart_colors) && chart_colors
           color = chart_colors[index]
