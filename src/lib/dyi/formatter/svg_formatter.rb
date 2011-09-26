@@ -67,7 +67,7 @@ module DYI #:nodoc:
           unless listeners.empty?
             methods = listeners.map do |listener|
                         if listener.name
-                          "#{listener.name}(#{listener.arguments.join(',')})"
+                          "#{listener.name}(evt)"
                         end
                       end
             attrs["on#{event_name}"] = methods.compact.join(';')
@@ -409,7 +409,7 @@ module DYI #:nodoc:
           unless listeners.empty?
             methods = listeners.inject([]) do |array, listener|
                         if listener.name
-                          array << "#{listener.name}(#{listener.arguments.join(',')})"
+                          array << "#{listener.name}(evt)"
                         end
                         array
                       end
