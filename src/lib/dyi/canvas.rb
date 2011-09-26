@@ -27,7 +27,7 @@ module DYI #:nodoc:
     attr_reader *IMPLEMENT_ATTRIBUTES
     attr_reader :child_elements
     # @since 1.0.0
-    attr_reader :event_listeners, :stylesheets
+    attr_reader :event_listeners, :stylesheets, :scripts
 
     def initialize(width, height,
                    real_width = nil, real_height = nil,
@@ -84,11 +84,6 @@ module DYI #:nodoc:
       self
     end
 
-    # @since 1.0.0
-    def event_listeners
-      @event_listeners ||= {}
-    end
-
     def write_as(formatter, io=$>)
       formatter.write_canvas(self, io)
     end
@@ -133,11 +128,6 @@ module DYI #:nodoc:
       @receive_event
     end
 
-    # @since 1.0.0
-    def scripts
-      @init_script ? [@init_script].push(*@scripts) : @scripts
-    end
-
     # @overload add_script(script)
     #   Registers a script object with this canvas
     #   @param [Script::SimpleScript] script a script that is registered
@@ -178,24 +168,6 @@ module DYI #:nodoc:
       else
         @init_script = Script::EcmaScript::EventListener.new(script_body, 'init')
         add_event_listener(:load, @init_script)
-      end
-    end
-
-    # @since 1.0.0
-    def add_event_listener(event_name, event_listener)
-      if event_listeners.key?(event_name)
-        unless event_listeners[event_name].include?(event_listener)
-          event_listeners[event_name] << event_listener
-        end
-      else
-        event_listeners[event_name] = [event_listener]
-      end
-    end
-
-    # @since 1.0.0
-    def remove_event_listener(event_name, event_listener)
-      if event_listeners.key?(event_name)
-        event_listeners[event_name].delete(event_listener)
       end
     end
 

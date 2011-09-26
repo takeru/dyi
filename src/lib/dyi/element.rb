@@ -143,7 +143,7 @@ module DYI #:nodoc:
 
     # Associates the element with a event listener
     # @param [Symbol] event_name a event name
-    # @param [Script::SimpleScript|String] event_listener a event listener
+    # @param [Script::SimpleScript] event_listener a event listener
     # @return [void]
     def add_event_listener(event_name, event_listener)
       event_listener.related_to(DYI::Event.new(event_name, self))
@@ -160,7 +160,7 @@ module DYI #:nodoc:
 
     # Removes asociation with given event listener
     # @param [Symbol] event_name a event name
-    # @param [Script::SimpleScript|String] event_listener a event listener
+    # @param [Script::SimpleScript] event_listener a event listener
     # @return [void]
     def remove_event_listener(event_name, event_listener)
       if event_listeners.key?(event_name)
