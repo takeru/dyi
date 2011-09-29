@@ -57,6 +57,17 @@ module DYI
         false
       end
 
+      # Appends script.
+      # @param [String] script_body body of client scripting that is appended
+      # @since 1.0.2
+      def append_body(script_body)
+        if @body.to_s[-1,1] == "\n"
+          @body += script_body
+        else
+          @body = [@body, "\n", script_body].join
+        end
+      end
+
       # Writes the buffer contents of the object.
       # @param [Formatter::Base] a formatter for export
       # @param [IO] io a buffer that is written

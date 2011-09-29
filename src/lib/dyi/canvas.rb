@@ -163,8 +163,7 @@ module DYI #:nodoc:
     # @since 1.0.0
     def add_initialize_script(script_body)
       if @init_script
-        @init_script = Script::EcmaScript::EventListener.new(
-            @init_script.instance_variable_get(:@body) + script_body, 'init')
+        @init_script.append_body(script_body)
       else
         @init_script = Script::EcmaScript::EventListener.new(script_body, 'init')
         add_event_listener(:load, @init_script)
