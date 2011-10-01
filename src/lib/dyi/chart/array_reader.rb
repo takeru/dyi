@@ -168,7 +168,8 @@ module DYI #:nodoc:
       #   data.age_values   # => [20, 25]
       # @since 1.0.0
       def method_missing(name, *args)
-        if args.size == 0 && name.to_s =~ /_values\z/ && @schema.members.include?($`)
+        if args.size == 0 && name.to_s =~ /_values\z/ &&
+            @schema.members.include?(RUBY_VERSION >= '1.9' ? $`.to_sym : $`)
           @records.map{|r| r.__send__($`)}
         else
           super
