@@ -96,7 +96,7 @@ module DYI #:nodoc:
     end
 
     def size_adjust=(value) #:nodoc:
-      @size_adjust = value.to_s.size != 0 ? value.to_s : nil
+      @size_adjust = value ? value.to_f : nil
     end
 
     def draw_size
