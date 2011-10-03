@@ -22,11 +22,13 @@
 module DYI #:nodoc:
 
   class Painting
-    IMPLEMENT_ATTRIBUTES = [:opacity,:fill,:fill_opacity,:fill_rule,:stroke,:stroke_dasharray,:stroke_dashoffset,:stroke_linecap,:stroke_linejoin,:stroke_miterlimit,:stroke_opacity,:stroke_width]
+    IMPLEMENT_ATTRIBUTES = [:opacity,:fill,:fill_opacity,:fill_rule,:stroke,:stroke_dasharray,:stroke_dashoffset,:stroke_linecap,:stroke_linejoin,:stroke_miterlimit,:stroke_opacity,:stroke_width,:display,:visibility]
     VALID_VALUES = {
       :fill_rule => ['nonzero','evenodd'],
       :stroke_linecap => ['butt','round','square'],
-      :stroke_linejoin => ['miter','round','bevel']
+      :stroke_linejoin => ['miter','round','bevel'],
+      :display => ['block','none'],
+      :visibility => ['visible','hidden']
     }
 
     ##
@@ -61,6 +63,12 @@ module DYI #:nodoc:
 
     ##
     # :method: stroke_width
+
+    ##
+    # :method: display
+
+    ##
+    # :method: visibility
 
     ##
     attr_reader *IMPLEMENT_ATTRIBUTES
@@ -99,6 +107,20 @@ module DYI #:nodoc:
     # 
     # :call-seq:
     # stroke_linejoin= (value)
+    # 
+
+    ##
+    # :method: display=
+    # 
+    # :call-seq:
+    # display= (value)
+    # 
+
+    ##
+    # :method: visibility=
+    # 
+    # :call-seq:
+    # visibility= (value)
     # 
 
     ##
