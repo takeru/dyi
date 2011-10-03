@@ -133,70 +133,73 @@ EOS
         end
 
         def form_legend_labels(legend)
-          parts = []
-          parts << "  (function(){\n"
-          parts << "    var legend = #{get_element(legend)}\n"
-          parts << "    var lengths = [];\n"
-          parts << "    var groups = legend.childNodes;\n"
-          parts << "    for(var i=0,lenI=groups.length; i<lenI; i++){\n"
-          parts << "      if(groups.item(i).nodeName == \"g\"){\n"
-          parts << "        var lens = [];\n"
-          parts << "        var texts = groups.item(i).childNodes;\n"
-          parts << "        for(var j=0,lenJ=texts.length; j<lenJ; j++){\n"
-          parts << "          if(texts.item(j).nodeName == \"text\"){\n"
-          parts << "            lens.push(texts.item(j).getComputedTextLength());\n"
-          parts << "          }\n"
-          parts << "        }\n"
-          parts << "        lengths.push(lens);\n"
-          parts << "      }\n"
-          parts << "    }\n"
-          parts << "    var max_lengths = [];\n"
-          parts << "    lengths.forEach(function(lens, i, lengths){\n"
-          parts << "      if(i == 0){\n"
-          parts << "        max_lengths = lens;\n"
-          parts << "        return;\n"
-          parts << "      }\n"
-          parts << "      for(j=0; j<max_lengths.length; j++){\n"
-          parts << "        if(max_lengths[j] < lens[j])\n"
-          parts << "          max_lengths[j] = lens[j];\n"
-          parts << "      }\n"
-          parts << "    });\n"
-          parts << "    for(i=0; i<lenI; i++){\n"
-          parts << "      if(groups.item(i).nodeName == \"g\"){\n"
-          parts << "        var lens = [];\n"
-          parts << "        var texts = groups.item(i).childNodes;\n"
-          parts << "        var k = 0, x = 0;\n"
-          parts << "        for(j=0,lenJ=texts.length; j<lenJ; j++){\n"
-          parts << "          var node = texts.item(j);\n"
-          parts << "          if(node.nodeName == \"rect\"){\n"
-          parts << "            x = Number(node.getAttribute(\"x\")) + Number(node.getAttribute(\"width\"));\n"
-          parts << "          }\n"
-          parts << "          else if(node.nodeName == \"line\"){\n"
-          parts << "            x = Number(node.getAttribute(\"x2\"));\n"
-          parts << "          }\n"
-          parts << "          else if(node.nodeName == \"text\"){\n"
-          parts << "            x += node.getExtentOfChar(0).height * 0.5;\n"
-          parts << "            if(node.getAttribute(\"text-anchor\") == \"middle\"){\n"
-          parts << "              x += max_lengths[k] / 2.0;\n"
-          parts << "              node.setAttribute(\"x\", x);\n"
-          parts << "              x += max_lengths[k] / 2.0;\n"
-          parts << "            }\n"
-          parts << "            else if(node.getAttribute(\"text-anchor\") == \"end\"){\n"
-          parts << "              x += max_lengths[k];\n"
-          parts << "              node.setAttribute(\"x\", x);\n"
-          parts << "            }\n"
-          parts << "            else {\n"
-          parts << "              node.setAttribute(\"x\", x);\n"
-          parts << "              x += max_lengths[k];\n"
-          parts << "            }\n"
-          parts << "            k++;\n"
-          parts << "          }\n"
-          parts << "        }\n"
-          parts << "        lengths.push(lens);\n"
-          parts << "      }\n"
-          parts << "    }\n"
-          parts << "  })();\n"
-          parts.join
+=begin
+script =<<-EOS
+(function(){
+  var legend = \#{get_element(legend)};
+  var lengths = [];
+  var groups = legend.childNodes;
+  for(var i=0,lenI=groups.length; i<lenI; i++){
+    if(groups.item(i).nodeName == \"g\"){
+      var lens = [];
+      var texts = groups.item(i).childNodes;
+      for(var j=0,lenJ=texts.length; j<lenJ; j++){
+        if(texts.item(j).nodeName == \"text\"){
+          lens.push(texts.item(j).getComputedTextLength());
+        }
+      }
+      lengths.push(lens);
+    }
+  }
+  var max_lengths = [];
+  lengths.forEach(function(lens, i, lengths){
+    if(i == 0){
+      max_lengths = lens;
+      return;
+    }
+    for(j=0; j<max_lengths.length; j++){
+      if(max_lengths[j] < lens[j])
+        max_lengths[j] = lens[j];
+    }
+  });
+  for(i=0; i<lenI; i++){
+    if(groups.item(i).nodeName == \"g\"){
+      var lens = [];
+      var texts = groups.item(i).childNodes;
+      var k = 0, x = 0;
+      for(j=0,lenJ=texts.length; j<lenJ; j++){
+        var node = texts.item(j);
+        if(node.nodeName == \"rect\"){
+          x = Number(node.getAttribute(\"x\")) + Number(node.getAttribute(\"width\"));
+        }
+        else if(node.nodeName == \"line\"){
+          x = Number(node.getAttribute(\"x2\"));
+        }
+        else if(node.nodeName == \"text\"){
+          x += node.getExtentOfChar(0).height * 0.5;
+          if(node.getAttribute(\"text-anchor\") == \"middle\"){
+            x += max_lengths[k] / 2.0;
+            node.setAttribute(\"x\", x);
+            x += max_lengths[k] / 2.0;
+          }
+          else if(node.getAttribute(\"text-anchor\") == \"end\"){
+            x += max_lengths[k];
+            node.setAttribute(\"x\", x);
+          }
+          else {
+            node.setAttribute(\"x\", x);
+            x += max_lengths[k];
+          }
+          k++;
+        }
+      }
+      lengths.push(lens);
+    }
+  }
+})();
+EOS
+=end
+          "(function(){var a=#{get_element(legend)};var b=[];var c=a.childNodes;for(var d=0,e=c.length;d<e;d++){if(c.item(d).nodeName==\"g\"){var f=[];var g=c.item(d).childNodes;for(var h=0,i=g.length;h<i;h++){if(g.item(h).nodeName==\"text\"){f.push(g.item(h).getComputedTextLength());}}b.push(f);}}var j=[];b.forEach(function(f,d,b){if(d==0){j=f;return;}for(h=0;h<j.length;h++){if(j[h]<f[h])j[h]=f[h];}});for(d=0;d<e;d++){if(c.item(d).nodeName==\"g\"){var f=[];var g=c.item(d).childNodes;var k=0,l=0;for(h=0,i=g.length;h<i;h++){var m=g.item(h);if(m.nodeName==\"rect\"){l=Number(m.getAttribute(\"x\"))+Number(m.getAttribute(\"width\"));}else if(m.nodeName==\"line\"){l=Number(m.getAttribute(\"x2\"));}else if(m.nodeName==\"text\"){l+=m.getExtentOfChar(0).height*0.5;if(m.getAttribute(\"text-anchor\")==\"middle\"){l+=j[k]/2.0;m.setAttribute(\"x\",l);l+=j[k]/2.0;}else if(m.getAttribute(\"text-anchor\")==\"end\"){l+=j[k];m.setAttribute(\"x\",l);}else{m.setAttribute(\"x\",l);l+=j[k];}k++;}}b.push(f);}}})();"
         end
       end
 
