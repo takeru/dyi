@@ -90,11 +90,11 @@ module DYI #:nodoc:
               content_type = script.content_type
               create_cdata_node(sio, 'script',
                                 :type => content_type) {
-                sio << script.body
+                sio << script.contents
                 if (i += 1) < length
                   script = canvas.scripts[i]
                   while !script.has_uri_reference? && content_type == script.content_type
-                    sio << script.body
+                    sio << script.contents
                     break if length <= (i += 1)
                     script = canvas.scripts[i]
                   end
@@ -385,7 +385,7 @@ module DYI #:nodoc:
                            :'xlink:href' => script.href,
                            :type => script.content_type)
         else
-          io << script.body
+          io << script.contents
         end
       end
 

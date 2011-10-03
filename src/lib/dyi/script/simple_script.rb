@@ -68,6 +68,11 @@ module DYI
         end
       end
 
+      # @since 1.0.3
+      def contents
+        @body
+      end
+
       # Writes the buffer contents of the object.
       # @param [Formatter::Base] a formatter for export
       # @param [IO] io a buffer that is written

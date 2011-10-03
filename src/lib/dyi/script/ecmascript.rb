@@ -48,7 +48,7 @@ module DYI
           parts << '.addEventListener("' << event.event_name
           parts << '", function(' << listener.arguments.join(', ') << ") {\n"
           parts << listener.body
-          parts << '})'
+          parts << '}, false)'
           parts.join
         end
 
@@ -198,8 +198,8 @@ module DYI
           end
         end
 
-        # (see SimpleScript#body)
-        def body
+        # @since 1.0.3
+        def contents
           parts = []
           parts << 'function'
           parts << " #{name}" if name
@@ -240,8 +240,8 @@ module DYI
           @events.delete(event)
         end
 
-        # (see SimpleScript#body)
-        def body
+        # @since 1.0.3
+        def contents
           if name
             super
           else
