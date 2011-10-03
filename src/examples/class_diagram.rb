@@ -67,7 +67,7 @@ class ArrowPen < DYI::Drawing::Pen
     total_length = DYI::Length.new(start_point.distance(end_point))
     end_point_no_rotate = DYI::Coordinate.new(start_point.x + total_length, start_point.y)
     
-    rotate_value = Math.atan2(end_point.y - start_point.y, end_point.x - start_point.x) * 360.0 / (2*Math::PI)
+    rotate_value = Math.atan2((end_point.y - start_point.y).to_f, (end_point.x - start_point.x).to_f) * 360.0 / (2*Math::PI)
     
     draw_line(canvas, start_point, end_point_no_rotate).rotate(rotate_value, start_point)
     draw_polygon(canvas, end_point_no_rotate){|line|
