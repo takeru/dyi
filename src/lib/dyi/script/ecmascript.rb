@@ -59,6 +59,30 @@ module DYI
           parts.join
         end
 
+        # @since 1.1.0
+        def metadata_parse_json
+=begin
+script =<<-EOS
+(function() {
+  var metadata_element = document.getElementsByTagName("metadata").item(0);
+  if(metadata_element == null)
+    return null;
+  var metadata_contents = [];
+  for(var i=0, length=metadata_element.childNodes.length; i<length; i++) {
+    var child = metadata_element.childNodes.item(i);
+    if(child.nodeType!=3&&child.nodeType!=4)
+      return null;
+    metadata_contents.push(child.data);
+  }
+  if(metadata_contents.length == 0)
+    return null;
+  return JSON.parse(metadata_contents.join(""));
+})()
+EOS
+=end
+          '(function(){var a=document.getElementsByTagName("metadata").item(0);if(a==null)return null;var b=[];for(var c=0,d=a.childNodes.length;c<d;c++){var e=a.childNodes.item(c);if(e.nodeType!=3&&e.nodeType!=4)return null;b.push(e.data);}if(b.length==0)return null;return JSON.parse(b.join(""));})()'
+        end
+
         def draw_text_border(*elements)
           parts = []
           parts << "  (function(){\n"

@@ -28,6 +28,8 @@ module DYI #:nodoc:
     attr_reader :child_elements
     # @since 1.0.0
     attr_reader :event_listeners, :stylesheets, :scripts
+    # @since 1.1.0
+    attr_accessor :metadata
 
     def initialize(width, height,
                    real_width = nil, real_height = nil,
