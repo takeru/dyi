@@ -105,11 +105,11 @@ module DYI #:nodoc:
       if css_class.to_s !~ CLASS_REGEXP
         raise ArgumentError, "`#{css_class}' is a illegal class-name"
       end
-      unless css_classes.include?(css_class.to_s)
-        @css_class = css_classes.push(scc_class).join(' ')
-        css_class
+      if css_classes.include?(css_class.to_s)
+        return nil
       end
-      nil
+      @css_class = css_classes.push(scc_class).join(' ')
+      css_class
     end
 
     def remove_css_class(css_class)
