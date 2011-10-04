@@ -115,6 +115,12 @@ module DYI #:nodoc:
         self
       end
 
+      # @return [Array] a array of a field's name (as Symbol)
+      # @since 1.1.0
+      def members
+        @schema.members.map{|name| name.to_sym}
+      end
+
       private
 
       def primitive_value(value, type=nil)
