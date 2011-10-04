@@ -143,12 +143,17 @@ module DYI #:nodoc:
 
       private
 
+      def initialize(*args)
+        super
+        init_container
+      end
+
       def default_legend_point #:nodoc:
         Coordinate.new(margin_left, 0)
       end
 
       def create_vector_image #:nodoc:
-        init_container
+        super
 
         main_series_data = []
         sub_series_data = []
