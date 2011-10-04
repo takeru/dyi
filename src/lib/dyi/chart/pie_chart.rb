@@ -241,7 +241,7 @@ module DYI #:nodoc:
                                       :duration => animation_duration,
                                       :fill => 'freeze',
                                       :begin_event => Event.mouseout(pie_sector))
-          if @legends
+          if show_legend?
             text.add_painting_animation(:to => {:opacity => 1},
                                         :duration => animation_duration,
                                         :fill => 'freeze',
@@ -268,7 +268,6 @@ module DYI #:nodoc:
                                format_string(format, record, toatal)
                              end
           end
-          require 'pp'
           max_lengths = legend_labels.inject(Array.new(formats.size, 0)) do |maxs, labels|
                           (0...formats.size).each do |i|
                             maxs[i] = labels[i].bytesize if maxs[i] < labels[i].bytesize
