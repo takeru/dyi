@@ -205,9 +205,7 @@ EOS
           "(function(){var a=#{get_element(legend)};var b=[];var c=a.childNodes;for(var d=0,e=c.length;d<e;d++){if(c.item(d).nodeName==\"g\"){var f=[];var g=c.item(d).childNodes;for(var h=0,i=g.length;h<i;h++){if(g.item(h).nodeName==\"text\"){f.push(g.item(h).getComputedTextLength());}}b.push(f);}}var j=[];b.forEach(function(f,d,b){if(d==0){j=f;return;}for(h=0;h<j.length;h++){if(j[h]<f[h])j[h]=f[h];}});for(d=0;d<e;d++){if(c.item(d).nodeName==\"g\"){var f=[];var g=c.item(d).childNodes;var k=0,l=0;for(h=0,i=g.length;h<i;h++){var m=g.item(h);if(m.nodeName==\"rect\"){l=Number(m.getAttribute(\"x\"))+Number(m.getAttribute(\"width\"));}else if(m.nodeName==\"line\"){l=Number(m.getAttribute(\"x2\"));}else if(m.nodeName==\"text\"){l+=m.getExtentOfChar(0).height*0.5;if(m.getAttribute(\"text-anchor\")==\"middle\"){l+=j[k]/2.0;m.setAttribute(\"x\",l);l+=j[k]/2.0;}else if(m.getAttribute(\"text-anchor\")==\"end\"){l+=j[k];m.setAttribute(\"x\",l);}else{m.setAttribute(\"x\",l);l+=j[k];}k++;}}b.push(f);}}})();"
         end
 
-        module_function :get_element, :add_event_listener, :dispatch_evnet,
-                        :metadata_parse_json, :draw_text_border,
-                        :form_legend_labels
+        module_function(*private_instance_methods)
       end
 
       # Class representing a function of ECMAScript.  The scripting becomes
