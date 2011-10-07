@@ -86,6 +86,92 @@ EOS
           '(function(){var a=document.getElementsByTagName("metadata").item(0);if(a==null)return null;var b=[];for(var c=0,d=a.childNodes.length;c<d;c++){var e=a.childNodes.item(c);if(e.nodeType!=3&&e.nodeType!=4)return null;b.push(e.data);}if(b.length==0)return null;return JSON.parse(b.join(""));})()'
         end
 
+        # Returns an ECMAScript value of attribute of the element.
+        # @param [Element|String] element the target element or id of the target
+        # element
+        # @param [String|Symbol] attribute_name the name of attribute
+        # @return [String] ECMAScript string
+        # @example
+        #   rect = pen.draw_rectange(canvas, [0, 0], 20, 30, :id => "rect1")
+        #   get_attribute(rect, "width")
+        #        # => "document.getElementById(\"rect1\").getAttribute(\"x\")"
+        # @since 1.1.0
+        def get_attribute(element, attribute_name)
+          "#{get_element(element)}.getAttribute(\"#{attribute_name}\")"
+        end
+
+        # Returns an ECMAScript expression that sets a value to the element.
+        # @param [Element|String] element the target element or id of the target
+        # element
+        # @param [String|Symbol] attribute_name the name of attribute
+        # @param [Object] value a value of attribute, calls a to_s method
+        # @return [String] ECMAScript string
+        # @example
+        #   rect = pen.draw_rectange(canvas, [0, 0], 20, 30, :id => "rect1")
+        #   get_attribute(rect, "width", 50)
+        #        # => "document.getElementById(\"rect1\").setAttribute(\"x\",\"50\")"
+        # @since 1.1.0
+        def set_attribute(element, attribute_name, value)
+          "#{get_element(element)}.setAttribute(\"#{attribute_name}\",\"#{value.to_s}\")"
+        end
+
+        # Returns an ECMAScript expression that rewrite text node of a <text>
+        # element.
+        # @param [Shape::Text] text_element the target element
+        # @param [String] text new contents of the text element
+        # @return [String] ECMAScript string
+        # @since 1.1.0
+        def rewrite_text(text_element, text)
+=begin
+lines = text.split(/(\r\n|\n|\r)/).map{|line| to_ecmascript_string(line)}
+script =<<-EOS
+(function() {
+  var texts = [\#{lines.join(",")}];
+  var text_elements = \#{get_element(text_element)}.getElementsByTagName("text");
+  for (var i=0,len=text_elements.length; i<len; i++){
+    if(texts.length <= i)
+      break;
+    text_elements[i].replaceChild(document.createTextNode(texts[i]), text_elements[i].lastChild);
+  }
+})()
+EOS
+=end
+          lines = text.split(/(?:\r\n|\n|\r)/).map{|line| to_ecmascript_string(line)}
+          "(function(){var a=[#{lines.join(",")}];var b=#{get_element(text_element)}.getElementsByTagName(\"text\");for(var c=0,len=b.length;c<len;c++){if(a.length<=c)break;b[c].replaceChild(document.createTextNode(a[c]),b[c].lastChild);}})()"
+        end
+
+        # Returns an ECMAScript string literal that mean any Ruby object.
+        # This method calls to_s method to convert into string.
+        # @param [Object] obj any Ruby object
+        # @return [String] ECMAScript string
+        # @example
+        #   to_ecmascript_string("abc") #=> "\"abc\""
+        #   to_ecmascript_string('This figure is made using "DYI".')
+        #       #=> "\"This figure is made using \\\"DYI\\\".\""
+        #   to_ecmascript_string("\346\227\245\346\234\254\350\252\236")
+        #       #=> "\"\\u65E5\\u672C\\u8A9E\""  (encoding: utf-8)
+        # @since 1.1.0
+        def to_ecmascript_string(obj)
+          chars = []
+          chars << '"'
+          obj.to_s.unpack('U*').each do |c|
+            case c
+              when 0x08 then chars << '\\b'
+              when 0x09 then chars << '\\t'
+              when 0x0a then chars << '\\n'
+              when 0x0b then chars << '\\v'
+              when 0x0c then chars << '\\f'
+              when 0x0d then chars << '\\r'
+              when 0x22 then chars << '\\"'
+              when 0x5c then chars << '\\\\'
+              when (0x20..0x7e) then chars << c.chr
+              else chars << '\\u' << ('%04X' % c)
+            end
+          end
+          chars << '"'
+          chars.join
+        end
+
         def draw_text_border(*elements)
           parts = []
           parts << "  (function(){\n"
