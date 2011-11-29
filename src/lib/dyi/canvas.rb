@@ -28,8 +28,6 @@ module DYI #:nodoc:
     attr_reader :child_elements
     # @since 1.0.0
     attr_reader :event_listeners, :stylesheets, :scripts
-    # @since 1.1.0
-    attr_accessor :metadata
 
     def initialize(width, height,
                    real_width = nil, real_height = nil,
@@ -91,15 +89,15 @@ module DYI #:nodoc:
     end
 
     def save(file_name, format=nil, options={})
-      get_formatter(format).save(file_name, options)
+      get_formatter(format, options).save(file_name)
     end
 
-    def puts_in_io(format=nil, io=$>)
-      get_formatter(format).puts(io)
+    def puts_in_io(format=nil, io=$>, options={})
+      get_formatter(format, options).puts(io)
     end
 
-    def string(format=nil)
-      get_formatter(format).string
+    def string(format=nil, options={})
+      get_formatter(format, options).string
     end
 
     def attributes #:nodoc:
@@ -174,10 +172,14 @@ module DYI #:nodoc:
 
     private
 
-    def get_formatter(format=nil) #:nodoc:
+    def get_formatter(format=nil, options={}) #:nodoc:
       case format
-        when :svg, nil then Formatter::SvgFormatter.new(self, 2)
-        when :xaml then Formatter::XamlFormatter.new(self, 2)
+        when :svg, nil
+          options[:indent] = 2 unless options.key?(:indent)
+          Formatter::SvgFormatter.new(self, options)
+        when :xaml
+          options[:indent] = 2 unless options.key?(:indent)
+          Formatter::XamlFormatter.new(self, options)
         when :eps then Formatter::EpsFormatter.new(self)
         when :png then Formatter::PngFormatter.new(self)
         else raise ArgumentError, "`#{format}' is unknown format"

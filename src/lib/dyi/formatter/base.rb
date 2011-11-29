@@ -167,11 +167,14 @@ module DYI #:nodoc:
 
     class XmlFormatter < Base
       include XmlChar
+      attr_reader :name_space
 
-      def initialize(canvas, indent=0, level=0)
+      def initialize(canvas, options={})
         @canvas = canvas
-        @indent = indent
-        @level = level
+        @indent = options[:indent] || 0
+        @level = options[:level] || 0
+        name_space = options[:name_space].to_s
+        @name_space = name_space.empty? ? nil : name_space
       end
 
       def xml_instruction
@@ -229,20 +232,22 @@ module DYI #:nodoc:
       end
 
       def create_node(io, tag_name, attributes={}, &block) #:nodoc:
+        _tag_name = @name_space ? "#{name_space}:#{tag_name}" : tag_name
         puts_line(io) {
-          io << '<' << tag_name
+          io << '<' << _tag_name
           attributes.each do |key, value|
             io << ' ' << key << '="' << attr_escape(value) << '"'
           end
           io << '>'
         }
         create_nested_nodes(io, &block) if block
-        puts_line(io) {io << '</' << tag_name << '>'}
+        puts_line(io) {io << '</' << _tag_name << '>'}
       end
 
       def create_leaf_node(io, tag_name, *attr) #:nodoc:
+        _tag_name = @name_space ? "#{name_space}:#{tag_name}" : tag_name
         puts_line(io) {
-          io << '<' << tag_name
+          io << '<' << _tag_name
           if attr.first.kind_of?(Hash)
             attr.first.each do |key, value|
               io << ' ' << key << '="' << attr_escape(value) << '"'
@@ -252,11 +257,11 @@ module DYI #:nodoc:
             attr[1].each do |key, value|
               io << ' ' << key << '="' << attr_escape(value) << '"'
             end
-            io << '>' << escape(attr.first) << '</' << tag_name << '>'
+            io << '>' << escape(attr.first) << '</' << _tag_name << '>'
           elsif attr.first.nil?
             io << '/>'
           else
-            io << '>' << escape(attr.first) << '</' << tag_name << '>'
+            io << '>' << escape(attr.first) << '</' << _tag_name << '>'
           end
         }
       end
@@ -270,15 +275,16 @@ module DYI #:nodoc:
 
       # @since 1.0.0
       def create_cdata_node(io, tag_name, attributes={}, &block) #:nodoc:
+        _tag_name = @name_space ? "#{name_space}:#{tag_name}" : tag_name
         puts_line(io) {
-          io << '<' << tag_name
+          io << '<' << _tag_name
           attributes.each do |key, value|
             io << ' ' << key << '="' << attr_escape(value) << '"'
           end
           io << '><![CDATA['
         }
         yield
-        puts_line(io) {io << ']]></' << tag_name << '>'}
+        puts_line(io) {io << ']]></' << _tag_name << '>'}
       end
     end
   end

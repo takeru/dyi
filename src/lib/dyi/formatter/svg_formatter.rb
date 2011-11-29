@@ -25,10 +25,10 @@ module DYI #:nodoc:
   module Formatter #:nodoc:
 
     class SvgFormatter < XmlFormatter
-      include DYI::Script::EcmaScript::DomLevel2
 
-      def initialize(canvas, indent=0, level=0, version='1.1')
-        super(canvas, indent, level)
+      def initialize(canvas, options={})
+        super(canvas, options)
+        version = options[:version] || '1.1'
         unless ['1.0', '1.1'].include?(@version = version.to_s)
           raise ArgumentError, "version `#{version}' is unknown version"
         end
@@ -51,10 +51,14 @@ module DYI #:nodoc:
 
       def write_canvas(canvas, io)
         @defs = {}
-        @xmlns = {:xmlns => "http://www.w3.org/2000/svg"}
+        @xmlns = if name_space
+                   {:"xmlns:#{name_space}" => : "http://www.w3.org/2000/svg"}
+                 else
+                   {:xmlns => "http://www.w3.org/2000/svg"}
+                 end
         pre_write
         unless @text_border_elements.empty?
-          @canvas.add_initialize_script(draw_text_border(*@text_border_elements))
+          @canvas.add_initialize_script(Script::EcmaScript::DomLevel2.draw_text_border(*@text_border_elements))
         end
         attrs = @xmlns.merge(:version => @version,
                              :width => canvas.real_width,
@@ -75,13 +79,6 @@ module DYI #:nodoc:
         end
         sio = StringIO.new
         create_node(sio, 'svg', attrs) {
-          if canvas.metadata
-            create_cdata_node(sio, 'metadata'){
-              puts_line(sio) {
-                write_metadata(canvas.metadata, sio)
-              }
-            }
-          end
           @root_info = [sio.pos, @level]
           i = 0
           length = canvas.scripts.size
@@ -408,61 +405,6 @@ module DYI #:nodoc:
         end
       end
 
-      # @since 1.1.0
-      def write_metadata(metadata, io)
-        case metadata
-        when String, Symbol
-          io << '"'
-          metadata.to_s.unpack('U*').each do |c|
-            case c
-              when 0x08 then io << '\\b'
-              when 0x09 then io << '\\t'
-              when 0x0a then io << '\\n'
-              when 0x0c then io << '\\f'
-              when 0x0d then io << '\\r'
-              when 0x22 then io << '\\"'
-              when 0x5c then io << '\\\\'
-              when (0x20..0x7e) then io << c.chr
-              else io << '\\u' << ('%04X' % c)
-            end
-          end
-          io << '"'
-        when Integer, TrueClass, FalseClass
-          io << metadata.inspect
-        when NilClass
-          io << 'null'
-        when Numeric
-          io << metadata.to_f.to_s
-        when Hash
-          io << '{'
-          metadata.keys.each_with_index do |key, i|
-            io << ',' unless i == 0
-            write_metadata(key.to_s, io)
-            io << ':'
-            write_metadata(metadata[key], io)
-          end
-          io << '}'
-        when Struct
-          io << '{'
-          metadata.members.each_with_index do |key, i|
-            io << ',' unless i == 0
-            write_metadata(key.to_s, io)
-            io << ':'
-            write_metadata(metadata.__send__(key), io)
-          end
-          io << '}'
-        when Enumerable
-          io << '['
-          metadata.each_with_index do |value, i|
-            io << ',' unless i == 0
-            write_metadata(value, io)
-          end
-          io << ']'
-        else
-          write_metadata(metadata.to_s, io)
-        end
-      end
-
       private
 
       # @since 1.0.0
@@ -666,18 +608,19 @@ module DYI #:nodoc:
 
     class PngFormatter
       def save(file_name, options={})
-        tmp_svg_file = [file_name, Time.now.strftime('%Y%m%d%H%M%S'), 'tmp'].join('.')
-        @svg_formatter.save(tmp_svg_file, options)
-        `rsvg-convert -o #{file_name} #{tmp_svg_file}`
-        File.delete(tmp_svg_file)
+        IO.popen("rsvg-convert -f png -o #{file_name}", 'w+b') {|io|
+          io.puts(@svg_formatter.string)
+        }
       end
 
       def string
-        tmp_svg_file = [Time.now.strftime('%Y%m%d%H%M%S'), 'tmp'].join('.')
-        @svg_formatter.save(tmp_svg_file)
-        png_data = `rsvg-convert #{tmp_svg_file}`
-        File.delete(tmp_svg_file)
-        png_date
+        results = ''
+        IO.popen("rsvg-convert -f png", 'w+') {|io|
+          io.puts(@svg_formatter.string)
+          io.close_write
+          io.read(nil, results)
+        }
+        results
       end
 
       def initialize(*args)
