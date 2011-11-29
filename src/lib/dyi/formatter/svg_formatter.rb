@@ -51,8 +51,8 @@ module DYI #:nodoc:
 
       def write_canvas(canvas, io)
         @defs = {}
-        @xmlns = if name_space
-                   {:"xmlns:#{name_space}" => : "http://www.w3.org/2000/svg"}
+        @xmlns = if namespace
+                   {:"xmlns:#{namespace}" => "http://www.w3.org/2000/svg"}
                  else
                    {:xmlns => "http://www.w3.org/2000/svg"}
                  end

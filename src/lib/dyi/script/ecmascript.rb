@@ -197,7 +197,7 @@ EOS
           parts << "      var top=null,right=null,bottom=null,left=null,rect=null;\n"
           parts << "      for(var j=0, len=elm.el.childNodes.length; j<len; j++){\n"
           parts << "        var node = elm.el.childNodes.item(j);\n"
-          parts << "        if(node.nodeName == \"text\") {\n"
+          parts << "        if(node.localName == \"text\") {\n"
           parts << "          var text_width = node.getComputedTextLength();\n"
           parts << "          if(node.getNumberOfChars() > 0){\n"
           parts << "            var ext = node.getExtentOfChar(0);\n"
@@ -211,7 +211,7 @@ EOS
           parts << "              left = ext.x;\n"
           parts << "          }\n"
           parts << "        }\n"
-          parts << "        else if(node.nodeName == \"rect\")\n"
+          parts << "        else if(node.localName == \"rect\")\n"
           parts << "          rect = node;\n"
           parts << "      }\n"
           parts << "      rect.setAttribute(\"x\", left - elm.hp);\n"
@@ -231,11 +231,11 @@ script =<<-EOS
   var lengths = [];
   var groups = legend.childNodes;
   for(var i=0,lenI=groups.length; i<lenI; i++){
-    if(groups.item(i).nodeName == \"g\"){
+    if(groups.item(i).localName == \"g\"){
       var lens = [];
       var texts = groups.item(i).childNodes;
       for(var j=0,lenJ=texts.length; j<lenJ; j++){
-        if(texts.item(j).nodeName == \"text\"){
+        if(texts.item(j).localName == \"text\"){
           lens.push(texts.item(j).getComputedTextLength());
         }
       }
@@ -254,19 +254,19 @@ script =<<-EOS
     }
   });
   for(i=0; i<lenI; i++){
-    if(groups.item(i).nodeName == \"g\"){
+    if(groups.item(i).localName == \"g\"){
       var lens = [];
       var texts = groups.item(i).childNodes;
       var k = 0, x = 0;
       for(j=0,lenJ=texts.length; j<lenJ; j++){
         var node = texts.item(j);
-        if(node.nodeName == \"rect\"){
+        if(node.localName == \"rect\"){
           x = Number(node.getAttribute(\"x\")) + Number(node.getAttribute(\"width\"));
         }
-        else if(node.nodeName == \"line\"){
+        else if(node.localName == \"line\"){
           x = Number(node.getAttribute(\"x2\"));
         }
-        else if(node.nodeName == \"text\"){
+        else if(node.localName == \"text\"){
           x += node.getExtentOfChar(0).height * 0.5;
           if(node.getAttribute(\"text-anchor\") == \"middle\"){
             x += max_lengths[k] / 2.0;
@@ -290,7 +290,7 @@ script =<<-EOS
 })();
 EOS
 =end
-          "(function(){var a=#{get_element(legend)};var b=[];var c=a.childNodes;for(var d=0,e=c.length;d<e;d++){if(c.item(d).nodeName==\"g\"){var f=[];var g=c.item(d).childNodes;for(var h=0,i=g.length;h<i;h++){if(g.item(h).nodeName==\"text\"){f.push(g.item(h).getComputedTextLength());}}b.push(f);}}var j=[];b.forEach(function(f,d,b){if(d==0){j=f;return;}for(h=0;h<j.length;h++){if(j[h]<f[h])j[h]=f[h];}});for(d=0;d<e;d++){if(c.item(d).nodeName==\"g\"){var f=[];var g=c.item(d).childNodes;var k=0,l=0;for(h=0,i=g.length;h<i;h++){var m=g.item(h);if(m.nodeName==\"rect\"){l=Number(m.getAttribute(\"x\"))+Number(m.getAttribute(\"width\"));}else if(m.nodeName==\"line\"){l=Number(m.getAttribute(\"x2\"));}else if(m.nodeName==\"text\"){l+=m.getExtentOfChar(0).height*0.5;if(m.getAttribute(\"text-anchor\")==\"middle\"){l+=j[k]/2.0;m.setAttribute(\"x\",l);l+=j[k]/2.0;}else if(m.getAttribute(\"text-anchor\")==\"end\"){l+=j[k];m.setAttribute(\"x\",l);}else{m.setAttribute(\"x\",l);l+=j[k];}k++;}}b.push(f);}}})();"
+          "(function(){var a=#{get_element(legend)};var b=[];var c=a.childNodes;for(var d=0,e=c.length;d<e;d++){if(c.item(d).localName==\"g\"){var f=[];var g=c.item(d).childNodes;for(var h=0,i=g.length;h<i;h++){if(g.item(h).localName==\"text\"){f.push(g.item(h).getComputedTextLength());}}b.push(f);}}var j=[];b.forEach(function(f,d,b){if(d==0){j=f;return;}for(h=0;h<j.length;h++){if(j[h]<f[h])j[h]=f[h];}});for(d=0;d<e;d++){if(c.item(d).localName==\"g\"){var f=[];var g=c.item(d).childNodes;var k=0,l=0;for(h=0,i=g.length;h<i;h++){var m=g.item(h);if(m.localName==\"rect\"){l=Number(m.getAttribute(\"x\"))+Number(m.getAttribute(\"width\"));}else if(m.localName==\"line\"){l=Number(m.getAttribute(\"x2\"));}else if(m.localName==\"text\"){l+=m.getExtentOfChar(0).height*0.5;if(m.getAttribute(\"text-anchor\")==\"middle\"){l+=j[k]/2.0;m.setAttribute(\"x\",l);l+=j[k]/2.0;}else if(m.getAttribute(\"text-anchor\")==\"end\"){l+=j[k];m.setAttribute(\"x\",l);}else{m.setAttribute(\"x\",l);l+=j[k];}k++;}}b.push(f);}}})();"
         end
 
         module_function(*private_instance_methods)

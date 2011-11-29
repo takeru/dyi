@@ -167,14 +167,14 @@ module DYI #:nodoc:
 
     class XmlFormatter < Base
       include XmlChar
-      attr_reader :name_space
+      attr_reader :namespace
 
       def initialize(canvas, options={})
         @canvas = canvas
         @indent = options[:indent] || 0
         @level = options[:level] || 0
-        name_space = options[:name_space].to_s
-        @name_space = name_space.empty? ? nil : name_space
+        namespace = options[:namespace].to_s
+        @namespace = namespace.empty? ? nil : namespace
       end
 
       def xml_instruction
@@ -232,7 +232,7 @@ module DYI #:nodoc:
       end
 
       def create_node(io, tag_name, attributes={}, &block) #:nodoc:
-        _tag_name = @name_space ? "#{name_space}:#{tag_name}" : tag_name
+        _tag_name = @namespace ? "#{namespace}:#{tag_name}" : tag_name
         puts_line(io) {
           io << '<' << _tag_name
           attributes.each do |key, value|
@@ -245,7 +245,7 @@ module DYI #:nodoc:
       end
 
       def create_leaf_node(io, tag_name, *attr) #:nodoc:
-        _tag_name = @name_space ? "#{name_space}:#{tag_name}" : tag_name
+        _tag_name = @namespace ? "#{namespace}:#{tag_name}" : tag_name
         puts_line(io) {
           io << '<' << _tag_name
           if attr.first.kind_of?(Hash)
@@ -275,7 +275,7 @@ module DYI #:nodoc:
 
       # @since 1.0.0
       def create_cdata_node(io, tag_name, attributes={}, &block) #:nodoc:
-        _tag_name = @name_space ? "#{name_space}:#{tag_name}" : tag_name
+        _tag_name = @namespace ? "#{namespace}:#{tag_name}" : tag_name
         puts_line(io) {
           io << '<' << _tag_name
           attributes.each do |key, value|

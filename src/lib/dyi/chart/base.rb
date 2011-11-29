@@ -247,15 +247,15 @@ module DYI #:nodoc:
       end
 
       def save(file_name, format=nil, options={})
-        @canvas.save(file_name, format)
+        @canvas.save(file_name, format, options)
       end
 
-      def puts_in_io(format=nil, io=$>)
-        @canvas.puts_in_io(format, io)
+      def puts_in_io(format=nil, io=$>, options={})
+        @canvas.puts_in_io(format, io, options)
       end
 
-      def string(format=nil)
-        @canvas.string(format)
+      def string(format=nil, options={})
+        @canvas.string(format, options)
       end
 
       private
