@@ -184,7 +184,7 @@ module DYI #:nodoc:
       end
 
       def polar_coordinates(radius, theta)
-        new(radius * Math.cos(theta * Math::PI / 180), radius * Math.sin(theta * Math::PI / 180))
+        new(radius * DYI::Util.cos(theta), radius * DYI::Util.sin(theta))
       end
 
       def set_default_format(format)

@@ -39,17 +39,16 @@ module DYI #:nodoc:
         @yy = args[2] || args[1]
         @xy = @yx = @x0 = @y0 = 0
       when :rotate
-        radian = args[1] * 2 * Math::PI / 360
-        @xx = @yy = Math.cos(radian)
-        @xy = -(@yx = Math.sin(radian))
+        @xx = @yy = DYI::Util.cos(args[1])
+        @xy = -(@yx = DYI::Util.sin(args[1]))
         @x0 = @y0 = 0
       when :skewX
         @xx = @yy = 1
-        @xy = Math.tan(args[1] * 2 * Math::PI / 360)
+        @xy = DYI::Util.tan(args[1])
         @yx = @x0 = @y0 = 0
       when :skewY
         @xx = @yy = 1
-        @yx = Math.tan(args[1] * 2 * Math::PI / 360)
+        @yx = DYI::Util.tan(args[1])
         @xy = @x0 = @y0 = 0
       else
         raise ArgumentError unless args.size == 6

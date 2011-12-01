@@ -19,39 +19,41 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-
 module DYI
-  VERSION = '1.1.0'
-  URL = 'http://sourceforge.net/projects/dyi/'
-end
 
-%w(
+  # @since 1.1.0
+  module Util
 
-util
-dyi/util
-dyi/length
-dyi/coordinate
-dyi/color
-dyi/painting
-dyi/font
-dyi/matrix
-dyi/type
-dyi/svg_element
-dyi/element
-dyi/canvas
-dyi/shape
-dyi/drawing
-dyi/event
-dyi/animation
-dyi/script
-dyi/stylesheet
-dyi/formatter
-dyi/chart
+    private
 
-).each do |file_name|
-  require File.join(File.dirname(__FILE__), file_name)
-end
+    def to_radian(degree)
+      Math::PI * degree / 180
+    end
 
-if defined? IRONRUBY_VERSION
-  require File.join(File.dirname(__FILE__), 'ironruby')
+    def sin(degree)
+      Math.sin(to_radian(degree))
+    end
+
+    def cos(degree)
+      Math.cos(to_radian(degree))
+    end
+
+    def tan(degree)
+      Math.tan(to_radian(degree))
+    end
+
+    def asin(x)
+      Math.asin(x) * 180 / Math::PI
+    end
+
+    def acos(x)
+      Math.acos(x) * 180 / Math::PI
+    end
+
+    def atan(x)
+      Math.atan(x) * 180 / Math::PI
+    end
+
+    module_function(*private_instance_methods)
+  end
 end

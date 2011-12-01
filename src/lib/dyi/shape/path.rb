@@ -864,8 +864,8 @@ module DYI #:nodoc:
         end
 
         def center_angle
-          angle = Math.acos(start_angle_point.x.to_f * end_angle_point.x.to_f +
-                            start_angle_point.y.to_f * end_angle_point.y.to_f) * 180.0 / Math::PI
+          angle = DYI::Util.acos(start_angle_point.x.to_f * end_angle_point.x.to_f +
+                            start_angle_point.y.to_f * end_angle_point.y.to_f)
           large_arc? ? 360.0 - angle : angle
         end
 
@@ -878,7 +878,7 @@ module DYI #:nodoc:
         end
 
         def control_point_of_curve(point, center_angle, is_start_point)
-          handle_length = Math.tan(center_angle * Math::PI / 180.0 / 4.0) * 4.0 / 3.0
+          handle_length = DYI::Util.tan(center_angle / 4.0) * 4.0 / 3.0
           handle = is_start_point ? handle_length : -handle_length
           transform_matrix.transform(Matrix.new(1, handle, -handle, 1, 0, 0).transform(point))
         end
