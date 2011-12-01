@@ -83,7 +83,7 @@ module DYI #:nodoc:
 
       def write_ellipse(shape, io)
         attrs, attr_creator = common_attributes(shape, :shape)
-        attrs.merge!(:"Canvas.Left"=>shape.center.x - shape.radius, :"Canvas.Top"=>shape.center.y - shape.radius, :Width=>shape.radius_x * 2, :Height=>shape.radius_y * 2)
+        attrs.merge!(:"Canvas.Left"=>shape.center.x - shape.radius_x, :"Canvas.Top"=>shape.center.y - shape.radius_y, :Width=>shape.radius_x * 2, :Height=>shape.radius_y * 2)
         if attr_creator
           create_node(io, 'Ellipse', attrs) {
             attr_creator.call(io, 'Ellipse')
