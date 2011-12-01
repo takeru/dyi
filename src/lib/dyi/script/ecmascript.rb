@@ -122,8 +122,8 @@ EOS
         # @return [String] ECMAScript string
         # @since 1.1.0
         def rewrite_text(text_element, text)
+          lines = text.split(/(?:\r\n|\n|\r)/).map{|line| to_ecmascript_string(line)}
 =begin
-lines = text.split(/(\r\n|\n|\r)/).map{|line| to_ecmascript_string(line)}
 script =<<-EOS
 (function() {
   var texts = [\#{lines.join(",")}];
@@ -133,11 +133,10 @@ script =<<-EOS
       break;
     text_elements[i].replaceChild(document.createTextNode(texts[i]), text_elements[i].lastChild);
   }
-})()
+})();
 EOS
 =end
-          lines = text.split(/(?:\r\n|\n|\r)/).map{|line| to_ecmascript_string(line)}
-          "(function(){var a=[#{lines.join(",")}];var b=#{get_element(text_element)}.getElementsByTagName(\"text\");for(var c=0,len=b.length;c<len;c++){if(a.length<=c)break;b[c].replaceChild(document.createTextNode(a[c]),b[c].lastChild);}})()"
+          "(function(){var a=[#{lines.join(",")}];var b=#{get_element(text_element)}.getElementsByTagName(\"text\");for(var c=0,len=b.length;c<len;c++){if(a.length<=c)break;b[c].replaceChild(document.createTextNode(a[c]),b[c].lastChild);}})();"
         end
 
         # Returns an ECMAScript string literal that mean any Ruby object.
@@ -173,54 +172,58 @@ EOS
         end
 
         def draw_text_border(*elements)
-          parts = []
-          parts << "  (function(){\n"
-          parts << "    var elms = ["
+          elements_js_variable = []
+          elements_js_variable << "var a=["
           script_elements =
               elements.map do |element|
                 el_parts = []
-                el_parts << '{el:'
+                el_parts << '{a:'
                 el_parts << get_element(element)
-                el_parts << ',hp:'
+                el_parts << ',b:'
                 el_parts << (element.attributes[:horizontal_padding] || 
                              element.attributes[:padding] || 0)
-                el_parts << ',vp:'
+                el_parts << ',c:'
                 el_parts << (element.attributes[:vertical_padding] ||
                              element.attributes[:padding] || 0)
                 el_parts << '}'
                 el_parts.join
               end
-          parts << script_elements.join(",\n                ")
-          parts << "];\n"
-          parts << "    for(var i=0; i<#{elements.size}; i++){\n"
-          parts << "      var elm = elms[i];\n"
-          parts << "      var top=null,right=null,bottom=null,left=null,rect=null;\n"
-          parts << "      for(var j=0, len=elm.el.childNodes.length; j<len; j++){\n"
-          parts << "        var node = elm.el.childNodes.item(j);\n"
-          parts << "        if(node.localName == \"text\") {\n"
-          parts << "          var text_width = node.getComputedTextLength();\n"
-          parts << "          if(node.getNumberOfChars() > 0){\n"
-          parts << "            var ext = node.getExtentOfChar(0);\n"
-          parts << "            if(top == null || ext.y < top)\n"
-          parts << "              top = ext.y;\n"
-          parts << "            if(right == null || right < ext.x + text_width)\n"
-          parts << "              right = ext.x + text_width;\n"
-          parts << "            if(bottom == null || bottom < ext.y + ext.height)\n"
-          parts << "              bottom = ext.y + ext.height;\n"
-          parts << "            if(left == null || ext.x < left)\n"
-          parts << "              left = ext.x;\n"
-          parts << "          }\n"
-          parts << "        }\n"
-          parts << "        else if(node.localName == \"rect\")\n"
-          parts << "          rect = node;\n"
-          parts << "      }\n"
-          parts << "      rect.setAttribute(\"x\", left - elm.hp);\n"
-          parts << "      rect.setAttribute(\"y\", top - elm.vp);\n"
-          parts << "      rect.setAttribute(\"width\", right - left + elm.hp * 2);\n"
-          parts << "      rect.setAttribute(\"height\", bottom - top + elm.vp * 2);\n"
-          parts << "    }\n"
-          parts << "  })();\n"
-          parts.join
+          elements_js_variable << script_elements.join(",") << "];"
+=begin
+script =<<-EOS
+(function(){
+  \#{elements_js_variable.join}
+  for(var i=0; i<\#{elements.size}; i++){
+    var elm = a[i];
+    var top=null,right=null,bottom=null,left=null,rect=null;
+    for(var j=0, len=elm.a.childNodes.length; j<len; j++){
+      var node = elm.a.childNodes.item(j);
+      if(node.localName == \"text\") {
+        var text_width = node.getComputedTextLength();
+        if(node.getNumberOfChars() > 0){
+          var ext = node.getExtentOfChar(0);
+          if(top == null || ext.y < top)
+            top = ext.y;
+          if(right == null || right < ext.x + text_width)
+            right = ext.x + text_width;
+          if(bottom == null || bottom < ext.y + ext.height)
+            bottom = ext.y + ext.height;
+          if(left == null || ext.x < left)
+            left = ext.x;
+        }
+      }
+      else if(node.localName == \"rect\")
+        rect = node;
+    }
+    rect.setAttribute(\"x\", left - elm.b);
+    rect.setAttribute(\"y\", top - elm.c);
+    rect.setAttribute(\"width\", right - left + elm.b * 2);
+    rect.setAttribute(\"height\", bottom - top + elm.c * 2);
+  }
+})();
+EOS
+=end
+          "(function(){#{elements_js_variable.join}for(var b=0;b<#{elements.size};b++){var c=a[b];var d=null,right=null,bottom=null,left=null,rect=null;for(var e=0,len=c.a.childNodes.length;e<len;e++){var f=c.a.childNodes.item(e);if(f.localName==\"text\"){var g=f.getComputedTextLength();if(f.getNumberOfChars()>0){var h=f.getExtentOfChar(0);if(d==null||h.y<d)d=h.y;if(right==null||right<h.x+g)right=h.x+g;if(bottom==null||bottom<h.y+h.height)bottom=h.y+h.height;if(left==null||h.x<left)left=h.x;}}else if(f.localName==\"rect\")rect=f;}rect.setAttribute(\"x\",left-c.b);rect.setAttribute(\"y\",d-c.c);rect.setAttribute(\"width\",right-left+c.b*2);rect.setAttribute(\"height\",bottom-d+c.c*2);}})();"
         end
 
         def form_legend_labels(legend)
