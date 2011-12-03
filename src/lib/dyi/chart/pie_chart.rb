@@ -30,6 +30,7 @@ module DYI #:nodoc:
       opt_accessor :center_point, {:type => :point, :default_method => :default_center_point}
       opt_accessor :chart_radius_x, {:type => :length, :default_method => :default_chart_radius_x}
       opt_accessor :chart_radius_y, {:type => :length, :default_method => :default_chart_radius_y}
+      opt_accessor :inner_radius, {:type => :float, :default => 0.0, :range => 0.0 ... 1.0}
       opt_accessor :represent_3d, {:type => :boolean}
       opt_accessor :_3d_settings, {:type => :hash, :default => {}, :keys => [:dy], :item_type => :float}
       opt_accessor :chart_colors, {:type => :array, :item_type => :color}
@@ -181,7 +182,7 @@ module DYI #:nodoc:
           chart_radius_y,
           accumulation * 360.0 / total_value - 90,
           value * 360.0 / total_value,
-          attrs)
+          attrs.merge(:inner_radius => inner_radius))
         @sectors[index] = pie_sector
 
         if moved_elements && (dr = moved_elements[index])
