@@ -66,15 +66,25 @@ module DYI #:nodoc:
         Shape::Line.create_on_direction(start_point, direction_x, direction_y, merge_option(options)).draw_on(canvas)
       end
 
-      def draw_polyline(canvas, point, options={}, &block)
-        polyline = Shape::Polyline.new(point, merge_option(options))
-        yield polyline
+      def draw_polyline(canvas, points, options={})
+        if block_given?
+          polyline = Shape::Polyline.new(points, merge_option(options))
+          yield polyline
+        else
+          polyline = Shape::Polyline.new(points.first, merge_option(options))
+          polyline.line_to(*points[1..-1])
+        end
         polyline.draw_on(canvas)
       end
 
-      def draw_polygon(canvas, point, options={}, &block)
-        polygon = Shape::Polygon.new(point, merge_option(options))
-        yield polygon
+      def draw_polygon(canvas, points, options={})
+        if block_given?
+          polygon = Shape::Polygon.new(points, merge_option(options))
+          yield polygon
+        else
+          polygon = Shape::Polygon.new(points.first, merge_option(options))
+          polygon.line_to(*points[1..-1])
+        end
         polygon.draw_on(canvas)
       end
 
@@ -115,25 +125,62 @@ module DYI #:nodoc:
       end
 
       def draw_sector(canvas, center_point, radius_x, radius_y, start_angle, center_angle, options={})
-        raise ArgumentError, "center_angle is out of range: #{center_angle}" if center_angle.abs > 360
+        start_angle = (center_angle > 0 ? start_angle : (start_angle + center_angle)) % 360
+        center_angle = center_angle.abs
+        options = merge_option(options)
+        inner_radius = options.delete(:inner_radius).to_f
         center_point = Coordinate.new(center_point)
-        radius_x = Length.new(radius_x)
-        radius_y = Length.new(radius_y)
+        radius_x = Length.new(radius_x).abs
+        radius_y = Length.new(radius_y).abs
         large_arc = (center_angle.abs > 180)
 
-        arc_start_pt = Coordinate.new(radius_x * Math.cos(Math::PI * start_angle / 180), radius_y * Math.sin(Math::PI * start_angle / 180)) + center_point
-        arc_end_pt = Coordinate.new(radius_x * Math.cos(Math::PI * (start_angle + center_angle) / 180), radius_y * Math.sin(Math::PI * (start_angle + center_angle) / 180)) + center_point
-
-        draw_path(canvas, center_point, merge_option(options)) {|path|
-          path.line_to(arc_start_pt)
-          if center_angle.abs > 270
-            transit_pt = center_point * 2 - arc_start_pt
-            path.arc_to(transit_pt, radius_x, radius_y, 0, true)
-            path.arc_to(arc_end_pt, radius_x, radius_y, 0, false)
+        if inner_radius >= 1 || 0 > inner_radius
+          raise ArgumentError, "inner_radius option is out of range: #{inner_radius}"
+        end
+        if 360 <= center_angle
+          if inner_radius == 0.0
+            draw_ellipse(canvas, center_point, radius_x, radius_y, options)
           else
-            path.arc_to(arc_end_pt, radius_x, radius_y, 0, large_arc)
+            draw_toroid(canvas, center_point, radius_x, radius_y, inner_radius, options)
           end
-          path.line_to(center_point)
+        else
+          arc_start_pt = Coordinate.new(
+              radius_x * DYI::Util.cos(start_angle),
+              radius_y * DYI::Util.sin(start_angle)) + center_point
+          arc_end_pt = Coordinate.new(
+              radius_x * DYI::Util.cos(start_angle + center_angle),
+              radius_y * DYI::Util.sin(start_angle + center_angle)) + center_point
+
+          draw_sector_internal(canvas, center_point,
+                               radius_x, radius_y, inner_radius,
+                               arc_start_pt, arc_end_pt,
+                               start_angle, center_angle, options)
+        end
+      end
+
+      # @since 1.1.0
+      def draw_toroid(canvas, center_point, radius_x, radius_y, inner_radius, options={})
+        if inner_radius >= 1 || 0 > inner_radius
+          raise ArgumentError, "inner_radius option is out of range: #{inner_radius}"
+        end
+        radius_x, radius_y = Length.new(radius_x).abs, Length.new(radius_y).abs
+        center_point = Coordinate.new(center_point)
+        arc_start_pt = center_point + [radius_x, 0]
+        arc_opposite_pt = center_point - [radius_x, 0]
+        inner_arc_start_pt = center_point + [radius_x * inner_radius, 0]
+        inner_arc_opposite_pt = center_point - [radius_x * inner_radius, 0]
+
+        draw_closed_path(canvas, arc_start_pt, options) {|path|
+          path.arc_to(arc_opposite_pt, radius_x, radius_y, 0, true)
+          path.arc_to(arc_start_pt, radius_x, radius_y, 0, true)
+          path.close_path
+          path.move_to(inner_arc_start_pt)
+          path.arc_to(inner_arc_opposite_pt,
+                      radius_x * inner_radius,
+                      radius_y * inner_radius, 0, true, false)
+          path.arc_to(inner_arc_start_pt,
+                      radius_x * inner_radius,
+                      radius_y * inner_radius, 0, true, false)
         }
       end
 
@@ -145,6 +192,27 @@ module DYI #:nodoc:
 
       def merge_option(options)
         {:painting=>@painting, :font=>@font}.merge(options)
+      end
+
+      # @since 1.1.0
+      def draw_sector_internal(canvas, center_point,
+                               radius_x, radius_y, inner_radius,
+                               arc_start_pt, arc_end_pt,
+                               start_angle, center_angle, merged_options)
+        draw_closed_path(canvas, arc_start_pt, merged_options) {|path|
+          path.arc_to(arc_end_pt, radius_x, radius_y, 0, (180 < center_angle))
+          if inner_radius == 0
+            path.line_to(center_point) if center_angle != 180
+          else
+            inner_arc_start_pt = center_point * (1 - inner_radius) + arc_end_pt * inner_radius
+            inner_arc_end_pt = center_point * (1 - inner_radius) + arc_start_pt * inner_radius
+
+            path.line_to(inner_arc_start_pt)
+            path.arc_to(inner_arc_end_pt,
+                        radius_x * inner_radius,
+                        radius_y * inner_radius, 0, (180 < center_angle), false)
+          end
+        }
       end
     end
 

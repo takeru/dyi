@@ -448,8 +448,14 @@ module DYI #:nodoc:
         @attributes = init_attributes(options)
       end
 
-      def line_to(point, relative=false)
-        @points.push(relative ? current_point + point : Coordinate.new(point))
+      def line_to(*points)
+        @points.push(*points.map{|pt| Coordinate.new(pt)})
+      end
+
+      # @since 1.1.0
+      def rline_to(*points)
+        current = current_point
+        @points.push(*points.inject([]){|result, pt| result << (current += pt)})
       end
 
       def current_point

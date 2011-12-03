@@ -185,85 +185,273 @@ module DYI #:nodoc:
         @dy = Length.new_or_nil(value)
       end
 
-      def draw_sector(canvas, center_point, radius_x, radius_y, start_angle, center_angle, options={})
-        @fill = color
+      # Returns a flank color
+      # @since 1.1.0
+      def flank_color
+        @flank_color || color.merge('black', 0.2)
+      end
 
-        start_angle = (center_angle > 0 ? start_angle : (start_angle + center_angle)) % 360
-        center_angle = center_angle.abs % 360
+      # Set a flank color
+      # @since 1.1.0
+      def flank_color=(color)
+        @flank_color = Color.new_or_nil(color)
+      end
+
+      # Draw a cylinder by specifying the upper surface, which is a circle
+      # @since 1.1.0
+      def draw_circle(canvas, center_point, radius, options={})
+        radius = Length.new(radius).abs
         center_point = Coordinate.new(center_point)
-        radius_x = Length.new(radius_x)
-        radius_y = Length.new(radius_y)
-        large_arc = (center_angle > 180)
-
-        arc_start_pt = Coordinate.new(radius_x * Math.cos(Math::PI * start_angle / 180), radius_y * Math.sin(Math::PI * start_angle / 180)) + center_point
-        arc_end_pt = Coordinate.new(radius_x * Math.cos(Math::PI * (start_angle + center_angle) / 180), radius_y * Math.sin(Math::PI * (start_angle + center_angle) / 180)) + center_point
-
-        org_opacity = opacity
-        if org_color = color
-          self.color = color.merge('black', 0.2)
-        else
-          self.color = 'black'
-          self.opacity = 0.2
+        group_options = {}
+        parts_options = merge_option(options)
+        (flank_painting = @painting.dup).fill = flank_color
+        flank_options = parts_options.merge(:painting => flank_painting)
+        [:anchor_href, :anchor_target, :css_class, :id].each do |key|
+          group_options[key] = parts_options.delete(key)
         end
-
-        if (90..270).include?(start_angle) && center_angle < 180
-          draw_polygon(canvas, center_point, options) {|polygon|
-            polygon.line_to(center_point + [0, dy])
-            polygon.line_to(arc_end_pt + [0, dy])
-            polygon.line_to(arc_end_pt)
-          }
-          draw_polygon(canvas, center_point, options) {|polygon|
-            polygon.line_to(center_point + [0, dy])
-            polygon.line_to(arc_start_pt + [0, dy])
-            polygon.line_to(arc_start_pt)
-          }
-        else
-          draw_polygon(canvas, center_point, options) {|polygon|
-            polygon.line_to(center_point + [0, dy])
-            polygon.line_to(arc_start_pt + [0, dy])
-            polygon.line_to(arc_start_pt)
-          }
-          draw_polygon(canvas, center_point, options) {|polygon|
-            polygon.line_to(center_point + [0, dy])
-            polygon.line_to(arc_end_pt + [0, dy])
-            polygon.line_to(arc_end_pt)
-          }
-        end
-        if (0..180).include?(start_angle)
-          draw_path(canvas, arc_start_pt, options) {|path|
-            path.line_to(arc_start_pt + [0, dy])
-            if arc_end_pt.y >= center_point.y
-              path.arc_to(arc_end_pt + [0, dy], radius_x, radius_y, 0, false)
-              path.line_to(arc_end_pt)
-              path.arc_to(arc_start_pt, radius_x, radius_y, 0, false, false)
-            else
-              path.arc_to(center_point + [-(radius_x.abs), dy], radius_x, radius_y, 0, false)
-              path.line_to(center_point + [-(radius_x.abs), 0])
-              path.arc_to(arc_start_pt, radius_x, radius_y, 0, false, false)
-            end
-          }
-        elsif (270..360).include?(start_angle) && start_angle + center_angle > 360
-          draw_path(canvas, center_point + [radius_x.abs, 0], options) {|path|
-            path.line_to(center_point + [radius_x.abs, dy])
-            if arc_end_pt.y >= center_point.y
-              path.arc_to(arc_end_pt + [0, dy], radius_x, radius_y, 0, false)
-              path.line_to(arc_end_pt)
-              path.arc_to(center_point + [radius_x.abs, 0], radius_x, radius_y, 0, false, false)
-            else
-              path.arc_to(center_point + [-(radius_x.abs), dy], radius_x, radius_y, 0, false)
-              path.line_to(center_point + [-(radius_x.abs), 0])
-              path.arc_to(center_point + [radius_x.abs, 0], radius_x, radius_y, 0, false, false)
-            end
-          }
-        end
-        self.color = org_color
-        self.opacity = org_opacity
-
-        draw_path(canvas, center_point, options) {|path|
-          path.line_to(arc_start_pt)
-          path.arc_to(arc_end_pt, radius_x, radius_y, 0, large_arc)
-          path.line_to(center_point)
+        shape = Shape::ShapeGroup.draw_on(canvas, group_options)
+        super(shape, center_point + [0, dy], radius, parts_options)
+        draw_closed_path(shape, center_point - [radius, 0], flank_options) {|path|
+          path.rarc_to([radius * 2, 0], radius, radius)
+          path.rline_to([0, dy])
+          path.rarc_to([- radius * 2, 0], radius, radius, 0, false, false)
         }
+        draw_closed_path(shape, center_point - [radius, 0], flank_options) {|path|
+          path.rarc_to([radius * 2, 0], radius, radius, 0, false, false)
+          path.rline_to([0, dy])
+          path.rarc_to([- radius * 2, 0], radius, radius)
+        }
+        super(shape, center_point, radius, parts_options)
+        shape
+      end
+
+      # Draw a cylinder by specifying the upper surface, which is a ellipse
+      # @since 1.1.0
+      def draw_ellipse(canvas, center_point, radius_x, radius_y, options={})
+        radius_x, radius_y = Length.new(radius_x).abs, Length.new(radius_y).abs
+        center_point = Coordinate.new(center_point)
+        group_options = {}
+        parts_options = merge_option(options)
+        (flank_painting = @painting.dup).fill = flank_color
+        flank_options = parts_options.merge(:painting => flank_painting)
+        [:anchor_href, :anchor_target, :css_class, :id].each do |key|
+          group_options[key] = parts_options.delete(key)
+        end
+        shape = Shape::ShapeGroup.draw_on(canvas, group_options)
+        super(shape, center_point + [0, dy], radius_x, radius_y, parts_options)
+        draw_closed_path(shape, center_point - [radius_x, 0], flank_options) {|path|
+          path.rarc_to([radius_x * 2, 0], radius_x, radius_y)
+          path.rline_to([0, dy])
+          path.rarc_to([- radius_x * 2, 0], radius_x, radius_y, 0, false, false)
+        }
+        draw_closed_path(shape, center_point - [radius_x, 0], flank_options) {|path|
+          path.rarc_to([radius_x * 2, 0], radius_x, radius_y, 0, false, false)
+          path.rline_to([0, dy])
+          path.rarc_to([- radius_x * 2, 0], radius_x, radius_y)
+        }
+        super(shape, center_point, radius_x, radius_y, parts_options)
+        shape
+      end
+
+      # @since 1.1.0
+      def draw_toroid(canvas, center_point, radius_x, radius_y, inner_radius, options={})
+        if inner_radius >= 1 || 0 > inner_radius
+          raise ArgumentError, "inner_radius option is out of range: #{inner_radius}"
+        end
+        radius_x, radius_y = Length.new(radius_x).abs, Length.new(radius_y).abs
+        center_point = Coordinate.new(center_point)
+        arc_right_pt = center_point + [radius_x, 0]
+        arc_left_pt = center_point - [radius_x , 0]
+        inner_radius_x = radius_x * inner_radius
+        inner_radius_y = radius_y * inner_radius
+        inner_arc_right_pt = center_point + [inner_radius_x , 0]
+        inner_arc_left_pt = center_point - [inner_radius_x, 0]
+        group_options = {}
+        parts_options = merge_option(options)
+        (flank_painting = @painting.dup).fill = flank_color
+        flank_options = parts_options.merge(:painting => flank_painting)
+        [:anchor_href, :anchor_target, :css_class, :id].each do |key|
+          group_options[key] = parts_options.delete(key)
+        end
+        shape = Shape::ShapeGroup.draw_on(canvas, group_options)
+
+        super(shape, center_point + [0, dy], radius_x, radius_y, inner_radius, parts_options)
+        draw_sector_back_flank(shape, center_point,
+                               radius_x, radius_y,
+                               arc_left_pt, arc_right_pt,
+                               180, 180, flank_options)
+        draw_sector_back_flank(shape, center_point,
+                               inner_radius_x, inner_radius_y,
+                               inner_arc_left_pt, inner_arc_right_pt,
+                               180, 180, flank_options)
+        draw_sector_front_flank(shape, center_point,
+                                inner_radius_x, inner_radius_y,
+                                inner_arc_right_pt, inner_arc_left_pt,
+                                0, 180, flank_options)
+        draw_sector_front_flank(shape, center_point,
+                                radius_x, radius_y,
+                                arc_right_pt, arc_left_pt,
+                                0, 180, flank_options)
+        super(shape, center_point, radius_x, radius_y, inner_radius, parts_options)
+      end
+
+      private
+
+      # @since 1.1.0
+      def draw_sector_internal(canvas, center_point,
+                               radius_x, radius_y, inner_radius,
+                               arc_start_pt, arc_end_pt,
+                               start_angle, center_angle, merged_options)
+        if inner_radius == 0
+          inner_arc_start_pt = inner_arc_end_pt = center_point
+        else
+          inner_arc_start_pt = center_point * (1 - inner_radius) + arc_end_pt * inner_radius
+          inner_arc_end_pt = center_point * (1 - inner_radius) + arc_start_pt * inner_radius
+          inner_radius_x = radius_x * inner_radius
+          inner_radius_y = radius_y * inner_radius
+        end
+        group_options = {}
+        parts_options = merged_options.dup
+        (flank_painting = @painting.dup).fill = flank_color
+        flank_options = parts_options.merge(:painting => flank_painting)
+        [:anchor_href, :anchor_target, :css_class, :id].each do |key|
+          group_options[key] = parts_options.delete(key)
+        end
+        shape = Shape::ShapeGroup.draw_on(canvas, group_options)
+
+        super(shape, center_point + [0, dy],
+              radius_x, radius_y, inner_radius,
+              arc_start_pt + [0, dy], arc_end_pt + [0, dy],
+              start_angle, center_angle, parts_options)
+
+        draw_sector_back_flank(shape, center_point,
+                               radius_x, radius_y,
+                               arc_start_pt, arc_end_pt,
+                               start_angle, center_angle, flank_options)
+
+        if center_angle == 180 && inner_radius == 0
+          draw_polygon(shape, arc_start_pt, flank_options) {|polygon|
+            polygon.line_to(arc_start_pt + [0, dy], arc_end_pt + [0, dy], arc_end_pt)
+          }
+        else
+          pt_ys = [[arc_start_pt.y, proc {
+                        draw_polygon(shape, inner_arc_end_pt, flank_options) {|polygon|
+                          polygon.line_to(inner_arc_end_pt + [0, dy], arc_start_pt + [0, dy], arc_start_pt)
+                        }
+                      }],
+                   [arc_end_pt.y, proc {
+                        draw_polygon(shape, inner_arc_start_pt, flank_options) {|polygon|
+                          polygon.line_to(inner_arc_start_pt + [0, dy], arc_end_pt + [0, dy], arc_end_pt)
+                        }
+                      }],
+                   [center_point.y, proc {
+                        if inner_radius != 0
+                          draw_sector_back_flank(shape, center_point,
+                                                 inner_radius_x, inner_radius_y,
+                                                 inner_arc_end_pt, inner_arc_start_pt,
+                                                 start_angle, center_angle, flank_options)
+                          draw_sector_front_flank(shape, center_point,
+                                                  inner_radius_x, inner_radius_y,
+                                                  inner_arc_end_pt, inner_arc_start_pt,
+                                                  start_angle, center_angle, flank_options)
+                        end
+                      }]]
+
+          pt_ys.sort{|a,b| a[0] <=> b[0]}.each do |pt_y|
+            pt_y[1].call
+          end
+        end
+
+        draw_sector_front_flank(shape, center_point,
+                                radius_x, radius_y,
+                                arc_start_pt, arc_end_pt,
+                                start_angle, center_angle, flank_options)
+
+        super(shape, center_point,
+              radius_x, radius_y, inner_radius,
+              arc_start_pt, arc_end_pt,
+              start_angle, center_angle, parts_options)
+        shape
+      end
+
+      def draw_sector_back_flank(canvas, center_point,
+                                 radius_x, radius_y,
+                                 arc_start_pt, arc_end_pt,
+                                 start_angle, center_angle, options)
+        if start_angle < 180
+          if 360 < start_angle + center_angle
+            draw_closed_path(canvas, center_point - [radius_x, 0], options) {|path|
+              path.rarc_to([radius_x * 2, 0], radius_x, radius_y)
+              path.rline_to([0, dy])
+              path.rarc_to([- radius_x * 2, 0], radius_x, radius_y, 0, false, false)
+            }
+          elsif 180 < start_angle + center_angle
+            draw_closed_path(canvas, center_point - [radius_x, 0], options) {|path|
+              path.arc_to(arc_end_pt, radius_x, radius_y)
+              path.rline_to([0, dy])
+              path.arc_to(center_point + [-radius_x, dy], radius_x, radius_y, 0, false, false)
+            }
+          end
+        elsif 360 < start_angle + center_angle
+          draw_closed_path(canvas, arc_start_pt, options) {|path|
+            path.arc_to(center_point + [radius_x, 0], radius_x, radius_y)
+            path.rline_to([0, dy])
+            path.arc_to(arc_start_pt + [0, dy], radius_x, radius_y, 0, false, false)
+            if 540 < start_angle + center_angle
+              path.close_path
+              path.move_to(center_point - [radius_x, 0])
+              path.arc_to(arc_end_pt, radius_x, radius_y)
+              path.rline_to([0, dy])
+              path.arc_to(center_point + [-radius_x, dy], radius_x, radius_y, 0, false, false)
+            end
+          }
+        else
+          draw_closed_path(canvas, arc_start_pt, options) {|path|
+            path.arc_to(arc_end_pt, radius_x, radius_y)
+            path.rline_to([0, dy])
+            path.arc_to(arc_start_pt + [0, dy], radius_x, radius_y, 0, false, false)
+          }
+        end
+      end
+
+      def draw_sector_front_flank(canvas, center_point,
+                                  radius_x, radius_y,
+                                  arc_start_pt, arc_end_pt,
+                                  start_angle, center_angle, options)
+        if start_angle < 180
+          if 180 < start_angle + center_angle
+            draw_closed_path(canvas, arc_start_pt, options) {|path|
+              path.arc_to(center_point - [radius_x, 0], radius_x, radius_y)
+              path.rline_to([0, dy])
+              path.arc_to(arc_start_pt + [0, dy], radius_x, radius_y, 0, false, false)
+              if 360 < start_angle + center_angle
+                path.close_path
+                path.move_to(center_point + [radius_x, 0])
+                path.arc_to(arc_end_pt, radius_x, radius_y)
+                path.rline_to([0, dy])
+                path.arc_to(center_point + [radius_x, dy], radius_x, radius_y, 0, false, false)
+              end
+            }
+          else
+            draw_closed_path(canvas, arc_start_pt, options) {|path|
+              path.arc_to(arc_end_pt, radius_x, radius_y)
+              path.rline_to([0, dy])
+              path.arc_to(arc_start_pt + [0, dy], radius_x, radius_y, 0, false, false)
+            }
+          end
+        elsif 540 < start_angle + center_angle
+          draw_closed_path(canvas, center_point + [radius_x, 0], options) {|path|
+            path.arc_to(center_point - [radius_x, 0], radius_x, radius_y)
+            path.rline_to([0, dy])
+            path.arc_to(center_point + [radius_x, dy], radius_x, radius_y, 0, false, false)
+          }
+        elsif 360 < start_angle + center_angle
+          draw_closed_path(canvas, center_point + [radius_x, 0], options) {|path|
+            path.arc_to(arc_end_pt, radius_x, radius_y)
+            path.rline_to([0, dy])
+            path.arc_to(center_point + [radius_x, dy], radius_x, radius_y, 0, false, false)
+          }
+        end
       end
     end
   end
