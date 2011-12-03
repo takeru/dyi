@@ -24,7 +24,6 @@ module DYI #:nodoc:
 
     class PieChart < Base
       include Legend
-      include DYI::Script::EcmaScript::DomLevel2
 
       attr_reader :chart_canvas, :data_label_canvas, :legend_canvas
 
@@ -241,7 +240,7 @@ module DYI #:nodoc:
                                       :duration => animation_duration,
                                       :fill => 'freeze',
                                       :begin_event => Event.mouseout(pie_sector))
-          if show_legend?
+          if @legends
             text.add_painting_animation(:to => {:opacity => 1},
                                         :duration => animation_duration,
                                         :fill => 'freeze',
@@ -274,7 +273,7 @@ module DYI #:nodoc:
                           end
                           maxs
                         end
-          canvas.add_initialize_script(form_legend_labels(legend_canvas))
+          canvas.add_initialize_script(Script::EcmaScript::DomLevel2.form_legend_labels(legend_canvas))
           records.each_with_index do |record, i|
             y = legend_font_size * (1.2 * (i + 1))
             attrs = {}
