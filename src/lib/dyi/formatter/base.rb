@@ -183,7 +183,7 @@ module DYI #:nodoc:
       end
 
       def inline_mode=(boolean)
-        @inlime_mode = boolean ? true : false
+        @inline_mode = boolean ? true : false
       end
 
       def xml_instruction
