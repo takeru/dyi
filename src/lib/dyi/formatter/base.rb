@@ -173,8 +173,17 @@ module DYI #:nodoc:
         @canvas = canvas
         @indent = options[:indent] || 0
         @level = options[:level] || 0
+        @inline_mode = options[:inline_mode]
         namespace = options[:namespace].to_s
         @namespace = namespace.empty? ? nil : namespace
+      end
+
+      def inline_mode?
+        @inline_mode ? true : false
+      end
+
+      def inline_mode=(boolean)
+        @inlime_mode = boolean ? true : false
       end
 
       def xml_instruction
@@ -208,7 +217,7 @@ module DYI #:nodoc:
       end
 
       def puts(io=$>)
-        if @canvas.root_element?
+        if @canvas.root_element? && !inline_mode?
           puts_line(io) {io << xml_instruction}
           @canvas.stylesheets.each do |stylesheet|
             if stylesheet.include_external_file?
