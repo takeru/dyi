@@ -111,6 +111,7 @@ module DYI #:nodoc:
 
     class CylinderBrush < Brush
 
+      # @since 1.1.0
       def initialize(options={})
         self.ry = options.delete(:ry)
         super
@@ -176,6 +177,12 @@ module DYI #:nodoc:
     end
 
     class ColumnBrush < Brush
+
+      def initialize(options={})
+        self.flank_color = options.delete(:flank_color)
+        self.dy = options.delete(:dy)
+        super
+      end
 
       def dy
         @dy || Length.new(16)
@@ -374,6 +381,7 @@ module DYI #:nodoc:
         shape
       end
 
+      # @since 1.1.0
       def draw_sector_back_flank(canvas, center_point,
                                  radius_x, radius_y,
                                  arc_start_pt, arc_end_pt,
@@ -414,6 +422,7 @@ module DYI #:nodoc:
         end
       end
 
+      # @since 1.1.0
       def draw_sector_front_flank(canvas, center_point,
                                   radius_x, radius_y,
                                   arc_start_pt, arc_end_pt,
