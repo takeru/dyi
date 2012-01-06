@@ -240,7 +240,6 @@ module DYI #:nodoc:
               @axis_front_canvas,
               [margin_left - text_margin, y],
               main_y_axis == :left ? settings[:min] : sub_settings[:min],
-              :alignment_baseline=>'middle',
               :text_anchor=>'end',
               :format => (main_y_axis == :left ? axis_format : second_axis_format))
           end
@@ -249,7 +248,6 @@ module DYI #:nodoc:
               @axis_front_canvas,
               [width - margin_right + text_margin, y],
               main_y_axis == :right ? settings[:min] : sub_settings[:min],
-              :alignment_baseline=>'middle',
               :format => (main_y_axis == :right ? axis_format : second_axis_format))
           end
         end
