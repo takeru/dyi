@@ -529,14 +529,12 @@ module DYI #:nodoc:
     end
 
     class Text < Base
-      UNPRIMITIVE_OPTIONS = [:line_height, :alignment_baseline, :format]
       BASELINE_VALUES = ['baseline', 'top', 'middle', 'bottom']
       DEFAULT_LINE_HEIGHT = 1
       attr_coordinate :point
-      attr_coordinate :line_height
+      attr_accessor :line_height
       attr_accessor :text
       attr_reader :format
-      attr_reader *UNPRIMITIVE_OPTIONS
 
       def initialize(point, text=nil, options={})
         @point = Coordinate.new(point || [0,0])
