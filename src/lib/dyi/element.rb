@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -18,16 +18,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
-#
-# == Overview
-#
-# This file provides the DYI::Element class, which is abstract base class of
-# DYI::Canvas and DYI::Shape::Base.
-#
-# @since 1.0.0
 
-module DYI #:nodoc:
+module DYI
 
+  # Abstract class that represents a element contained in the image.
+  # @abstract
+  # @since 1.0.0
   class Element
     extend AttributeCreator
     ID_REGEXP = /\A[:A-Z_a-z][\-\.0-9:A-Z_a-z]*\z/
@@ -58,7 +54,7 @@ module DYI #:nodoc:
       @id = value.to_s
     end
 
-    # Returns the canvas where the shape is drawn
+    # Returns the canvas where the shape is drawn.
     # @return [Canvas] the canvas where the shape is drawn
     def canvas
       current_node = self
@@ -68,24 +64,40 @@ module DYI #:nodoc:
       end
     end
 
+    # Returns an array of child elements.
+    # @return [[Element]] an empty array
     def child_elements
       []
     end
 
+    # Returns whether the element has reference of external file.
+    # @return [Boolean] always false
     def include_external_file?
       false
     end
 
-    # @return [Boolean] whether the element has a URI reference
+    # Returns whether the element has URI reference.
+    # @return [Boolean] always false
     def has_uri_reference?
       false
     end
   end
 
+  # Abstract class that represents a graphic element.
+  # @abstract
+  # @since 1.0.0
   class GraphicalElement < Element
+
+    # Returns a CSS class attribute of the element.
+    # @return [String] a class name or set of class names. If the elements has
+    #   multiple class names, class names are separated by white space
     attr_reader :css_class
+
     CLASS_REGEXP = /\A[A-Z_a-z][\-0-9A-Z_a-z]*\z/
 
+    # Sets a CSS class attribute.
+    # @param [String] css_class a CSS class attribute
+    # @see {#css_class}
     def css_class=(css_class)
       return @css_class = nil if css_class.nil?
       classes = css_class.to_s.split(/\s+/)
@@ -97,10 +109,16 @@ module DYI #:nodoc:
       @css_class = classes.join(' ')
     end
 
+    # Returns an array of CSS class names.
+    # @return [[String]] an array of CSS class names
     def css_classes
       css_class.to_s.split(/\s+/)
     end
 
+    # Adds a CSS class.
+    # @param [String] css_class a CSS class name
+    # @return [String | nil] value of parameter css_class if successes to add a class,
+    #   nil if failures
     def add_css_class(css_class)
       if css_class.to_s !~ CLASS_REGEXP
         raise ArgumentError, "`#{css_class}' is a illegal class-name"
@@ -112,6 +130,10 @@ module DYI #:nodoc:
       css_class
     end
 
+    # Remove a CSS class.
+    # @param [String] css_class a CSS class name that will be removed
+    # @return [String | nil] value of parameter css_class if successes to remove a
+    #   class, nil if failures
     def remove_css_class(css_class)
       classes = css_classes
       if classes.delete(css_class.to_s)
@@ -122,29 +144,30 @@ module DYI #:nodoc:
       end
     end
 
-    # Returns event listeners that is associated with the element
+    # Returns event listeners that is associated with the element.
+    # @return [Hash] hash of event listeners
     def event_listeners
       @event_listeners ||= {}
     end
 
-    # Adds a animation of painting to the element
-    # @param [Event] an event that is set to the element
-    # @return [void]
+    # Adds a animation of painting to the element.
+    # @param [Event] event an event that is set to the element
+    # @return [String] id for this element
     def set_event(event)
       @events ||= []
       @events << event
       publish_id
     end
 
-    # @return [Boolean] whether event is set to the element
+    # Returns whether an event is set to the element.
+    # @return [Boolean] true if an event is set to the element, false otherwise
     def event_target?
       !(@events.nil? || @events.empty?)
     end
 
-    # Associates the element with a event listener
+    # Associates the element with a event listener.
     # @param [Symbol] event_name a event name
     # @param [Script::SimpleScript] event_listener a event listener
-    # @return [void]
     def add_event_listener(event_name, event_listener)
       event_listener.related_to(DYI::Event.new(event_name, self))
       if event_listeners.key?(event_name)
@@ -161,7 +184,6 @@ module DYI #:nodoc:
     # Removes asociation with given event listener
     # @param [Symbol] event_name a event name
     # @param [Script::SimpleScript] event_listener a event listener
-    # @return [void]
     def remove_event_listener(event_name, event_listener)
       if event_listeners.key?(event_name)
         event_listeners[event_name].delete(event_listener)

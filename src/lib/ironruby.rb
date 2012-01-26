@@ -26,7 +26,8 @@ require 'System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f
 require 'Microsoft.VisualBasic, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
 require File.join(File.dirname(__FILE__), 'dyi/formatter/emf_formatter')
 
-class BigDecimal < Numeric #:nodoc:
+
+class BigDecimal < Numeric
   alias __org_div__ div
   def div(other)
     case other
@@ -37,15 +38,15 @@ class BigDecimal < Numeric #:nodoc:
   end
 end
 
-module DYI #:nodoc:
+module DYI
 
-  class Coordinate #:nodoc:
+  class Coordinate
     def to_cls_point
       System::Drawing::PointF.new(x.to_f, y.to_f)
     end
   end
 
-  class Color #:nodoc:
+  class Color
     def to_cls_color(opacity=nil)
       if opacity
         System::Drawing::Color.from_argb((opacity.to_f * 255).to_i, @r, @g, @b)
@@ -63,7 +64,7 @@ module DYI #:nodoc:
     end
   end
 
-  class Painting #:nodoc:
+  class Painting
     def cls_line_join
       case stroke_linejoin
         when 'miter' then System::Drawing::Drawing2D::LineJoin.miter
@@ -114,7 +115,7 @@ module DYI #:nodoc:
     end
   end
 
-  class Font #:nodoc:
+  class Font
     def to_cls_font
       System::Drawing::Font.new(font_family || '', size ? size.to_f : DEFAULT_SIZE.to_f('pt'))
     end
@@ -126,14 +127,14 @@ module DYI #:nodoc:
     end
   end
 
-  class Matrix #:nodoc:
+  class Matrix
     def to_cls_matrix
       System::Drawing::Drawing2D::Matrix.new(xx, yx, xy, yy, x0, y0)
     end
   end
 
-  module Shape #:nodoc:
-    class Text < Base #:nodoc:
+  module Shape
+    class Text < Base
       def string_format
         format = System::Drawing::StringFormat.new
         format.alignment =
@@ -156,7 +157,7 @@ module DYI #:nodoc:
     end
   end
 
-  class Canvas #:nodoc:
+  class Canvas
     private
     def get_formatter(format=nil)
       case format
@@ -169,8 +170,8 @@ module DYI #:nodoc:
     end
   end
 
-  module Drawing #:nodoc:
-    module ColorEffect #:nodoc:
+  module Drawing
+    module ColorEffect
       class LinearGradient
         def create_cls_brush(opacity=nil, shape=nil)
           brush = System::Drawing::Drawing2D::LinearGradientBrush.new(
@@ -227,8 +228,8 @@ module DYI #:nodoc:
     end
   end
 
-  module Chart #:nodoc:
-    class CsvReader < ArrayReader #:nodoc:
+  module Chart
+    class CsvReader < ArrayReader
       def read(path, options={})
         options = options.dup
         @date_format = options.delete(:date_format)
@@ -255,7 +256,7 @@ module DYI #:nodoc:
       end
     end
 
-    class ExcelReader < ArrayReader #:nodoc:
+    class ExcelReader < ArrayReader
       def read(path, options={})
         if defined? WIN32OLE
           # for Windows
@@ -292,8 +293,8 @@ module DYI #:nodoc:
     end
   end
 
-  module Formatter #:nodoc:
-    class EpsFormatter < Base #:nodoc:
+  module Formatter
+    class EpsFormatter < Base
       def write_text(shape, io)
         command_block(io) {
           puts_line(io, '/GothicBBB-Medium-RKSJ-H findfont', shape.font.draw_size, 'scalefont setfont')

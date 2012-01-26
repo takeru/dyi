@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -19,9 +19,13 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-
+# Root namespace of DYI.
 module DYI
-  VERSION = '1.1.0'
+
+  # DYI program version
+  VERSION = '1.1.1'
+
+  # URL of DYI Project
   URL = 'http://sourceforge.net/projects/dyi/'
 end
 
