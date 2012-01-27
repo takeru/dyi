@@ -98,6 +98,7 @@ module DYI
     # Sets a CSS class attribute.
     # @param [String] css_class a CSS class attribute
     # @see {#css_class}
+    # @raise [ArgumentError] parameter `css_class' is illegal class name
     def css_class=(css_class)
       return @css_class = nil if css_class.nil?
       classes = css_class.to_s.split(/\s+/)
@@ -117,8 +118,9 @@ module DYI
 
     # Adds a CSS class.
     # @param [String] css_class a CSS class name
-    # @return [String | nil] value of parameter css_class if successes to add a class,
-    #   nil if failures
+    # @return [String, nil] value of parameter `css_class' if successes to add
+    #   a class, nil if failures
+    # @raise [ArgumentError] parameter `css_class' is illegal class name
     def add_css_class(css_class)
       if css_class.to_s !~ CLASS_REGEXP
         raise ArgumentError, "`#{css_class}' is a illegal class-name"
@@ -132,8 +134,8 @@ module DYI
 
     # Remove a CSS class.
     # @param [String] css_class a CSS class name that will be removed
-    # @return [String | nil] value of parameter css_class if successes to remove a
-    #   class, nil if failures
+    # @return [String, nil] value of parameter `css_class' if successes to
+    #   remove a class, nil if failures
     def remove_css_class(css_class)
       classes = css_classes
       if classes.delete(css_class.to_s)

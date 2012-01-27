@@ -23,26 +23,27 @@ module DYI
 
   # The body of Vector-Image. This class is a container for all graphical
   # elements that make up the image.
+  # @since 0.0.0
   class Canvas < GraphicalElement
 
     # @private
     IMPLEMENT_ATTRIBUTES = [:view_box, :preserve_aspect_ratio]
 
-    # Returns width of vector-image on user unit.
+    # Returns width of the vector-image on user unit.
     # @attribute width
     # @return [Length] width of vector-image on user unit
     attr_length :width
 
-    # Returns heigth of vector-image on user unit.
+    # Returns heigth of the vector-image on user unit.
     # @attribute height
     # @return [Length] heigth of vector-image on user unit
     attr_length :height
 
-    # Returns the value of view_box.
+    # Returns the value of the view_box.
     # @attribute view_box
     # @return [String]
 
-    # Returns the value of preserve_aspect_ratio.
+    # Returns the value of the preserve_aspect_ratio.
     # @attribute preserve_aspect_ratio
     # @return [String] the value of preserve_aspect_ratio
     attr_reader *IMPLEMENT_ATTRIBUTES
@@ -214,7 +215,7 @@ module DYI
     # @param [String, Script::SimpleScript] script_body a string that is a
     #   script body or a script object that is registered
     # @param [String] content_type a content-type of the script. If parameter
-    #   script_body is {Script::SimpleScript} object, this parameter is ignored
+    #   `script_body' is {Script::SimpleScript} object, this parameter is ignored
     # @since 1.0.0
     def add_script(script_body, content_type = 'application/ecmascript')
       if script_body.respond_to?(:include_external_file?)

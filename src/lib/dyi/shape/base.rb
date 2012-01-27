@@ -21,22 +21,50 @@
 
 require 'enumerator'
 
-module DYI #:nodoc:
-  module Shape #:nodoc:
+module DYI
+  module Shape
 
+    # Base class of all graphical shapes.
+    # @abstract
+    # @since 0.0.0
     class Base < GraphicalElement
+
+      # Returns painting status of the shape.
+      # @attribute painting
+      # @return [Painting] painting status
       attr_painting :painting
+
+      # Returns font status of the shape.
+      # @attribute font
+      # @return [Font] font status
       attr_font :font
-      attr_reader :attributes, :clipping
+
+      # Returns optional attributes of the shape.
+      # @return [Hash] optional attributes
+      attr_reader :attributes
+
+      # Returns clipping status of the shape.
+      # @return [Drawing::Clipping] clipping status
+      attr_reader :clipping
+
+      # Returns a parent element of the shape.
+      # @return [GraphicalElement] a parent element
       attr_reader :parent
+
+      # Returns a location of a reference of a source anchor for the link.
+      # @return [String] a location of a reference
       attr_accessor :anchor_href
+
+      # Returns a relevant presentation context when the link is activated.
+      # @return [String] a relevant presentation context
       attr_accessor :anchor_target
 
-      ID_REGEXP = /\A[:A-Z_a-z][0-9:A-Z_a-z]*\z/
-
       # Draws the shape on a parent element.
-      # @param [Element] parent a element that you draw the shape on
-      # @return [Shape::Base] receiver itself
+      # @param [Element] parent a container element on which the shape is drawn
+      # @return [Shape::Base] itself
+      # @raise [ArgumentError] parent is nil
+      # @raise [RuntimeError] this shape already has a parent, or descendants of
+      #   this shape include itself
       def draw_on(parent)
         raise ArgumentError, "parent is nil" if parent.nil?
         return self if @parent == parent
@@ -53,8 +81,7 @@ module DYI #:nodoc:
         self
       end
 
-      # This method is depricated; use Shape::Base#root_element?
-      # @deprecated
+      # @deprecated Use {#root_element?} instead.
       def root_node?
         msg = [__FILE__, __LINE__, ' waring']
         msg << ' DYI::Shape::Base#root_node? is depricated; use DYI::Shape::Base#root_element?'
@@ -62,15 +89,22 @@ module DYI #:nodoc:
         false
       end
 
+      # Returns whether this instance is root element of the shape.
+      # @return [Boolean] always false.
       # @since 1.0.0
       def root_element?
         false
       end
 
+      # Returns transform list.
+      # @return [Array] transform list.
       def transform
         @transform ||= []
       end
 
+      # Translates the shape.
+      # @param [Numeric] x translated value along x-axis
+      # @param [Numeric] y translated value along y-axis
       def translate(x, y=0)
         x = Length.new(x)
         y = Length.new(y)
@@ -85,6 +119,11 @@ module DYI #:nodoc:
         end
       end
 
+      # Scales up (or down) this shape.
+      # @param [Numeric] x scaled ratio along x-axis
+      # @param [Numeric] y scaled ratio along y-axis. If this parameter is nil,
+      #   uses value that equals to parameter `x' value
+      # @param [Coordinate] base_point based coordinate of scaling up (or down)
       def scale(x, y=nil, base_point=Coordinate::ZERO)
         y ||= x
         return if x == 1 && y == 1
@@ -101,6 +140,9 @@ module DYI #:nodoc:
         translate(- base_point.x, - base_point.y) if base_point.nonzero?
       end
 
+      # Rotates this shape.
+      # @param [Numeric] angle rotation angle. specifies degree
+      # @param [Coordinate] base_point based coordinate of rotetion
       def rotate(angle, base_point=Coordinate::ZERO)
         angle %= 360
         return if angle == 0
@@ -116,6 +158,9 @@ module DYI #:nodoc:
         translate(- base_point.x, - base_point.y) if base_point.nonzero?
       end
 
+      # Skews this shape along x-axis.
+      # @param [Numeric] angle skew angle. specifies degree
+      # @param [Coordinate] base_point based coordinate of skew
       def skew_x(angle, base_point=Coordinate::ZERO)
         angle %= 180
         return if angle == 0
@@ -125,6 +170,9 @@ module DYI #:nodoc:
         translate(- base_point.x, - base_point.y) if base_point.nonzero?
       end
 
+      # Skews this shape along y-axis.
+      # @param [Numeric] angle skew angle. specifies degree
+      # @param [Coordinate] base_point based coordinate of skew
       def skew_y(angle, base_point=Coordinate::ZERO)
         angle %= 180
         return if angle == 0
@@ -135,51 +183,58 @@ module DYI #:nodoc:
         translate(- base_point.x, - base_point.y) if base_point.nonzero?
       end
 
+      # Restricts the region to which paint can be applied.
+      # @param [Drawing::Clipping] clipping a clipping object
       def set_clipping(clipping)
         clipping.set_canvas(canvas)
         @clipping = clipping
       end
 
+      # Crears clipping settings.
       def clear_clipping
         @clipping = nil
       end
 
+      # Sets shapes that is used to estrict the region to which paint can be
+      #   applied.
+      # @param [Base] shapes a shape that is used to clip
       def set_clipping_shapes(*shapes)
         set_clipping(Drawing::Clipping.new(*shapes))
       end
 
+      # Returns registed animations.
+      # @return [[Animation::Base]] amination list.
       # since 1.0.0
       def animations
         @animations ||= []
       end
 
-      # @return [Boolean] whether the shape is animated
+      # Returns whether the shape is animated.
+      # @return [Boolean] true if the shape is animated, false otherwise
       # @since 1.0.0
       def animate?
         !(@animations.nil? || @animations.empty?)
       end
 
-      # Add animation to the shape
+      # Adds animation to the shape
       # @param [Animation::Base] animation a animation that the shape is run
-      # @return [void]
       # @since 1.0.0
       def add_animation(animation)
         animations << animation
       end
 
-      # Add animation of painting to the shape
-      # @param [Hash] options
+      # Adds animation of painting to the shape
       # @option options [Painting] :from the starting painting of the animation
       # @option options [Painting] :to the ending painting of the animation
       # @option options [Number] :duration a simple duration in seconds
       # @option options [Number] :begin_offset a offset that determine the
-      #                                        animation begin, in seconds
+      #   animation begin, in seconds
       # @option options [Event] :begin_event an event that determine the
-      #                                      animation begin
+      #   animation begin
       # @option options [Number] :end_offset a offset that determine the
-      #                                      animation end, in seconds
-      # @option options [Event] :end_event an event that determine the
-      #                                    animation end
+      #   animation end, in seconds
+      # @option options [Event] :end_event an event that determine the animation
+      #   end
       # @option options [String] :fill `freeze' or `remove'
       # @return [void]
       # @since 1.0.0
@@ -187,44 +242,44 @@ module DYI #:nodoc:
         add_animation(Animation::PaintingAnimation.new(self, options))
       end
 
-      # Add animation of transform to the shape
-      #
+      # Adds animation of transform to the shape
       # @param [Symbol] type a type of transformation which is to have values
-      # @param [Hash] options
-      # @option options [Number|Array] :from the starting transform of the animation
-      # @option options [Number|Array] :to the ending transform of the animation
+      # @option options [Number, Array] :from the starting transform of the
+      #   animation
+      # @option options [Number, Array] :to the ending transform of the animation
       # @option options [Number] :duration a simple duration in seconds
       # @option options [Number] :begin_offset a offset that determine the
-      #                                        animation begin, in seconds
+      #   animation begin, in seconds
       # @option options [Event] :begin_event an event that determine the
-      #                                      animation begin
+      #   animation begin
       # @option options [Number] :end_offset a offset that determine the
-      #                                      animation end, in seconds
-      # @option options [Event] :end_event an event that determine the
-      #                                    animation end
+      #   animation end, in seconds
+      # @option options [Event] :end_event an event that determine the animation
+      #   end
       # @option options [String] :fill `freeze' or `remove'
-      # @return [void]
       # @since 1.0.0
       def add_transform_animation(type, options)
         add_animation(Animation::TransformAnimation.new(self, type, options))
       end
 
-      # Add animation of painting to the shape
+      # Adds animation of painting to the shape
       # @param [Event] an event that is set to the shape
-      # @return [void]
       # @since 1.0.0
       def set_event(event)
         super
         canvas.set_event(event)
       end
 
+      # Sets a location of a reference of a source anchor for the link.
+      # @param [String] href a location of a reference
       # @since 1.0.0
       def anchor_href=(href)
         anchor_href = href.strip
         @anchor_href = anchor_href.empty? ? nil : anchor_href
       end
 
-      # @return [Boolean] whether the element has a URI reference
+      # Returns whether the element has URI reference.
+      # @return [Boolean] true if the element has URI reference, false otherwise
       # @since 1.0.0
       def has_uri_reference?
         @anchor_href ? true : false
@@ -244,9 +299,28 @@ module DYI #:nodoc:
       end
     end
 
+    # The rectangle in the vector image
+    # @since 0.0.0
     class Rectangle < Base
-      attr_length :width, :height
 
+      # Returns width of the rectangle.
+      # @attribute width
+      # @return [Length] width of the rectangle
+      attr_length :width
+
+      # Returns heigth of the rectangle.
+      # @attribute height
+      # @return [Length] heigth of the rectangle
+      attr_length :height
+
+      # @param [Coordinate] left_top a coordinate of a corner of the rectangle
+      # @param [Length] width width of the rectangle
+      # @param [Length] heigth heigth of the rectangle
+      # @option options [Painting] :painting painting status of the rectangle
+      # @option options [Length] :rx the x-axis radius of the ellipse for
+      #   rounded the rectangle
+      # @option options [Length] :ry the y-axis radius of the ellipse for
+      #   rounded the rectangle
       def initialize(left_top, width, height, options={})
         width = Length.new(width)
         height = Length.new(height)
@@ -258,26 +332,39 @@ module DYI #:nodoc:
         @attributes = init_attributes(options)
       end
 
+      # Returns a x-axis coordinate of the left side of the rectangle.
+      # @return [Length] the x-axis coordinate of the left side
       def left
         @lt_pt.x
       end
 
+      # Returns a x-axis coordinate of the right side of the rectangle.
+      # @return [Length] the x-axis coordinate of the right side
       def right
         @lt_pt.x + width
       end
 
+      # Returns a y-axis coordinate of the top of the rectangle.
+      # @return [Length] a y-axis coordinate of the top
       def top
         @lt_pt.y
       end
 
+      # Returns a y-axis coordinate of the bottom of the rectangle.
+      # @return [Length] a y-axis coordinate of the bottom
       def bottom
         @lt_pt.y + height
       end
 
+      # Returns a coordinate of the center of the rectangle.
+      # @return [Coordinate] a coordinate of the center
       def center
         @lt_pt + Coordinate.new(width.quo(2), height.quo(2))
       end
 
+      # Writes the shape on io object.
+      # @param [Formatter::Base] formatter an object that defines the image format
+      # @param [IO] io an io to be written
       def write_as(formatter, io=$>)
         formatter.write_rectangle(self, io, &(block_given? ? Proc.new : nil))
       end
@@ -286,10 +373,31 @@ module DYI #:nodoc:
 
         public
 
+        # Create a new instance of Rectangle.
+        # @param [Coordinate] left_top a coordinate of a corner of the rectangle
+        # @param [Length] width width of the rectangle
+        # @param [Length] heigth heigth of the rectangle
+        # @option options [Painting] :painting painting status of the rectangle
+        # @option options [Length] :rx the x-axis radius of the ellipse for
+        #   rounded the rectangle
+        # @option options [Length] :ry the y-axis radius of the ellipse for
+        #   rounded the rectangle
+        # @return [Rectangle] a new instance of Rectangle
         def create_on_width_height(left_top, width, height, options={})
           new(left_top, width, height, options)
         end
 
+        # Create a new instance of Rectangle.
+        # @param [Length] top a y-axis coordinate of the top
+        # @param [Length] right a x-axis coordinate of the right side
+        # @param [Length] bottom a y-axis coordinate of the bottom
+        # @param [Length] left a x-axis coordinate of the left side
+        # @option options [Painting] :painting painting status of the rectangle
+        # @option options [Length] :rx the x-axis radius of the ellipse for
+        #   rounded the rectangle
+        # @option options [Length] :ry the y-axis radius of the ellipse for
+        #   rounded the rectangle
+        # @return [Rectangle] a new instance of Rectangle
         def create_on_corner(top, right, bottom, left, options={})
           left_top = Coordinate.new([left, right].min, [top, bottom].min)
           width = (Length.new(right) - Length.new(left)).abs
@@ -299,8 +407,18 @@ module DYI #:nodoc:
       end
     end
 
+    # The circle in the vector image
+    # @since 0.0.0
     class Circle < Base
+
+      # Returns a center coordinate of the circle.
+      # @attribute center
+      # @return [Coordinate]  a center coordinate of the circle
       attr_coordinate :center
+
+      # Returns a radius of the circle.
+      # @attribute radius
+      # @return [Length]  a radius of the circle
       attr_length :radius
 
       def initialize(center, radius, options={})

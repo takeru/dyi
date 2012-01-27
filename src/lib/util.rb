@@ -19,8 +19,24 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
+# Addes Numeirc class to {#strfnum} method.
 class Numeric
 
+  # Converts the numeric value of this instance to the string representation,
+  # using the numeric format string.
+  # @param [String] format the numeric format string
+  # @return [String] formated string that is equivalent to this instance
+  # @example
+  #   3.141592.strfnum('0.00')           # => "3.14"
+  #   3.141592.strfnum('0.###')          # => "3.142"
+  #   3.140159.strfnum('0.###')          # => "3.14"
+  #   1234567.strfnum('#,##0')           # => "1,234,567"
+  #   1234567.strfnum('#,##0,.0')        # => "1,234.6"
+  #   0.56789.strfnum('0.0%')            # => "56.8%"
+  #   -12345.strfnum('#,##0')            # => "-12,345"
+  #   -12345.strfnum('#,##0;*#,##0')     # => "*12,345"
+  #   0.001.strfnum('#,##0;-#,##0;zero') # => "zero"
+  #   12345.strfnum('\##,##0')           # => "#12,345"
   def strfnum(format)
     decimal_separator = (defined? ::Numeric::DECIMAL_SEPARATOR) ? ::Numeric::DECIMAL_SEPARATOR : '.'
     group_separator = (defined? ::Numeric::GROUP_SEPARATOR) ? ::Numeric::GROUP_SEPARATOR : ','
