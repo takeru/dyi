@@ -67,6 +67,11 @@ module DYI
     # @since 1.0.0
     attr_reader :scripts
 
+    # Returns a metadata object that the image has.
+    # @return [Object] a metadata object that the image has.
+    # @since 1.1.1
+    attr_accessor :metadata
+
     # @param [Length] width width of the canvas on user unit
     # @param [Length] height height of the canvas on user unit
     # @param [Length] real_width width of the image. When this value

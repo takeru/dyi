@@ -28,6 +28,16 @@ module DYI
     extend AttributeCreator
     ID_REGEXP = /\A[:A-Z_a-z][\-\.0-9:A-Z_a-z]*\z/
 
+    # Returns a title of the element.
+    # @return [String] a title of the element
+    # @since 1.1.1
+    attr_accessor :title
+
+    # Returns a title of the element.
+    # @return [String] a title of the element
+    # @since 1.1.1
+    attr_accessor :description
+
     # Returns id for the element. If the element has no id yet, makes id and
     # returns it.
     # @return [String] id for the element

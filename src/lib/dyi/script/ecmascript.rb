@@ -62,7 +62,9 @@ module DYI
           parts.join
         end
 
-        # @since 1.1.0
+        # Returns an ECMAScript value of a metadata that this image has.
+        # @return [String] a string that means 
+        # @since 1.1.1
         def metadata_parse_json
 =begin
 script =<<-EOS

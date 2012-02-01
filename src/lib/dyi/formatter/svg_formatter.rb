@@ -27,7 +27,7 @@ module DYI #:nodoc:
     class SvgFormatter < XmlFormatter
 
       def initialize(canvas, options={})
-        super(canvas, options)
+        super
         version = options[:version] || '1.1'
         unless ['1.0', '1.1'].include?(@version = version.to_s)
           raise ArgumentError, "version `#{version}' is unknown version"
@@ -79,6 +79,15 @@ module DYI #:nodoc:
         end
         sio = StringIO.new
         create_node(sio, 'svg', attrs) {
+          create_leaf_node(sio, 'title', canvas.title) if canvas.title
+          create_leaf_node(sio, 'desc', canvas.description) if canvas.description
+          if canvas.metadata
+            create_cdata_node(sio, 'metadata'){
+              puts_line(sio) {
+                write_metadata(canvas.metadata, sio)
+              }
+            }
+          end
           @root_info = [sio.pos, @level]
           i = 0
           length = canvas.scripts.size
@@ -433,8 +442,10 @@ module DYI #:nodoc:
 
       # @since 1.0.0
       def write_shape_node(shape, io, attrs, tag_name, &create_child_node)
-        if shape.animate? || block_given?
+        if shape.title || shape.description || shape.animate? || block_given?
           create_node(io, tag_name, attrs) {
+            create_leaf_node(io, 'title', shape.title) if shape.title
+            create_leaf_node(io, 'desc', shape.description) if shape.description
             yield if block_given?
             write_animations(shape, io)
           }
@@ -449,6 +460,61 @@ module DYI #:nodoc:
           shape.animations.each do |anim|
             anim.write_as(self, shape, io)
           end
+        end
+      end
+
+      # @since 1.1.1
+      def write_metadata(metadata, io)
+        case metadata
+        when String, Symbol
+          io << '"'
+          metadata.to_s.unpack('U*').each do |c|
+            case c
+              when 0x08 then io << '\\b'  # backspace
+              when 0x09 then io << '\\t'  # horizontal tab
+              when 0x0a then io << '\\n'  # line feed
+              when 0x0c then io << '\\f'  # form feed
+              when 0x0d then io << '\\r'  # carriage return
+              when 0x22 then io << '\\"'  # double quote
+              when 0x5c then io << '\\\\' # backslash
+              when (0x20..0x7e) then io << c.chr
+              else io << '\\u' << ('%04X' % c)
+            end
+          end
+          io << '"'
+        when Integer, TrueClass, FalseClass
+          io << metadata.inspect
+        when NilClass
+          io << 'null'
+        when Numeric
+          io << metadata.to_f.to_s
+        when Hash
+          io << '{'
+          metadata.keys.each_with_index do |key, i|
+            io << ',' unless i == 0
+            write_metadata(key.to_s, io)
+            io << ':'
+            write_metadata(metadata[key], io)
+          end
+          io << '}'
+        when Struct
+          io << '{'
+          metadata.members.each_with_index do |key, i|
+            io << ',' unless i == 0
+            write_metadata(key.to_s, io)
+            io << ':'
+            write_metadata(metadata.__send__(key), io)
+          end
+          io << '}'
+        when Enumerable
+          io << '['
+          metadata.each_with_index do |value, i|
+            io << ',' unless i == 0
+            write_metadata(value, io)
+          end
+          io << ']'
+        else
+          write_metadata(metadata.to_s, io)
         end
       end
 
