@@ -49,7 +49,7 @@ module DYI
     attr_reader *IMPLEMENT_ATTRIBUTES
 
     # Returns an array of child elements.
-    # @return [[Element]] an array of child elements
+    # @return [Array<Element>] an array of child elements
     attr_reader :child_elements
 
     # Returns hash of event listners.
@@ -58,12 +58,12 @@ module DYI
     attr_reader :event_listeners
 
     # Returns an array of stylesheets.
-    # @return [[Stylesheet::Style]] an array of stylesheets
+    # @return [Array<Stylesheet::Style>] an array of stylesheets
     # @since 1.0.0
     attr_reader :stylesheets
 
     # Returns an array of scripts.
-    # @return [[Script::SimpleScript]] an array of scripts
+    # @return [Array<Script::SimpleScript>] an array of scripts
     # @since 1.0.0
     attr_reader :scripts
 

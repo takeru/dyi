@@ -33,8 +33,8 @@ module DYI
     # @since 1.1.1
     attr_accessor :title
 
-    # Returns a title of the element.
-    # @return [String] a title of the element
+    # Returns a description of the element.
+    # @return [String] a description of the element
     # @since 1.1.1
     attr_accessor :description
 
@@ -75,7 +75,7 @@ module DYI
     end
 
     # Returns an array of child elements.
-    # @return [[Element]] an empty array
+    # @return [Array<Element>] an empty array
     def child_elements
       []
     end
@@ -121,7 +121,7 @@ module DYI
     end
 
     # Returns an array of CSS class names.
-    # @return [[String]] an array of CSS class names
+    # @return [Array<String>] an array of CSS class names
     def css_classes
       css_class.to_s.split(/\s+/)
     end

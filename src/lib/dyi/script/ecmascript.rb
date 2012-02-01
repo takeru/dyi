@@ -35,6 +35,36 @@ module DYI
       # This Module includes helper methods for generating a client-script.
       # These methods generate a script that conforms to DOM Level 2 (W3C
       # Recommendation).
+      #
+      # All the methods defined by this module are `module functions', which are
+      # called as private instance methods and are also called as public class
+      # methods (they are methods of Math Module like).
+      # In the following example, DomLevel2#get_element method is called as a
+      # private instance method.
+      #   include DYI::Script::EcmaScript::DomLevel2
+      #   
+      #   puts get_element('el_id')   # => "document.getElementById(\"el_id\")"
+      # In the Next example, DomLevel2#get_element method is called as a
+      # public class method.
+      #   puts DYI::Script::EcmaScript::DomLevel2.get_element('el_id')
+      #                               # => "document.getElementById(\"el_id\")"
+      #
+      #= Module Function List
+      #
+      # {#add_event_listener}, {#draw_text_border}, {#form_legend_labels},
+      # {#get_attribute}, {#get_element}, {#metadata_parse_json},
+      # {#rewrite_text}, {#set_attribute}, {#to_ecmascript_string}
+      #
+      # {render:#add_event_listener}
+      # {render:#dispatch_evnet}
+      # {render:#draw_text_border}
+      # {render:#form_legend_labels}
+      # {render:#get_attribute}
+      # {render:#get_element}
+      # {render:#metadata_parse_json}
+      # {render:#rewrite_text}
+      # {render:#set_attribute}
+      # {render:#to_ecmascript_string}
       module DomLevel2
 
         private
@@ -65,6 +95,7 @@ module DYI
         # Returns an ECMAScript value of a metadata that this image has.
         # @return [String] a string that means 
         # @since 1.1.1
+        # @api function
         def metadata_parse_json
 =begin
 script =<<-EOS
@@ -96,7 +127,7 @@ EOS
         # @example
         #   rect = pen.draw_rectange(canvas, [0, 0], 20, 30, :id => "rect1")
         #   get_attribute(rect, "width")
-        #        # => "document.getElementById(\"rect1\").getAttribute(\"x\")"
+        #        # => "document.getElementById(\"rect1\").getAttribute(\"width\")"
         # @since 1.1.0
         def get_attribute(element, attribute_name)
           "#{get_element(element)}.getAttribute(\"#{attribute_name}\")"

@@ -203,7 +203,7 @@ module DYI
       end
 
       # Returns registed animations.
-      # @return [[Animation::Base]] amination list.
+      # @return [Array<Animation::Base>] amination list.
       # since 1.0.0
       def animations
         @animations ||= []
