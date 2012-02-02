@@ -29,7 +29,6 @@ module DYI #:nodoc:
       # Difines a read property.
       # @param [Symbol] name the property name
       # @param [Hash] settings settings of the property
-      # @return [void]
       def opt_reader(name, settings = {})
         name = name.to_sym
         getter_name = settings[:type] == :boolean ? name.to_s.gsub(/^(.*[^=\?])[=\?]*$/, '\1?') : name
@@ -47,7 +46,6 @@ module DYI #:nodoc:
       # Difines a write property.
       # @param [Symbol] name the property name
       # @param [Hash] settings settings of the property
-      # @return [void]
       def opt_writer(name, settings = {})
         name = name.to_sym
         setter_name = name.to_s.gsub(/^(.*[^=\?])[=\?]*$/, '\1=')
@@ -184,7 +182,6 @@ module DYI #:nodoc:
       # Difines a read-write property.
       # @param [Symbol] name the property name
       # @param [Hash] settings settings of the property
-      # @return [void]
       def opt_accessor(name, settings = {})
         opt_reader(name, settings)
         opt_writer(name, settings)
@@ -279,6 +276,7 @@ module DYI #:nodoc:
         @canvas.add_css_class(canvas_css_class) if canvas_css_class && !canvas_css_class.empty?
         @canvas.add_script(script_body) if script_body && !script_body.empty?
         @canvas.add_stylesheet(css_body) if css_body && !css_body.empty?
+        @canvas.metadata = data
         script_files && script_files.each do |script_file|
           @canvas.reference_script_file(script_file)
         end

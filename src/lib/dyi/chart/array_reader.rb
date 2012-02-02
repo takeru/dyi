@@ -51,7 +51,6 @@ module DYI #:nodoc:
         @records.clear
       end
 
-      # @return [void]
       # @since 1.0.0
       def values_each(&block)
         @records.each do |record|
@@ -73,7 +72,6 @@ module DYI #:nodoc:
         @schema.members.include?(RUBY_VERSION >= '1.9' ? field_name.to_sym : field_name.to_s)
       end
 
-      # @return [void]
       # @since 1.0.0
       def each(&block)
         @records.each(&block)
@@ -83,6 +81,14 @@ module DYI #:nodoc:
         @records = []
       end
 
+      # Loads array-of-array and sets data.
+      # @param [Array<Array>] array_of_array two dimensional array
+      # @option options [Range] :row_range a range of rows
+      # @option options [Range] :column_range a range of columns
+      # @option options [Array<Symbol>] :schema array of field names
+      # @option options [Array<Symbol>] :data_types array of field data types
+      # @option options [Boolean] :transposed whether the array-of-array is
+      #   transposed
       def read(array_of_array, options={})
         clear_data
         row_range = options[:row_range] || (0..-1)
@@ -183,6 +189,10 @@ module DYI #:nodoc:
       end
 
       class << self
+        # Create a new instance of ArrayReader, loading array-of-array.
+        # @param (see #read)
+        # @option (see #read)
+        # @return [ArrayReader] a new instance of ArrayReader
         def read(array_of_array, options={})
           new.read(array_of_array, options)
         end

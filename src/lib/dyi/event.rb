@@ -60,7 +60,6 @@ module DYI
     # Sets a event listener.
     # @param [Script::EcmaScript::EventListener] event_listener a script to be
     #           called when the event occurs
-    # @return [void]
     def set_listener(event_listener)
       target.add_event_listener(event_name, event_listener)
       event_listener.related_to(self)
@@ -69,7 +68,6 @@ module DYI
     # Removes a event listener.
     # @param [Script::EcmaScript::EventListener] event_listener a script that
     #           is removed
-    # @return [void]
     def remove_listener(event_listener)
       target.remove_event_listener(event_name, event_listener)
       event_listener.unrelated_to(self)

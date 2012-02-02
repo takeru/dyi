@@ -59,7 +59,6 @@ module DYI
       # Writes the buffer contents of the object.
       # @param [Formatter::Base] a formatter for export
       # @param [IO] io a buffer that is written
-      # @return [void]
       def write_as(formatter, io=$>)
         formatter.write_style(self, io)
       end

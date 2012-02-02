@@ -236,7 +236,6 @@ module DYI
       # @option options [Event] :end_event an event that determine the animation
       #   end
       # @option options [String] :fill `freeze' or `remove'
-      # @return [void]
       # @since 1.0.0
       def add_painting_animation(options)
         add_animation(Animation::PaintingAnimation.new(self, options))

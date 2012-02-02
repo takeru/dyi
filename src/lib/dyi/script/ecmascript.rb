@@ -36,18 +36,24 @@ module DYI
       # These methods generate a script that conforms to DOM Level 2 (W3C
       # Recommendation).
       #
-      # All the methods defined by this module are `module functions', which are
+      # All the methods defined by the module are `module functions', which are
       # called as private instance methods and are also called as public class
       # methods (they are methods of Math Module like).
-      # In the following example, DomLevel2#get_element method is called as a
+      # In the following example, +get_element+ method is called as a
       # private instance method.
+      #   class Foo
+      #     include DYI::Script::EcmaScript::DomLevel2
+      #     def bar
+      #       puts get_element('el_id') # => "document.getElementById(\"el_id\")"
+      #     end
+      #   end
+      # At the toplevel, it is able to include the module.
       #   include DYI::Script::EcmaScript::DomLevel2
-      #   
-      #   puts get_element('el_id')   # => "document.getElementById(\"el_id\")"
-      # In the Next example, DomLevel2#get_element method is called as a
-      # public class method.
+      #   puts get_element('el_id')     # => "document.getElementById(\"el_id\")"
+      # In the Next example, +get_element+ method is called as a public class
+      # method.
       #   puts DYI::Script::EcmaScript::DomLevel2.get_element('el_id')
-      #                               # => "document.getElementById(\"el_id\")"
+      #                                 # => "document.getElementById(\"el_id\")"
       #
       #= Module Function List
       #
@@ -382,7 +388,6 @@ EOS
 
         # Relates this object to an event.
         # @param [Event] event an event that is related to
-        # @return [void]
         def related_to(event)
           unless @events.include?(event)
             @events << event
@@ -391,7 +396,6 @@ EOS
 
         # Removes the relation to an event.
         # @param [Event] event an event that is removed the relation to
-        # @return [void]
         def unrelated_to(event)
           @events.delete(event)
         end

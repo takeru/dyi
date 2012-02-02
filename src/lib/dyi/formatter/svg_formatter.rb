@@ -533,7 +533,6 @@ module DYI #:nodoc:
 
       # Examines the descendant elements of the canvas to collect the
       # information of the elements.
-      # @return [void]
       # @since 1.0.0
       def pre_write
         if @canvas.scripts.any?{|script| script.has_uri_reference?}
@@ -592,7 +591,6 @@ module DYI #:nodoc:
         [amin_event(shape, event), anim_duration(offset)].compact.join('+')
       end
 
-      # @return [void]
       # @since 1.0.0
       def merge_anim_attributes(anim, shape, attrs) #:nodoc:
         attrs[:dur] = anim_duration(anim.duration) if anim.duration && anim.duration != 0
