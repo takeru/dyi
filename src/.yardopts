@@ -1,0 +1,9 @@
+--no-private
+--title "DYI Documents"
+--output-dir ../doc
+--exclude lib/ironruby.rb
+--default-return ""
+lib/**/*.rb
+-
+README
+COPYING
