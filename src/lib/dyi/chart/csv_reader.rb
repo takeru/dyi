@@ -24,11 +24,33 @@ require 'date'
 require 'bigdecimal'
 require 'nkf'
 
-module DYI #:nodoc:
-  module Chart #:nodoc:
+module DYI
+  module Chart
 
+    # CsvReader class provides a interface to CSV file and data for a chart
+    # object.
     class CsvReader < ArrayReader
-      def read(path, options={})
+
+      # @private
+      alias __org_read__ read
+
+      # Parses CSV data and sets data.
+      # @param [String] csv CSV data
+      # @option (see ArrayReader#read)
+      # @option options [String] :date_format date format string of CSV data,
+      #   parsing a date string in CSV at +Date#strptime+
+      # @option options [String] :datetime_format date-time format string of CSV
+      #   data, parsing a date-time string in CSV at +DateTime#strptime+
+      # @option options [Symbol] :encode encoding of CSV data as the following:
+      #   +:utf8+ (default), +:sjis+, +:euc+, +:jis+ (ISO-2022-JP), +:utf16+
+      #   (UTF-16BE)
+      # @option options [String] :col_sep a separator of columns, default to
+      #   <tt>","</tt>
+      # @option options [String] :row_sep a separator of rows, default to
+      #   +:auto+ which means that a separetor is <tt>"\r\n"</tt>, <tt>"\n"</tt>,
+      #   or <tt>"\r"</tt> sequence
+      # @since 1.1.1
+      def parse(csv, options={})
         options = options.clone
         @date_format = options.delete(:date_format)
         @datetime_format = options.delete(:datetime_format)
@@ -43,11 +65,18 @@ module DYI #:nodoc:
           end
         parsed_array = 
           if RUBY_VERSION >= '1.9'
-            CSV.parse(nkf_options ? NKF.nkf(nkf_options, IO.read(path)) : IO.read(path), :col_sep => options[:col_sep] || ',', :row_sep => options[:row_sep] || :auto)
+            CSV.parse(nkf_options ? NKF.nkf(nkf_options, csv) : csv, :col_sep => options[:col_sep] || ',', :row_sep => options[:row_sep] || :auto)
           else
-            CSV.parse(nkf_options ? NKF.nkf(nkf_options, IO.read(path)) : IO.read(path), options[:col_sep], options[:row_sep])
+            CSV.parse(nkf_options ? NKF.nkf(nkf_options, csv) : csv, options[:col_sep], options[:row_sep])
           end
-        super(parsed_array, options)
+        __org_read__(parsed_array, options)
+      end
+
+      # Parses CSV file and sets data.
+      # @param [String] path a path of the CSV file
+      # @option (see #parse)
+      def read(path, options={})
+        parse(IO.read(path), options)
       end
 
       private
@@ -80,8 +109,22 @@ module DYI #:nodoc:
       end
 
       class << self
+        # Parses CSV file and creates instance of CsvReader.
+        # @param (see #read)
+        # @option (see #read)
+        # @return [CsvReader] a new instance of CsvReader
+        # @see ArrayReader.read
         def read(path, options={})
           new.read(path, options)
+        end
+
+        # Parses CSV data and creates instance of CsvReader.
+        # @param (see #parse)
+        # @option (see #parse)
+        # @return [CsvReader] a new instance of CsvReader
+        # @see ArrayReader.read
+        def parse(path, options={})
+          new.parse(path, options)
         end
       end
     end
