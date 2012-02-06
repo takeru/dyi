@@ -21,11 +21,14 @@
 
 require 'csv'
 
-module DYI #:nodoc:
-  module Chart #:nodoc:
+module DYI
+  module Chart
 
+    # @private
     module OptionCreator
 
+      # @macro [new] opt_reader
+      #   @attribute [r] $1
       # Difines a read property.
       # @param [Symbol] name the property name
       # @param [Hash] settings settings of the property
@@ -43,6 +46,8 @@ module DYI #:nodoc:
         end
       end
 
+      # @macro [new] opt_writer
+      #   @attribute [w] $1
       # Difines a write property.
       # @param [Symbol] name the property name
       # @param [Hash] settings settings of the property
@@ -179,6 +184,8 @@ module DYI #:nodoc:
         end
       end
 
+      # @macro [new] opt_accessor
+      #   @attribute [rw] $1
       # Difines a read-write property.
       # @param [Symbol] name the property name
       # @param [Hash] settings settings of the property
@@ -188,22 +195,82 @@ module DYI #:nodoc:
       end
     end
 
+    # Base class of all the chart classes.
+    # @abstract
+    # @since 0.0.0
     class Base
       extend OptionCreator
 
       DEFAULT_CHART_COLOR = ['#ff0f00', '#ff6600', '#ff9e01', '#fcd202', '#f8ff01', '#b0de09', '#04d215', '#0d8ecf', '#0d52d1', '#2a0cd0', '#8a0ccf', '#cd0d74']
-      attr_reader :options, :data, :canvas
 
+      # @private
+      attr_reader :options
+
+      # Returns the data for the chart.
+      # @return [Chart::ArrayReader] the data for the chart
+      attr_reader :data
+
+      # Returns the canvas of the image body.
+      # @return [Canvas] the canvas of the image body
+      attr_reader :canvas
+
+      # @macro opt_accessor
+      # Returns or sets the URI of the background image of the chart. The URL is
+      # included the chart image.
+      # @return [String] the URI of the background image
       opt_accessor :background_image_url, :type => :string
+
+      # @macro opt_accessor
+      # Returns or sets the background image of the chart. The image files is
+      # read and included when the chart image is created. The hash includes the
+      # following key:
+      # [+:path+] (+String+) the file path of the background image file
+      # [+:content_type+] (+String+) the content-type of the background image
+      #                   file
+      # @return [Hash{Symbol => String}] the background image of the chart
       opt_accessor :background_image_file, :type => :hash, :default => {}, :keys => [:path, :content_type], :item_type => :string
+
+      # @macro opt_accessor
+      # Returns or sets the opacity of the background image of the chart.
+      # Default to 1.0.
+      # @return [Float] the opacity of the background image
       opt_accessor :background_image_opacity, :type => :float, :default => 1.0
+
+      # @macro opt_accessor
+      # Returns or sets the script string of the chart.
+      # @return [String] the script string
       opt_accessor :script_body, :type => :string
+
+      # @macro opt_accessor
+      # Returns or sets the CSS styles of the image body of the chart.
+      # @return [String] the CSS styles of the image body
       opt_accessor :css_body, :type => :string
+
+      # @macro opt_accessor
+      # Returns or sets the URIs of the script files that the chart includes.
+      # @return [Array<String>] the array of the URIs of the script files
       opt_accessor :script_files, :type => :array, :item_type => :string
+
+      # @macro opt_accessor
+      # Returns or sets the URIs of the CSS files that the chart includes.
+      # @return [Array<String>] the array of the URIs of the CSS files
       opt_accessor :css_files, :type => :array, :item_type => :string
+
+      # @macro opt_accessor
+      # Returns or sets the URIs of the XSL files that the chart includes.
+      # @return [Array<String>] the array of the URIs of the XSL files
       opt_accessor :xsl_files, :type => :array, :item_type => :string
+
+      # @macro opt_accessor
+      # Returns or sets the CSS class of the image body of the chart.
+      # @return [String] the CSS class of the image body
       opt_accessor :canvas_css_class, :type => :string
 
+      # @param [Length] width width of the chart image
+      # @param [Length] height height of the chart image
+      # @param [Hash{Symbol => Object}] options the options to creat the chart
+      #   image. See <em>Instance Attribute</em> of the each chart class
+      #   ({Base}, {PieChart}, {LineChart}, etc...).
       def initialize(width, height, options={})
         @canvas = Canvas.new(width, height)
         @options = {}
@@ -212,56 +279,109 @@ module DYI #:nodoc:
         end
       end
 
+      # Returns width of the chart image on user unit.
+      # @return [Length] width of the chart image on user unit
       def width
         @canvas.width
       end
 
+      # Sets width of the chart image on user unit.
+      # @param [Length] width width of the chart image on user unit
       def width=(width)
         @canvas.width = width
       end
 
+      # Returns height of the chart image on user unit.
+      # @return [Length] height of the chart image on user unit
       def height
         @canvas.height
       end
 
+      # Sets height of the chart image on user unit.
+      # @param [Length] height height of the chart image on user unit
       def height=(height)
         @canvas.height = height
       end
 
+      # Sets size of the chart image.
+      # @param [Length] width width of the chart image
+      # @param [Length] height height of the chart image
       def set_real_size(width, height)
         @canvas.real_width = Length.new(width)
         @canvas.real_height = Length.new(height)
       end
 
+      # Clears <em>real size</em> of the chart image, and sets chart size as
+      # values of +width+ and +height+ properties. See {#set_real_size},
+      # {#width}, {#height}, {Canvas#real_width} and {Canvas#real_height}.
       def clear_real_size
         @canvas.real_width = nil
         @canvas.real_height = nil
       end
 
+      # Loads the data, and creates chart image.
+      # @param [ArrayReader] reader the +ArrayReader+ or its sub class that has
+      #   the data of the chart
       def load_data(reader)
         @data = reader
         create_vector_image
       end
 
+      # Save the chart image as a file.
+      # @param [String] file_name the file name which is saved the chart image
+      #   as
+      # @param [Symbol] format the file format. Supports the following formats:
+      #   [+:svg+] SVG (Scalable Vector Graphics). If +format+ equals nil,
+      #            output SVG format.
+      #   [+:eps+] EPS (Encapsulated Post Script).
+      #   [+:xaml+] XAML (Extensible Application Markup Language).
+      #   [+:emf+] EMF (Enhanced Metafile). Using _IronRuby_ only.
+      #   [+:png+] PNG (Portable Network Graphics). _librsvg_ must have been
+      #            installed on the system.
+      # @option options [Boolean] :inline_mode true if outputs the inlime-mode, false
+      #   otherwise. _SVG_ format only.
       def save(file_name, format=nil, options={})
         @canvas.save(file_name, format, options)
       end
 
+      # Outputs the chart image to IO stream.
+      # @param [Symbol] format the file format. Supports the following formats:
+      #   [+:svg+] SVG (Scalable Vector Graphics). If +format+ equals nil,
+      #            output SVG format.
+      #   [+:eps+] EPS (Encapsulated Post Script).
+      #   [+:xaml+] XAML (Extensible Application Markup Language).
+      #   [+:emf+] EMF (Enhanced Metafile). Using _IronRuby_ only.
+      #   [+:png+] PNG (Portable Network Graphics). _librsvg_ must have been
+      #            installed on the system.
+      # @param [IO] io the io which the chart image is outputed to
+      # @option options [Boolean] :inline_mode true if outputs the inlime-mode, false
+      #   otherwise. _SVG_ format only.
       def puts_in_io(format=nil, io=$>, options={})
         @canvas.puts_in_io(format, io, options)
       end
 
+      # Outputs the chart image as a +String+ (binary).
+      # @param [Symbol] format the file format. Supports the following formats:
+      #   [+:svg+] SVG (Scalable Vector Graphics). If +format+ equals nil,
+      #            output SVG format.
+      #   [+:eps+] EPS (Encapsulated Post Script).
+      #   [+:xaml+] XAML (Extensible Application Markup Language).
+      #   [+:emf+] EMF (Enhanced Metafile). Using _IronRuby_ only.
+      #   [+:png+] PNG (Portable Network Graphics). _librsvg_ must have been
+      #            installed on the system.
+      # @option options [Boolean] :inline_mode true if outputs the inlime-mode, false
+      #   otherwise. _SVG_ format only.
       def string(format=nil, options={})
         @canvas.string(format, options)
       end
 
       private
 
-      def options #:nodoc:
+      def options
         @options
       end
 
-      def chart_color(index) #:nodoc:
+      def chart_color(index)
         if data.has_field?(:color)
           color = Color.new_or_nil(data.records[index].color)
         end
@@ -272,7 +392,7 @@ module DYI #:nodoc:
       end
 
       # @since 1.0.0
-      def create_vector_image #:nodoc:
+      def create_vector_image
         @canvas.add_css_class(canvas_css_class) if canvas_css_class && !canvas_css_class.empty?
         @canvas.add_script(script_body) if script_body && !script_body.empty?
         @canvas.add_stylesheet(css_body) if css_body && !css_body.empty?

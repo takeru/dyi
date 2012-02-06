@@ -19,43 +19,266 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-module DYI #:nodoc:
-  module Chart #:nodoc:
+module DYI
+  module Chart
 
+    # +PieChart+ creates the image of pie chart.
+    #
+    #= Usage
+    #
+    # Usage for creating the pie chart is:
+    # Using +PieChart+ and ArrayReader (or sub class of ArrayReader), you can
+    # create the pie chart as the following:
+    #   require 'rubygems'
+    #   require 'dyi'
+    #   
+    #   # Nominal GDP of Asian Countries (2010)
+    #   chart_data = [['China', 5878],
+    #                 ['Japan', 5459],
+    #                 ['India', 1538],
+    #                 ['South Koria', 1007],
+    #                 ['Other Countries', 2863]]
+    #   reader = DYI::Chart::ArrayReader.read(chart_data, :schema => [:name, :value])
+    #
+    #   # Creates the Pie Chart
+    #   chart = DYI::Chart::PieChart.new(450,250)
+    #   chart.load_data(reader)
+    #   chart.save('asian_gdp.svg')
+    # See {ArrayReader} about how to set the chart data.
+    #
+    #= Setting Attributes
+    #
+    # The Attributes of +PieChart+ are specified at the constractor. See
+    # <em>Instance Attribute</em> of this class, {Base} and {Legend} for the
+    # attributes that can be specified. The specified attributes can be refered
+    # and set.
+    #   chart = DYI::Chart::PieChart.new(500,250,
+    #             :center_point => [130, 100],
+    #             :legend_point => [250, 50],
+    #             :represent_3d => true,
+    #             :_3d_settings => {:dy => 10},
+    #             :legend_format => "{?name}\t{!e}{?value:#,0}\t{!e}({?percent:0.0%})",
+    #             :chart_stroke_color => 'white')
+    #   puts chart.represent_3d?    # => true
+    #   chart.show_baloon = false
+    #   puts chart.show_baloon?     # => false
+    #
+    #   chart.load_data(reader)
+    #   chart.save('asian_gdp.svg')
+    #
+    #= Adds Custom Elements to Chart
+    #
+    # Using {#canvas canvas} attribute, you can add arbitrary graphical elements.
+    #   chart = DYI::Chart::PieChart.new(500,250,
+    #             :center_point => [130, 100],
+    #             :legend_point => [250, 50],
+    #             :represent_3d => true,
+    #             :_3d_settings => {:dy => 10},
+    #             :legend_format => "{?name}\t{!e}{?value:#,0}\t{!e}({?percent:0.0%})",
+    #             :chart_stroke_color => 'white',
+    #             :show_baloon => false)
+    #
+    #   DYI::Drawing::Pen.black_pen.draw_text(chart.canvas,
+    #             [250, 20],
+    #             'Nominal GDP of Asian Countries (2010)',
+    #             :text_anchor => 'middle')
+    #   chart.load_data(reader)
+    #   chart.save('asian_gdp.svg')
     class PieChart < Base
       include Legend
 
-      attr_reader :chart_canvas, :data_label_canvas, :legend_canvas
+      # Returns the container element which body of chart is drawn on.
+      # @return [Shape::ShapeGroup]  the container element which chart parts is
+      #   drawn on
+      attr_reader :chart_canvas
 
-      opt_accessor :center_point, {:type => :point, :default_method => :default_center_point}
-      opt_accessor :chart_radius_x, {:type => :length, :default_method => :default_chart_radius_x}
-      opt_accessor :chart_radius_y, {:type => :length, :default_method => :default_chart_radius_y}
-      opt_accessor :inner_radius, {:type => :float, :default => 0.0, :range => 0.0 ... 1.0}
-      opt_accessor :represent_3d, {:type => :boolean}
-      opt_accessor :_3d_settings, {:type => :hash, :default => {}, :keys => [:dy], :item_type => :float}
-      opt_accessor :chart_colors, {:type => :array, :item_type => :color}
-      opt_accessor :chart_stroke_color, {:type => :color}
-      opt_accessor :chart_stroke_width, {:type => :float, :default => 1}
-      opt_accessor :moved_elements, {:type => :array, :item_type => :float}
+      # Returns the container element which data labels is drawn on.
+      # @return [Shape::ShapeGroup]  the container element which chart parts is
+      #   drawn on
+      attr_reader :data_label_canvas
+
+      # Returns the container element which legend is drawn on.
+      # @return [Shape::ShapeGroup]  the container element which chart parts is
+      #   drawn on
+      attr_reader :legend_canvas
+
+      # @macro opt_accessor
+      # Returns or sets the center point of the pie chart.
+      # @return [Coordinate] the center point of the pie chart
+      opt_accessor :center_point, :type => :point, :default_method => :default_center_point
+
+      # @macro opt_accessor
+      # Returns or sets the x-axis radius of the pie chart.
+      # @return [Length] the x-axis radius of the pie chart
+      opt_accessor :chart_radius_x, :type => :length, :default_method => :default_chart_radius_x
+
+      # @macro opt_accessor
+      # Returns or sets the y-axis radius of the pie chart.
+      # @return [Length] the y-axis radius of the pie chart
+      opt_accessor :chart_radius_y, :type => :length, :default_method => :default_chart_radius_y
+
+      # @macro opt_accessor
+      # Returns or sets the ratio of inner radius to outer radius of the
+      # doughnut chart. The value of +inner_radius+ should be a positive number
+      # or zero less than 1.0. Defalt to 0.0 (that means that chart is not
+      # doughnut).
+      # @return [Float] the ratio of inner radius to outer radius
+      opt_accessor :inner_radius, :type => :float, :default => 0.0, :range => 0.0 ... 1.0
+
+      # @attribute represent_3d?
+      # Returns or sets whether the chart is made three-dimensional. Defalt to
+      # false.
+      # @return [Boolean] true if the chart is three-demensional, false otherwise
+      opt_accessor :represent_3d, :type => :boolean
+
+      # @macro opt_accessor
+      # Returns or sets the three-demenal setting hash.
+      # This attribute is valid if the +respond_3d+ attribute equals true.
+      # The hash includes the following key:
+      # [+:dy+] ({Length}) the thickness of the pie
+      # @return [Hash{Symbol => Object}] the three-demenal setting hash
+      opt_accessor :_3d_settings, :type => :hash, :default => {}, :keys => [:dy], :item_type => :lenth
+
+      # @macro opt_accessor
+      # Returns or sets specific colors for the slices.
+      # @return [Array<Color>] the array of the colors of the slices
+      opt_accessor :chart_colors, :type => :array, :item_type => :color
+
+      # @macro opt_accessor
+      # Returns or sets the color of the outline of the slices.
+      # @return [Color] the color of the outline of the slices
+      opt_accessor :chart_stroke_color, :type => :color
+
+      # @macro opt_accessor
+      # Returns or sets the width of the outline of the slices. Default to 1.0.
+      # @return [Float] the color of the outline of the slices
+      opt_accessor :chart_stroke_width, :type => :float, :default => 1.0
+
+      # @macro opt_accessor
+      # Returns or sets the array of the ratio of the distance which the slices
+      # are moved from the center to the outside.
+      # @return [Array<Float>] the array of the ratio of the distance which the
+      #   slices are moved
+      opt_accessor :moved_elements, :type => :array, :item_type => :float
+
+      # @macro opt_accessor
+      # Returns or sets the CSS class of the pie area.
+      # @return [String] the CSS class of the pie area
       opt_accessor :pie_css_class, :type => :string
-      opt_accessor :show_data_label, {:type => :boolean, :default => true}
+
+      # @attribute show_data_label?
+      # Returns or sets whether the data labels are shown. Defalt to true.
+      # @return [Boolean] true if the data labels are shown, false otherwise
+      opt_accessor :show_data_label, :type => :boolean, :default => true
+
+      # @macro opt_accessor
+      # Returns or sets the CSS class of the data labels.
+      # @return [String] the CSS class of the data labels
       opt_accessor :data_label_css_class, :type => :string
-      opt_accessor :data_label_position, {:type => :float, :default => 0.8}
-      opt_accessor :data_label_font, {:type => :font}
-      opt_accessor :data_label_format, {:type => :string, :default => "{?name}"}
-      opt_accessor :hide_data_label_ratio, {:type => :float, :default => 0.00}
+
+      # @macro opt_accessor
+      # Returns or sets the position of the data labels. Zero means the data
+      # labels are shown at the center point, and 1.0 means they are shown on
+      # the circumference of the pie. Default to 0.8.
+      # @return [Float] the position of the data labels
+      opt_accessor :data_label_position, :type => :float, :default => 0.8
+
+      # @macro opt_accessor
+      # Returns or sets the font of the data labels.
+      # @return [Font] the font of the data labels
+      opt_accessor :data_label_font, :type => :font
+
+      # @macro opt_accessor
+      # Returns or sets the format string of the data labels. Default to <tt>"{?name}"</tt>.
+      # @return [String] the format string of the data labels
+      opt_accessor :data_label_format, :type => :string, :default => "{?name}"
+
+      # @macro opt_accessor
+      # Returns or sets the value to control showing the data labels. If the
+      # slice's percentage of the pie is less than this value, its label is not
+      # shown. Default to 0.0 (it means all the labels are shown).
+      # @return [Float] the value to control showing the data labels
+      opt_accessor :hide_data_label_ratio, :type => :float, :default => 0.0
+
+      # @attribute show_baloon?
+      # Returns or sets whether the baloons are shown when the mouse is over the
+      # slices. Defalt to true.
+      # @return [Boolean] true if the baloons are shown, false otherwise
       opt_accessor :show_baloon, :type => :boolean, :default => true
+
+      # @macro opt_accessor
+      # Returns or sets the font of the baloons.
+      # @return [Font] the font of the data labels
       opt_accessor :baloon_font, :type => :font
-      opt_accessor :baloon_position, {:type => :float, :default => 0.8}
+
+      # @macro opt_accessor
+      # Returns or sets the position of the baloons. Zero means the baloons are
+      # shown at the center point, and 1.0 means they are shown on the
+      # circumference of the pie. Default to 0.8.
+      # @return [Float] the position of the baloons
+      opt_accessor :baloon_position, :type => :float, :default => 0.8
+
+      # @macro opt_accessor
+      # Returns or sets the format string of the baloons. Default to
+      # <tt>"{?name}\n{?value}"</tt>.
+      # @return [String] the format string of the baloons
       opt_accessor :baloon_format, :type => :string, :default => "{?name}\n{?value}"
+
+      # @macro opt_accessor
+      # Returns or sets the hash of the vertical and horizontal paddings of the
+      # baloons. The hash includes the following key:
+      # [+:vertical+] ({Length}) the vertical padding of the baloons
+      # [+:horizontal+] ({Length}) the horizontal padding of the baloons
+      # @return [Hash{Symbol => Length}] the hash of the paddings of the baloons
       opt_accessor :baloon_padding, :type => :hash, :default => {}, :keys => [:vertical, :horizontal], :item_type => :length
+
+      # @macro opt_accessor
+      # Returns or sets the radius of the circle used to round off the corners
+      # of the baloons.
+      # @return [Length] the radius of the circle used to round off the corners
       opt_accessor :baloon_round, :type => :length, :default => 6
+
+      # @macro opt_accessor
+      # Returns or sets the background color of the baloons. If this property
+      # has been set, the background color of all the baloons is the setting
+      # value. If +baloon_background_colors+ property has been set, the setting
+      # of +baloon_background_colors+ property is applied.
+      # @return [Color] the background color of the baloons
       opt_accessor :baloon_background_color, :type => :color
+
+      # @macro opt_accessor
+      # Returns or sets the background colors of the baloons of the each slices.
+      # @return [Array<Color>] the background color of the baloons of the each
+      #   slices
       opt_accessor :baloon_background_colors, :type => :array, :item_type => :color
+
+      # @macro opt_accessor
+      # Returns or sets the border color of the baloons. If this property has
+      # been set, the border color of all the baloons is the setting value. If
+      # +baloon_border_colors+ property has been set, the setting of
+      # +baloon_border_colors+ property is applied.
+      # @return [Color] the border color of the baloons
       opt_accessor :baloon_border_color, :type => :color
+
+      # @macro opt_accessor
+      # Returns or sets the border colors of the baloons of the each slices.
+      # @return [Array<Color>] the border color of the baloons of the each
+      #   slices
       opt_accessor :baloon_border_colors, :type => :array, :item_type => :color
+
+      # @macro opt_accessor
+      # Returns or sets the border width of the baloons.
+      # @return [Length] the border width of the baloons
       opt_accessor :baloon_border_width, :type => :length, :default => 2
+
+      # @macro opt_accessor
+      # Returns or sets the CSS class of the baloons.
+      # @return [String] the CSS class of the baloons
       opt_accessor :baloon_css_class, :type => :string
+
+      # @macro opt_accessor
+      # Returns or sets the duration of the animations.
+      # @return [Float] the duration of the animations
       opt_accessor :animation_duration, :type => :float, :default => 0.5
 
       def back_translate_value
@@ -78,20 +301,20 @@ module DYI #:nodoc:
 
       private
 
-      def default_center_point #:nodoc:
+      def default_center_point
         margin = [width - chart_radius_x * 2, height - chart_radius_y * 2].min.quo(2)
         Coordinate.new(margin + chart_radius_x, margin + chart_radius_y)
       end
 
-      def default_chart_radius_x #:nodoc:
+      def default_chart_radius_x
         [width, height].min * 0.4
       end
 
-      def default_chart_radius_y #:nodoc:
+      def default_chart_radius_y
         represent_3d? ? chart_radius_x.quo(2) : chart_radius_x
       end
 
-      def default_legend_point #:nodoc:
+      def default_legend_point
         if width - chart_radius_x * 2 < height - chart_radius_y * 2
           Coordinate.new(width * 0.1, chart_radius_y * 2 + (width - chart_radius_x * 2) * 0.8)
         else
@@ -99,11 +322,11 @@ module DYI #:nodoc:
         end
       end
 
-      def default_legend_format #:nodoc:
+      def default_legend_format
         "{?name}\t{?percent}"
       end
 
-      def create_vector_image #:nodoc:
+      def create_vector_image
         super
         if represent_3d?
           brush = Drawing::ColumnBrush.new(back_translate_value.merge(chart_stroke_color ? {:stroke_width => chart_stroke_width, :stroke => chart_stroke_color} : {}))
@@ -168,7 +391,7 @@ module DYI #:nodoc:
         end
       end
 
-      def draw_chart(brush, record, accumulation, total_value, index) #:nodoc:
+      def draw_chart(brush, record, accumulation, total_value, index)
         canvas = Shape::ShapeGroup.draw_on(@chart_canvas)
         attrs = {}
         if data.has_field?(:css_class) && (css_class = record.css_class)

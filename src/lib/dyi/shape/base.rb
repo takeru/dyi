@@ -29,13 +29,13 @@ module DYI
     # @since 0.0.0
     class Base < GraphicalElement
 
-      # Returns painting status of the shape.
       # @attribute painting
+      # Returns painting status of the shape.
       # @return [Painting] painting status
       attr_painting :painting
 
-      # Returns font status of the shape.
       # @attribute font
+      # Returns font status of the shape.
       # @return [Font] font status
       attr_font :font
 
@@ -302,13 +302,13 @@ module DYI
     # @since 0.0.0
     class Rectangle < Base
 
-      # Returns width of the rectangle.
       # @attribute width
+      # Returns width of the rectangle.
       # @return [Length] width of the rectangle
       attr_length :width
 
-      # Returns heigth of the rectangle.
       # @attribute height
+      # Returns heigth of the rectangle.
       # @return [Length] heigth of the rectangle
       attr_length :height
 
@@ -410,13 +410,13 @@ module DYI
     # @since 0.0.0
     class Circle < Base
 
-      # Returns a center coordinate of the circle.
       # @attribute center
+      # Returns a center coordinate of the circle.
       # @return [Coordinate]  a center coordinate of the circle
       attr_coordinate :center
 
-      # Returns a radius of the circle.
       # @attribute radius
+      # Returns a radius of the circle.
       # @return [Length]  a radius of the circle
       attr_length :radius
 

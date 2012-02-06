@@ -19,12 +19,15 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-module DYI #:nodoc:
+module DYI
 
   module AttributeCreator
 
     private
 
+    # @macro [new] attr_font
+    #   @attribute [rw] $1
+    #   @return [Font]
     def attr_font(*names)
       names.each do |name|
         define_method(name.to_sym) {| |
@@ -36,6 +39,9 @@ module DYI #:nodoc:
       end
     end
 
+    # @macro [new] attr_painting
+    #   @attribute [rw] $1
+    #   @return [Painting]
     def attr_painting(*names)
       names.each do |name|
         define_method(name.to_sym) {| |
@@ -47,6 +53,9 @@ module DYI #:nodoc:
       end
     end
 
+    # @macro [new] attr_length
+    #   @attribute [rw] $1
+    #   @return [Length]
     def attr_length(*names)
       names.each do |name|
         define_method(name.to_sym) {| |
@@ -58,6 +67,9 @@ module DYI #:nodoc:
       end
     end
 
+    # @macro [new] attr_coordinate
+    #   @attribute [rw] $1
+    #   @return [Coordinate]
     def attr_coordinate(*names)
       names.each do |name|
         define_method(name.to_sym) {| |

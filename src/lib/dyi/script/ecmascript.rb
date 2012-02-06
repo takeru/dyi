@@ -147,7 +147,7 @@ EOS
         # @return [String] ECMAScript string
         # @example
         #   rect = pen.draw_rectange(canvas, [0, 0], 20, 30, :id => "rect1")
-        #   get_attribute(rect, "width", 50)
+        #   set_attribute(rect, "width", 50)
         #        # => "document.getElementById(\"rect1\").setAttribute(\"x\",\"50\")"
         # @since 1.1.0
         def set_attribute(element, attribute_name, value)

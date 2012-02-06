@@ -29,22 +29,20 @@ module DYI
     # @private
     IMPLEMENT_ATTRIBUTES = [:view_box, :preserve_aspect_ratio]
 
+    # @macro attr_length
     # Returns width of the vector-image on user unit.
-    # @attribute width
-    # @return [Length] width of vector-image on user unit
     attr_length :width
 
+    # @macro attr_length
     # Returns heigth of the vector-image on user unit.
-    # @attribute height
-    # @return [Length] heigth of vector-image on user unit
     attr_length :height
 
-    # Returns the value of the view_box.
     # @attribute view_box
+    # Returns the value of the view_box.
     # @return [String]
 
-    # Returns the value of the preserve_aspect_ratio.
     # @attribute preserve_aspect_ratio
+    # Returns the value of the preserve_aspect_ratio.
     # @return [String] the value of preserve_aspect_ratio
     attr_reader *IMPLEMENT_ATTRIBUTES
 

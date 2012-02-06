@@ -23,13 +23,41 @@
 class Numeric
 
   # Converts the numeric value of this instance to the string representation,
-  # using the numeric format string.
-  # @param [String] format the numeric format string
-  # @return [String] formated string that is equivalent to this instance
-  # @example
+  # using the numeric format strings.
+  #
+  #== Numeric Format Strings
+  # Uses the following characters as numeric format strings.
+  # [<tt>"0"</tt> (Zero Placeholder)] Replaces <tt>"0"</tt> with the
+  #                                   corresponding digit if one is present;
+  #                                   otherwize, zero appears.
+  # [<tt>"#"</tt> (Digit Placeholder)] Replaces <tt>"#"</tt> with the
+  #                                    corresponding digit if one is present;
+  #                                    otherwise, no digit appears.
+  # [<tt>"."</tt> (Decimal Point)] Determines the location of the decimal
+  #                                separator.
+  # [<tt>","</tt> (Group Separator)] Serves as both a group separator if _zero_
+  #                                  or _sharp_ appears between _comma_ and
+  #                                  _dot_ or format strings does not include
+  #                                  _dot_; otherwise, serves as number scaling
+  #                                  specifier. If format strings includes a
+  #                                  group separator, it inserts a group
+  #                                  separater character between each group.
+  #                                  Including a number scaling specifier, it
+  #                                  divides a number by 1000 (it depends on
+  #                                  group size) for each _comma_ specified.
+  # [<tt>"%"</tt> (Percentage Placeholder)] Multiplies a number by 100 and
+  #                                         inserts a percentage symbol.
+  # [<tt>"\"</tt> (Escape Character)] Causes the next character to be
+  #                                   interpreted as a literal.
+  # [<tt>";"</tt> (Section Separater)] Defines sections with separate format
+  #                                    strings for positive, negative, and zero
+  #                                    numbers.
+  # [Other Characters] The character is copied to the result string unchanged.
+  #
   #   3.141592.strfnum('0.00')           # => "3.14"
   #   3.141592.strfnum('0.###')          # => "3.142"
   #   3.140159.strfnum('0.###')          # => "3.14"
+  #   3.140159.strfnum('000.00')         # => "003.14"
   #   1234567.strfnum('#,##0')           # => "1,234,567"
   #   1234567.strfnum('#,##0,.0')        # => "1,234.6"
   #   0.56789.strfnum('0.0%')            # => "56.8%"
@@ -37,6 +65,26 @@ class Numeric
   #   -12345.strfnum('#,##0;*#,##0')     # => "*12,345"
   #   0.001.strfnum('#,##0;-#,##0;zero') # => "zero"
   #   12345.strfnum('\##,##0')           # => "#12,345"
+  #
+  #== Customizes Separater Character
+  # Defining following constants, customizes the separator, scaling group size
+  # or the percent symbol.
+  # [+Numeric::DECIMAL_SEPARATOR+] (+String+) A decimal separator. If undefined,
+  #                                uses <tt>"."</tt>.
+  # [+Numeric::GROUP_SEPARATOR+] (+String+) A number scaling separator. If
+  #                              undefined, uses <tt>","</tt>.
+  # [+Numeric::GROUP_SIZES+] (+Integer+) Numeric scaling group size. If
+  #                          undefined, uses 3.
+  # [+Numeric::PERCENT_SYMBOL+] (+String+) A percentage symbol. If undefined,
+  #                             uses <tt>"%"</tt>.
+  #
+  #   Numeric::DECIMAL_SEPARATOR = ','
+  #   Numeric::GROUP_SEPARATOR = ' '
+  #   
+  #   1234567.89.strfnum('#,##0.0')      # => "1 234 567,9"
+  #
+  # @param [String] format the numeric format string
+  # @return [String] formated string that is equivalent to this instance
   def strfnum(format)
     decimal_separator = (defined? ::Numeric::DECIMAL_SEPARATOR) ? ::Numeric::DECIMAL_SEPARATOR : '.'
     group_separator = (defined? ::Numeric::GROUP_SEPARATOR) ? ::Numeric::GROUP_SEPARATOR : ','
