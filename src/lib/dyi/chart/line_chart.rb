@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -19,9 +19,11 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-module DYI #:nodoc:
-  module Chart #:nodoc:
+module DYI
 
+  module Chart
+
+    # @since 0.0.0
     class LineChart < Base
       include AxisUtil
       include Legend
@@ -50,7 +52,6 @@ module DYI #:nodoc:
       opt_accessor :max_x_label_count, {:type => :integer, :default_proc => proc{|c| c.chart_width.div(Length.new(96))}}
       opt_accessor :show_x_labels, {:type => :boolean, :default => true}
       opt_accessor :legend_texts, {:type => :array, :item_type => :string}
-#      opt_accessor :data_columns, {:type => :array, :item_type => :integer}
       opt_accessor :use_effect, {:type => :boolean, :default => true}
       opt_accessor :bar_seriese_interval, {:type => :float, :default => 0.3}
       opt_accessor :color_columns, {:type => :array, :item_type => :integer}
@@ -141,18 +142,19 @@ module DYI #:nodoc:
         Drawing::Brush.new(:color => color)
       end
 
-      private
-
+      # @since 1.1.0
       def initialize(*args)
         super
         init_container
       end
 
-      def default_legend_point #:nodoc:
+      private
+
+      def default_legend_point
         Coordinate.new(margin_left, 0)
       end
 
-      def create_vector_image #:nodoc:
+      def create_vector_image
         super
 
         main_series_data = []
@@ -189,7 +191,7 @@ module DYI #:nodoc:
         draw_legend(texts, legend_shapes)
       end
 
-      def init_container #:nodoc:
+      def init_container
 #        mask = Drawing::ColorEffect::Mask.new(@canvas)
 #        mask.add_shapes(Shape::Rectangle.new(Drawing::Brush.new(:color => '#FFFFFF'), [margin_left, margin_top], chart_width, chart_height))
         @axis_back_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @axis_back_canvas
@@ -206,7 +208,7 @@ module DYI #:nodoc:
         @chart_front_canvas.set_clipping(chart_clip)
       end
 
-      def draw_axis(settings, sub_settings) #:nodoc:
+      def draw_axis(settings, sub_settings)
         line_options = {:linecap => 'square'}
         line_pen = represent_3d? ? Drawing::CubicPen.new(line_options.merge(s_3d_pen_options)) : Drawing::Pen.new(line_options)
         sub_pen = represent_3d? ? Drawing::Pen.new : line_pen
@@ -218,7 +220,7 @@ module DYI #:nodoc:
         draw_scale(sub_pen, text_pen, settings, sub_settings, text_margin)
       end
 
-      def draw_y_axis(pen) #:nodoc:
+      def draw_y_axis(pen)
         if use_y_second_axis? || main_y_axis == :left
           start_point = [margin_left, height - margin_bottom]
           end_point = [margin_left, margin_top]
@@ -232,7 +234,7 @@ module DYI #:nodoc:
         end
       end
 
-      def draw_scale(line_pen, text_pen, settings, sub_settings, text_margin) #:nodoc:
+      def draw_scale(line_pen, text_pen, settings, sub_settings, text_margin)
         if settings[:min] == settings[:min_scale_value] - settings[:scale_interval]
           y = value_position_on_chart(margin_top, settings, settings[:min], true)
           if use_y_second_axis? || main_y_axis == :left
@@ -321,7 +323,7 @@ module DYI #:nodoc:
         i % ((data.records_size - 1) / [max_x_label_count - 1, 1].max) == 0
       end
 
-      def draw_x_axis(main_pen, sub_pen, text_pen, text_margin) #:nodoc:
+      def draw_x_axis(main_pen, sub_pen, text_pen, text_margin)
         main_pen.draw_line(represent_3d? ? @axis_back_canvas : @axis_front_canvas, [margin_left, height - margin_bottom], [width - margin_right, height - margin_bottom])
 
         data.records_size.times do |i|
@@ -342,7 +344,7 @@ module DYI #:nodoc:
         end
       end
 
-      def draw_chart(id, chart_type, color, settings) #:nodoc:
+      def draw_chart(id, chart_type, color, settings)
         case chart_type
           when :line then draw_line(id, color, settings)
           when :area then draw_area(id, color, settings)
@@ -351,7 +353,7 @@ module DYI #:nodoc:
         end
       end
 
-      def draw_line(id, color, settings) #:nodoc:
+      def draw_line(id, color, settings)
         values = data.series(id)
         return if values.compact.size == 0
         first_index = values.each_with_index {|value, i| break i if value}
@@ -371,7 +373,7 @@ module DYI #:nodoc:
         pen.linejoin = 'bevel'
       end
 
-      def draw_area(id, color, settings) #:nodoc:
+      def draw_area(id, color, settings)
         values = data.series(id)
         return if values.compact.size == 0
         first_index = values.each_with_index {|value, i| break i if value}
@@ -391,7 +393,7 @@ module DYI #:nodoc:
         polygone.translate(back_translate_value[:dx], back_translate_value[:dy]) if represent_3d?
       end
 
-      def draw_bar(id, color, settings) #:nodoc:
+      def draw_bar(id, color, settings)
         bar_group = Shape::ShapeGroup.new(@chart_options).draw_on(@chart_front_canvas)
         values = data.series(id)
         return if values.compact.size == 0
@@ -409,7 +411,7 @@ module DYI #:nodoc:
         bar_group.translate(back_translate_value[:dx] / 2, back_translate_value[:dy] / 2) if represent_3d?
       end
 
-      def draw_stackedbar(id, color, settings) #:nodoc:
+      def draw_stackedbar(id, color, settings)
         bar_group = Shape::ShapeGroup.new(@chart_options).draw_on(@chart_front_canvas)
 
         values = data.series(id)
@@ -433,14 +435,14 @@ module DYI #:nodoc:
       end
 
       # @since 1.0.0
-      def chart_color(index) #:nodoc:
+      def chart_color(index)
         if chart_colors
           color = chart_colors[index]
         end
         color || DEFAULT_CHART_COLOR[index % DEFAULT_CHART_COLOR.size]
       end
 
-      def legend_shapes #:nodoc:
+      def legend_shapes
         result = []
         (0...data.values_size).each_with_index do |id, index|
           result <<

@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -23,10 +23,10 @@
 #
 # This file provides the classes of client side scripting.  The event becomes
 # effective only when it is output by SVG format.
-#
-# @since 1.0.0
 
 module DYI
+
+  # @since 1.0.0
   module Stylesheet
 
     class Style

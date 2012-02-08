@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -19,8 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-module DYI #:nodoc:
+module DYI
 
+  # @since 0.0.0
   class Font
     IMPLEMENT_ATTRIBUTES = [:font_family, :style, :variant, :weight, :size, :size_adjust, :stretch]
     VALID_VALUES = {
@@ -95,7 +96,7 @@ module DYI #:nodoc:
       @size = Length.new_or_nil(value)
     end
 
-    def size_adjust=(value) #:nodoc:
+    def size_adjust=(value)
       @size_adjust = value ? value.to_f : nil
     end
 
@@ -119,7 +120,7 @@ module DYI #:nodoc:
 
     class << self
 
-      def new(*args) #:nodoc:
+      def new(*args)
         return args.first if args.size == 1 && args.first.instance_of?(self)
         super
       end

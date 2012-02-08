@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -21,13 +21,11 @@
 
 module DYI
 
+  # @since 0.0.0
   module AttributeCreator
 
     private
 
-    # @macro [new] attr_font
-    #   @attribute [rw] $1
-    #   @return [Font]
     def attr_font(*names)
       names.each do |name|
         define_method(name.to_sym) {| |
@@ -39,9 +37,6 @@ module DYI
       end
     end
 
-    # @macro [new] attr_painting
-    #   @attribute [rw] $1
-    #   @return [Painting]
     def attr_painting(*names)
       names.each do |name|
         define_method(name.to_sym) {| |
@@ -53,9 +48,6 @@ module DYI
       end
     end
 
-    # @macro [new] attr_length
-    #   @attribute [rw] $1
-    #   @return [Length]
     def attr_length(*names)
       names.each do |name|
         define_method(name.to_sym) {| |
@@ -67,9 +59,6 @@ module DYI
       end
     end
 
-    # @macro [new] attr_coordinate
-    #   @attribute [rw] $1
-    #   @return [Coordinate]
     def attr_coordinate(*names)
       names.each do |name|
         define_method(name.to_sym) {| |
@@ -82,6 +71,7 @@ module DYI
     end
   end
 
+  # @since 0.0.0
   module StringFormat
 
     class << self

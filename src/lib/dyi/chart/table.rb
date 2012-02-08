@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -19,9 +19,10 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-module DYI #:nodoc:
-  module Chart #:nodoc:
+module DYI
+  module Chart
 
+    # @since 0.0.0
     class Table < Base
       attr_reader :frame_canvas, :data_canvas
 
@@ -130,19 +131,19 @@ module DYI #:nodoc:
 =end
       private
 
-      def options #:nodoc:
+      def options
         @options
       end
 
-      def default_csv_format #:nodoc:
+      def default_csv_format
         [0, 1]
       end
 
-      def convert_data(value) #:nodoc:
+      def convert_data(value)
         value.strip
       end
 
-      def create_vector_image #:nodoc:
+      def create_vector_image
         pen = Drawing::Pen.new
         @frame_canvas = Shape::ShapeGroup.draw_on(@canvas)
         @data_canvas = Shape::ShapeGroup.draw_on(@canvas)
@@ -150,7 +151,7 @@ module DYI #:nodoc:
         draw_data(pen)
       end
 
-      def draw_frame(pen) #:nodoc:
+      def draw_frame(pen)
         w = table_width
         h = table_height
 
@@ -166,7 +167,7 @@ module DYI #:nodoc:
         end
       end
 
-      def draw_column_colors #:nodoc:
+      def draw_column_colors
         if column_colors
           brush = Drawing::Brush.new
           h = table_height
@@ -181,7 +182,7 @@ module DYI #:nodoc:
         end
       end
 
-      def draw_data(pen) #:nodoc:
+      def draw_data(pen)
         cell_margin = (row_height - (font && font.draw_size || Font::DEFAULT_SIZE)) / 2
         series.inject(cell_margin) do |x, column_index|
           y = row_height - cell_margin

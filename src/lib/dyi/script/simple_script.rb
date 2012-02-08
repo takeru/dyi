@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -18,15 +18,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
-#
-# == Overview
-#
-# This file provides the classes of client side scripting.  The event becomes
-# effective only when it is output by SVG format.
-#
-# @since 1.0.0
 
 module DYI
+
+  # @since 1.0.0
   module Script
 
     # Class representing a inline-client-script.  The scripting becomes

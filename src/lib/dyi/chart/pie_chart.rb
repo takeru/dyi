@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -24,7 +24,7 @@ module DYI
 
     # +PieChart+ creates the image of pie chart.
     #
-    #= Usage
+    #= Basic Usage
     #
     # Usage for creating the pie chart is:
     # Using +PieChart+ and ArrayReader (or sub class of ArrayReader), you can
@@ -46,9 +46,7 @@ module DYI
     #   chart.save('asian_gdp.svg')
     # See {ArrayReader} about how to set the chart data.
     #
-    #= Setting Attributes
-    #
-    # The Attributes of +PieChart+ are specified at the constractor. See
+    # The chart options of +PieChart+ are specified at the constractor. See
     # <em>Instance Attribute</em> of this class, {Base} and {Legend} for the
     # attributes that can be specified. The specified attributes can be refered
     # and set.
@@ -84,6 +82,7 @@ module DYI
     #             :text_anchor => 'middle')
     #   chart.load_data(reader)
     #   chart.save('asian_gdp.svg')
+    # @since 0.0.0
     class PieChart < Base
       include Legend
 
@@ -102,183 +101,120 @@ module DYI
       #   drawn on
       attr_reader :legend_canvas
 
-      # @macro opt_accessor
       # Returns or sets the center point of the pie chart.
-      # @return [Coordinate] the center point of the pie chart
       opt_accessor :center_point, :type => :point, :default_method => :default_center_point
 
-      # @macro opt_accessor
       # Returns or sets the x-axis radius of the pie chart.
-      # @return [Length] the x-axis radius of the pie chart
       opt_accessor :chart_radius_x, :type => :length, :default_method => :default_chart_radius_x
 
-      # @macro opt_accessor
       # Returns or sets the y-axis radius of the pie chart.
-      # @return [Length] the y-axis radius of the pie chart
       opt_accessor :chart_radius_y, :type => :length, :default_method => :default_chart_radius_y
 
-      # @macro opt_accessor
       # Returns or sets the ratio of inner radius to outer radius of the
       # doughnut chart. The value of +inner_radius+ should be a positive number
       # or zero less than 1.0. Defalt to 0.0 (that means that chart is not
       # doughnut).
-      # @return [Float] the ratio of inner radius to outer radius
       opt_accessor :inner_radius, :type => :float, :default => 0.0, :range => 0.0 ... 1.0
 
-      # @attribute represent_3d?
       # Returns or sets whether the chart is made three-dimensional. Defalt to
       # false.
-      # @return [Boolean] true if the chart is three-demensional, false otherwise
       opt_accessor :represent_3d, :type => :boolean
 
-      # @macro opt_accessor
       # Returns or sets the three-demenal setting hash.
       # This attribute is valid if the +respond_3d+ attribute equals true.
       # The hash includes the following key:
       # [+:dy+] ({Length}) the thickness of the pie
-      # @return [Hash{Symbol => Object}] the three-demenal setting hash
-      opt_accessor :_3d_settings, :type => :hash, :default => {}, :keys => [:dy], :item_type => :lenth
+      opt_accessor :_3d_settings, :type => :hash, :default => {}, :keys => [:dy], :item_type => :length
 
-      # @macro opt_accessor
       # Returns or sets specific colors for the slices.
-      # @return [Array<Color>] the array of the colors of the slices
       opt_accessor :chart_colors, :type => :array, :item_type => :color
 
-      # @macro opt_accessor
       # Returns or sets the color of the outline of the slices.
-      # @return [Color] the color of the outline of the slices
       opt_accessor :chart_stroke_color, :type => :color
 
-      # @macro opt_accessor
       # Returns or sets the width of the outline of the slices. Default to 1.0.
-      # @return [Float] the color of the outline of the slices
       opt_accessor :chart_stroke_width, :type => :float, :default => 1.0
 
-      # @macro opt_accessor
       # Returns or sets the array of the ratio of the distance which the slices
       # are moved from the center to the outside.
-      # @return [Array<Float>] the array of the ratio of the distance which the
-      #   slices are moved
       opt_accessor :moved_elements, :type => :array, :item_type => :float
 
-      # @macro opt_accessor
       # Returns or sets the CSS class of the pie area.
-      # @return [String] the CSS class of the pie area
       opt_accessor :pie_css_class, :type => :string
 
-      # @attribute show_data_label?
       # Returns or sets whether the data labels are shown. Defalt to true.
-      # @return [Boolean] true if the data labels are shown, false otherwise
       opt_accessor :show_data_label, :type => :boolean, :default => true
 
-      # @macro opt_accessor
       # Returns or sets the CSS class of the data labels.
-      # @return [String] the CSS class of the data labels
       opt_accessor :data_label_css_class, :type => :string
 
-      # @macro opt_accessor
       # Returns or sets the position of the data labels. Zero means the data
       # labels are shown at the center point, and 1.0 means they are shown on
       # the circumference of the pie. Default to 0.8.
-      # @return [Float] the position of the data labels
       opt_accessor :data_label_position, :type => :float, :default => 0.8
 
-      # @macro opt_accessor
       # Returns or sets the font of the data labels.
-      # @return [Font] the font of the data labels
       opt_accessor :data_label_font, :type => :font
 
-      # @macro opt_accessor
       # Returns or sets the format string of the data labels. Default to <tt>"{?name}"</tt>.
-      # @return [String] the format string of the data labels
       opt_accessor :data_label_format, :type => :string, :default => "{?name}"
 
-      # @macro opt_accessor
       # Returns or sets the value to control showing the data labels. If the
       # slice's percentage of the pie is less than this value, its label is not
       # shown. Default to 0.0 (it means all the labels are shown).
-      # @return [Float] the value to control showing the data labels
       opt_accessor :hide_data_label_ratio, :type => :float, :default => 0.0
 
-      # @attribute show_baloon?
       # Returns or sets whether the baloons are shown when the mouse is over the
       # slices. Defalt to true.
-      # @return [Boolean] true if the baloons are shown, false otherwise
       opt_accessor :show_baloon, :type => :boolean, :default => true
 
-      # @macro opt_accessor
       # Returns or sets the font of the baloons.
-      # @return [Font] the font of the data labels
       opt_accessor :baloon_font, :type => :font
 
-      # @macro opt_accessor
       # Returns or sets the position of the baloons. Zero means the baloons are
       # shown at the center point, and 1.0 means they are shown on the
       # circumference of the pie. Default to 0.8.
-      # @return [Float] the position of the baloons
       opt_accessor :baloon_position, :type => :float, :default => 0.8
 
-      # @macro opt_accessor
       # Returns or sets the format string of the baloons. Default to
       # <tt>"{?name}\n{?value}"</tt>.
-      # @return [String] the format string of the baloons
       opt_accessor :baloon_format, :type => :string, :default => "{?name}\n{?value}"
 
-      # @macro opt_accessor
       # Returns or sets the hash of the vertical and horizontal paddings of the
       # baloons. The hash includes the following key:
       # [+:vertical+] ({Length}) the vertical padding of the baloons
       # [+:horizontal+] ({Length}) the horizontal padding of the baloons
-      # @return [Hash{Symbol => Length}] the hash of the paddings of the baloons
       opt_accessor :baloon_padding, :type => :hash, :default => {}, :keys => [:vertical, :horizontal], :item_type => :length
 
-      # @macro opt_accessor
       # Returns or sets the radius of the circle used to round off the corners
       # of the baloons.
-      # @return [Length] the radius of the circle used to round off the corners
       opt_accessor :baloon_round, :type => :length, :default => 6
 
-      # @macro opt_accessor
       # Returns or sets the background color of the baloons. If this property
       # has been set, the background color of all the baloons is the setting
       # value. If +baloon_background_colors+ property has been set, the setting
       # of +baloon_background_colors+ property is applied.
-      # @return [Color] the background color of the baloons
       opt_accessor :baloon_background_color, :type => :color
 
-      # @macro opt_accessor
       # Returns or sets the background colors of the baloons of the each slices.
-      # @return [Array<Color>] the background color of the baloons of the each
-      #   slices
       opt_accessor :baloon_background_colors, :type => :array, :item_type => :color
 
-      # @macro opt_accessor
       # Returns or sets the border color of the baloons. If this property has
       # been set, the border color of all the baloons is the setting value. If
       # +baloon_border_colors+ property has been set, the setting of
       # +baloon_border_colors+ property is applied.
-      # @return [Color] the border color of the baloons
       opt_accessor :baloon_border_color, :type => :color
 
-      # @macro opt_accessor
       # Returns or sets the border colors of the baloons of the each slices.
-      # @return [Array<Color>] the border color of the baloons of the each
-      #   slices
       opt_accessor :baloon_border_colors, :type => :array, :item_type => :color
 
-      # @macro opt_accessor
       # Returns or sets the border width of the baloons.
-      # @return [Length] the border width of the baloons
       opt_accessor :baloon_border_width, :type => :length, :default => 2
 
-      # @macro opt_accessor
       # Returns or sets the CSS class of the baloons.
-      # @return [String] the CSS class of the baloons
       opt_accessor :baloon_css_class, :type => :string
 
-      # @macro opt_accessor
       # Returns or sets the duration of the animations.
-      # @return [Float] the duration of the animations
       opt_accessor :animation_duration, :type => :float, :default => 0.5
 
       def back_translate_value
@@ -544,6 +480,7 @@ module DYI
         end
       end
 
+      # @since 1.0.0
       def format_string(format, record, total_value)
         format = format.gsub(/\A\{!(\w)\}/, '')
         format.gsub(/\{\?((?![0-9])\w+)(:[^}]*)?\}/){|m|

@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -21,9 +21,10 @@
 
 require 'stringio'
 
-module DYI #:nodoc:
-  module Formatter #:nodoc:
+module DYI
+  module Formatter
 
+    # @since 0.0.0
     class Base
 
       def initialize(canvas)
@@ -88,9 +89,10 @@ module DYI #:nodoc:
       end
     end
 
-    module XmlChar #:nodoc:
+    # @since 0.0.0
+    module XmlChar
       # See http://intertwingly.net/stories/2004/04/14/i18n.html#CleaningWindows
-      CP1252 = {      #:nodoc:
+      CP1252 = {     
         128 => 8364,  # euro sign
         130 => 8218,  # single low-9 quotation mark
         131 =>  402,  # latin small letter f with hook
@@ -121,14 +123,14 @@ module DYI #:nodoc:
       }
 
       # See http://www.w3.org/TR/REC-xml/#dt-chardata for details.
-      PREDEFINED = {    #:nodoc:
+      PREDEFINED = {   
         38 => '&amp;',  # ampersand
         60 => '&lt;',   # left angle bracket
         62 => '&gt;'    # right angle bracket
       }
 
       # See http://www.w3.org/TR/REC-xml/#dt-chardata for details.
-      ATTR_PREDEFINED = PREDEFINED.merge( #:nodoc:
+      ATTR_PREDEFINED = PREDEFINED.merge(
         34 => '&quot;',  # double quote
         39 => '&apos;'   # single quote
       )
@@ -143,19 +145,19 @@ module DYI #:nodoc:
 
       private
 
-      def escape(s) #:nodoc:
+      def escape(s)
         s.to_s.unpack('U*').map {|n| code_to_char(n)}.join # ASCII, UTF-8
       rescue
         s.to_s.unpack('C*').map {|n| code_to_char(n)}.join # ISO-8859-1, WIN-1252
       end
 
-      def attr_escape(s) #:nodoc:
+      def attr_escape(s)
         s.to_s.unpack('U*').map {|n| code_to_char(n, true)}.join # ASCII, UTF-8
       rescue
         s.to_s.unpack('C*').map {|n| code_to_char(n, true)}.join # ISO-8859-1, WIN-1252
       end
 
-      def code_to_char(code, is_attr=false) #:nodoc:
+      def code_to_char(code, is_attr=false)
         code = CP1252[code] || code
         case code when *VALID
           (is_attr ? ATTR_PREDEFINED : PREDEFINED)[code] || (code<128 ? code.chr : "&##{code};")
@@ -165,8 +167,11 @@ module DYI #:nodoc:
       end
     end
 
+    # @since 0.0.0
     class XmlFormatter < Base
       include XmlChar
+
+      # @since 1.1.0
       attr_reader :namespace
 
       def initialize(canvas, options={})
@@ -178,18 +183,22 @@ module DYI #:nodoc:
         @namespace = namespace.empty? ? nil : namespace
       end
 
+      # @since 1.1.0
       def inline_mode?
         @inline_mode ? true : false
       end
 
+      # @since 1.1.0
       def inline_mode=(boolean)
         @inline_mode = boolean ? true : false
       end
 
+      # @since 1.0.0
       def xml_instruction
         %Q{<?xml version="1.0" encoding="UTF-8"?>}
       end
 
+      # @since 1.0.0
       def stylesheet_instruction(stylesheet)
         styles = []
         styles << '<?xml-stylesheet href="'
@@ -234,13 +243,13 @@ module DYI #:nodoc:
 
       private
 
-      def puts_line(io, &block) #:nodoc:
+      def puts_line(io, &block)
         io << (' ' * (@indent * @level)) if @indent != 0 && @level != 0
         yield io
         io << "\n" if @indent != 0
       end
 
-      def create_node(io, tag_name, attributes={}, &block) #:nodoc:
+      def create_node(io, tag_name, attributes={}, &block)
         _tag_name = @namespace ? "#{namespace}:#{tag_name}" : tag_name
         puts_line(io) {
           io << '<' << _tag_name
@@ -253,7 +262,7 @@ module DYI #:nodoc:
         puts_line(io) {io << '</' << _tag_name << '>'}
       end
 
-      def create_leaf_node(io, tag_name, *attr) #:nodoc:
+      def create_leaf_node(io, tag_name, *attr)
         _tag_name = @namespace ? "#{namespace}:#{tag_name}" : tag_name
         puts_line(io) {
           io << '<' << _tag_name
@@ -275,7 +284,7 @@ module DYI #:nodoc:
         }
       end
 
-      def create_nested_nodes(io, &block) #:nodoc:
+      def create_nested_nodes(io, &block)
         @level += 1
         yield io
       ensure
@@ -283,7 +292,7 @@ module DYI #:nodoc:
       end
 
       # @since 1.0.0
-      def create_cdata_node(io, tag_name, attributes={}, &block) #:nodoc:
+      def create_cdata_node(io, tag_name, attributes={}, &block)
         _tag_name = @namespace ? "#{namespace}:#{tag_name}" : tag_name
         puts_line(io) {
           io << '<' << _tag_name

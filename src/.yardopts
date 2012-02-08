@@ -1,3 +1,6 @@
+--load ./yard_extensions.rb
+--template dyi
+--template-path ../yard-template
 --no-private
 --title "DYI Documents"
 --output-dir ../doc

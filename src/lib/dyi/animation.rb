@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -23,11 +23,11 @@
 #
 # This file provides the classes of animation.  The event becomes effective
 # only when it is output by SVG format.
-#
-# @since 1.0.0
 
-module DYI #:nodoc:
-  module Animation #:nodoc:
+module DYI
+
+  # @since 1.0.0
+  module Animation
 
     # Base class for animation classes.
     # @abstract

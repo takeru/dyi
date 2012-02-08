@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -21,9 +21,10 @@
 
 require 'nkf'
 
-module DYI #:nodoc:
-  module Formatter #:nodoc:
+module DYI
+  module Formatter
 
+    # @since 0.0.0
     class EpsFormatter < Base
 
       def header_comment
@@ -245,17 +246,17 @@ module DYI #:nodoc:
 
       private
 
-      def puts_line(io, *args) #:nodoc:
+      def puts_line(io, *args)
         io << args.flatten.join(' ') << "\n"
       end
 
-      def command_block(io) #:nodoc:
+      def command_block(io)
         puts_line(io, 'gsave')
         yield
         puts_line(io, 'grestore')
       end
 
-      def stroke_path(io, shape) #:nodoc:
+      def stroke_path(io, shape)
         cmds = []
         if shape.respond_to?(:painting) && (attrs = shape.painting)
           cmds.push([attrs.stroke, 'setrgbcolor']) if attrs.stroke
@@ -274,13 +275,13 @@ module DYI #:nodoc:
         }
       end
 
-      def stroke_current_path(io, shape) #:nodoc:
+      def stroke_current_path(io, shape)
         stroke_path(io, shape) {
           puts_line(io, 'stroke')
         } if shape.painting.stroke
       end
 
-      def fill_path(io, shape) #:nodoc:
+      def fill_path(io, shape)
         cmds = []
         if shape.respond_to?(:painting) && (attrs = shape.painting)
           if attrs.fill
@@ -300,13 +301,13 @@ module DYI #:nodoc:
         }
       end
 
-      def fill_current_path(io, shape) #:nodoc:
+      def fill_current_path(io, shape)
         fill_path(io, shape) {
           puts_line(io, shape.painting.fill_rule == 'evenodd' ? 'eofill' : 'fill')
         } if shape.painting.fill
       end
 
-      def linecap_to_num(linecap) #:nodoc:
+      def linecap_to_num(linecap)
         case linecap
           when 'butt' then 0
           when 'round' then 1
@@ -314,7 +315,7 @@ module DYI #:nodoc:
         end
       end
 
-      def linejoin_to_num(linejoin) #:nodoc:
+      def linejoin_to_num(linejoin)
         case linejoin
           when 'miter' then 0
           when 'round' then 1
@@ -322,7 +323,7 @@ module DYI #:nodoc:
         end
       end
 
-      def write_lines(io, points) #:nodoc:
+      def write_lines(io, points)
         puts_line(io, points.first.x, points.first.y, 'moveto')
         points[1..-1].each do |pt|
           pt = Coordinate.new(pt)
@@ -360,7 +361,7 @@ module DYI #:nodoc:
         cmds
       end
 
-      def transform_path(io, shape) #:nodoc:
+      def transform_path(io, shape)
         if shape.respond_to?(:transform) && !(tr = shape.transform).empty?
           tr.each do |t|
             case t[0]
@@ -381,7 +382,7 @@ module DYI #:nodoc:
         end
       end
 
-      def clip_path(io, shape) #:nodoc:
+      def clip_path(io, shape)
         if shape.respond_to?(:clipping) && shape.clipping
           shape.clipping.each_shapes do |shape, rule|
             s = shape.clone

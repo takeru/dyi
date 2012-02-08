@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -19,8 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-module DYI #:nodoc:
+module DYI
 
+  # @since 1.0.0
   class Painting
     IMPLEMENT_ATTRIBUTES = [:opacity,:fill,:fill_opacity,:fill_rule,:stroke,:stroke_dasharray,:stroke_dashoffset,:stroke_linecap,:stroke_linejoin,:stroke_miterlimit,:stroke_opacity,:stroke_width,:display,:visibility]
     VALID_VALUES = {
@@ -31,46 +32,44 @@ module DYI #:nodoc:
       :visibility => ['visible','hidden']
     }
 
-    ##
-    # :method: fill
-
-    ##
-    # :method: fill_opacity
-
-    ##
-    # :method: fill_rule
-
-    ##
-    # :method: stroke
-
-    ##
-    # :method: stroke_dasharray
-
-    ##
-    # :method: stroke_dashoffset
-
-    ##
-    # :method: stroke_linecap
-
-    ##
-    # :method: stroke_linejoin
-
-    ##
-    # :method: stroke_miterlimit
-
-    ##
-    # :method: stroke_opacity
-
-    ##
-    # :method: stroke_width
-
-    ##
-    # :method: display
-
-    ##
-    # :method: visibility
-
-    ##
+    # @attribute fill
+    # @return [Color]
+    #+++
+    # @attribute fill_opacity
+    # @return [Float]
+    #+++
+    # @attribute fill_rule
+    # @return [String]
+    #+++
+    # @attribute stroke
+    # @return [Color]
+    #+++
+    # @attribute stroke_dasharray
+    # @return [Array<Length>]
+    #+++
+    # @attribute stroke_dashoffset
+    # @return [Length]
+    #+++
+    # @attribute stroke_linecap
+    # @return [String]
+    #+++
+    # @attribute stroke_linejoin
+    # @return [String]
+    #+++
+    # @attribute stroke_miterlimit
+    # @return [String]
+    #+++
+    # @attribute stroke_opacity
+    # @return [Float]
+    #+++
+    # @attribute stroke_width
+    # @return [Length]
+    #+++
+    # @attribute display
+    # @return [String]
+    #+++
+    # @attribute visibility
+    # @return [String]
     attr_reader *IMPLEMENT_ATTRIBUTES
 
     def initialize(options={})
@@ -88,42 +87,20 @@ module DYI #:nodoc:
       end
     end
 
-    ##
-    # :method: fill_rule=
-    # 
-    # :call-seq:
-    # fill_rule= (value)
-    # 
-
-    ##
-    # :method: stroke_linecap=
-    # 
-    # :call-seq:
-    # stroke_linecap= (value)
-    # 
-
-    ##
-    # :method: stroke_linejoin=
-    # 
-    # :call-seq:
-    # stroke_linejoin= (value)
-    # 
-
-    ##
-    # :method: display=
-    # 
-    # :call-seq:
-    # display= (value)
-    # 
-
-    ##
-    # :method: visibility=
-    # 
-    # :call-seq:
-    # visibility= (value)
-    # 
-
-    ##
+    # @attribute [w] fill_rule
+    # @param [String] value
+    #+++
+    # @attribute [w] stroke_linecap
+    # @param [String] value
+    #+++
+    # @attribute [w] stroke_linejoin
+    # @param [String] value
+    #+++
+    # @attribute [w] display
+    # @param [String] value
+    #+++
+    # @attribute [w] visibility
+    # @param [String] value
     VALID_VALUES.each do |attr, valid_values|
       define_method("#{attr.to_s}=") {|value|
         if (value = value.to_s).size == 0

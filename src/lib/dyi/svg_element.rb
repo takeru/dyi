@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -19,8 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-module DYI #:nodoc:
+module DYI
 
+  # @since 0.0.0
   module SvgElement
 
     def draw_on(canvas)
@@ -111,11 +112,11 @@ module DYI #:nodoc:
 
     private
 
-    def draw_children? #:nodoc:
+    def draw_children?
       not child_elements.empty?
     end
 
-    def svg_attributes #:nodoc:
+    def svg_attributes
       attrs =
           attributes.inject({}) do |hash, (key, value)|
             hash[name_to_attribute(key).to_sym] = value if value
@@ -132,15 +133,15 @@ module DYI #:nodoc:
       attrs
     end
 
-    def name_to_attribute(name) #:nodoc:
+    def name_to_attribute(name)
       name.to_s.gsub(/_/,'-')
     end
 
-    def root_attributes #:nodoc:
+    def root_attributes
       {}
     end
 
-    def child_elements_to_svg(xml) #:nodoc:
+    def child_elements_to_svg(xml)
       child_elements.each {|child|
         child.to_svg(xml)
       }

@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -25,10 +25,9 @@ module DYI
   module Chart
 
     # @private
+    # @since 1.0.0
     module OptionCreator
 
-      # @macro [new] opt_reader
-      #   @attribute [r] $1
       # Difines a read property.
       # @param [Symbol] name the property name
       # @param [Hash] settings settings of the property
@@ -46,8 +45,6 @@ module DYI
         end
       end
 
-      # @macro [new] opt_writer
-      #   @attribute [w] $1
       # Difines a write property.
       # @param [Symbol] name the property name
       # @param [Hash] settings settings of the property
@@ -184,8 +181,6 @@ module DYI
         end
       end
 
-      # @macro [new] opt_accessor
-      #   @attribute [rw] $1
       # Difines a read-write property.
       # @param [Symbol] name the property name
       # @param [Hash] settings settings of the property
@@ -214,56 +209,38 @@ module DYI
       # @return [Canvas] the canvas of the image body
       attr_reader :canvas
 
-      # @macro opt_accessor
       # Returns or sets the URI of the background image of the chart. The URL is
       # included the chart image.
-      # @return [String] the URI of the background image
       opt_accessor :background_image_url, :type => :string
 
-      # @macro opt_accessor
       # Returns or sets the background image of the chart. The image files is
       # read and included when the chart image is created. The hash includes the
       # following key:
       # [+:path+] (+String+) the file path of the background image file
       # [+:content_type+] (+String+) the content-type of the background image
       #                   file
-      # @return [Hash{Symbol => String}] the background image of the chart
       opt_accessor :background_image_file, :type => :hash, :default => {}, :keys => [:path, :content_type], :item_type => :string
 
-      # @macro opt_accessor
       # Returns or sets the opacity of the background image of the chart.
       # Default to 1.0.
-      # @return [Float] the opacity of the background image
       opt_accessor :background_image_opacity, :type => :float, :default => 1.0
 
-      # @macro opt_accessor
       # Returns or sets the script string of the chart.
-      # @return [String] the script string
       opt_accessor :script_body, :type => :string
 
-      # @macro opt_accessor
       # Returns or sets the CSS styles of the image body of the chart.
-      # @return [String] the CSS styles of the image body
       opt_accessor :css_body, :type => :string
 
-      # @macro opt_accessor
       # Returns or sets the URIs of the script files that the chart includes.
-      # @return [Array<String>] the array of the URIs of the script files
       opt_accessor :script_files, :type => :array, :item_type => :string
 
-      # @macro opt_accessor
       # Returns or sets the URIs of the CSS files that the chart includes.
-      # @return [Array<String>] the array of the URIs of the CSS files
       opt_accessor :css_files, :type => :array, :item_type => :string
 
-      # @macro opt_accessor
       # Returns or sets the URIs of the XSL files that the chart includes.
-      # @return [Array<String>] the array of the URIs of the XSL files
       opt_accessor :xsl_files, :type => :array, :item_type => :string
 
-      # @macro opt_accessor
       # Returns or sets the CSS class of the image body of the chart.
-      # @return [String] the CSS class of the image body
       opt_accessor :canvas_css_class, :type => :string
 
       # @param [Length] width width of the chart image

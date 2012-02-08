@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -26,13 +26,12 @@
 #
 # See the documentation to the DYI::Length class for more details and
 # examples of usage.
-#
-# @since 1.0.0
 
 module DYI
 
   # Class representing a event.  The event becomes effective only when it is
   # output by SVG format.
+  # @since 1.0.0
   class Event
     IMPLEMENT_EVENTS = [:focusin,:focusout,:click,:mousedown,:mouseup,
                         :mouseover,:mousemove,:mouseout,:load]

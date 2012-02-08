@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -21,9 +21,10 @@
 
 require 'stringio'
 
-module DYI #:nodoc:
-  module Formatter #:nodoc:
+module DYI
+  module Formatter
 
+    # @since 0.0.0
     class SvgFormatter < XmlFormatter
 
       def initialize(canvas, options={})
@@ -577,7 +578,7 @@ module DYI #:nodoc:
       end
 
       # @since 1.0.0
-      def amin_event(shape, event)
+      def anim_event(shape, event)
         return nil unless event
         if shape && shape == event.target
           event.event_name.to_s
@@ -588,11 +589,11 @@ module DYI #:nodoc:
 
       # @since 1.0.0
       def anim_period(shape, event, offset)
-        [amin_event(shape, event), anim_duration(offset)].compact.join('+')
+        [anim_event(shape, event), anim_duration(offset)].compact.join('+')
       end
 
       # @since 1.0.0
-      def merge_anim_attributes(anim, shape, attrs) #:nodoc:
+      def merge_anim_attributes(anim, shape, attrs)
         attrs[:dur] = anim_duration(anim.duration) if anim.duration && anim.duration != 0
         if anim.begin_event || anim.begin_offset
           attrs[:begin] = anim_period(shape, anim.begin_event, anim.begin_offset)
@@ -607,11 +608,11 @@ module DYI #:nodoc:
         attrs[:restart] = anim.restart if anim.restart
       end
 
-      def name_to_attribute(name) #:nodoc:
+      def name_to_attribute(name)
         name.to_s.gsub(/_/,'-').to_sym
       end
 
-      def common_attributes(shape) #:nodoc:
+      def common_attributes(shape)
         attributes = {}
         create_style(shape, attributes)
         attributes[:class] = shape.css_class if shape.css_class
@@ -623,7 +624,7 @@ module DYI #:nodoc:
         attributes
       end
 
-      def create_style(shape, attributes) #:nodoc:
+      def create_style(shape, attributes)
         styles = {}
         if shape.font && !shape.font.empty?
           styles.merge!(shape.font.attributes)
@@ -642,17 +643,17 @@ module DYI #:nodoc:
         end
       end
 
-      def attribute_string(value) #:nodoc:
+      def attribute_string(value)
         value.respond_to?(:write_as) ? "url(##{add_defs(value)})" : value.to_s
       end
 
-      def create_transform(shape) #:nodoc:
+      def create_transform(shape)
         if shape.respond_to?(:transform) && !shape.transform.empty?
           shape.transform.map{|item| "#{item[0]}(#{item[1...item.size].join(',')})"}.join(' ')
         end
       end
 
-      def add_defs(value) #:nodoc:
+      def add_defs(value)
         @defs.each do |def_id, def_item|
           return def_id if def_item == value
         end
@@ -661,15 +662,16 @@ module DYI #:nodoc:
         def_id
       end
 
-      def create_def_id(index) #:nodoc:
+      def create_def_id(index)
         'def%03d' % index
       end
 
-      def attribute_name(key) #:nodoc:
+      def attribute_name(key)
         key.to_s.gsub(/_/,'-')
       end
     end
 
+    # @since 1.0.0
     class PngFormatter
       def save(file_name, options={})
         IO.popen("rsvg-convert -f png -o #{file_name}", 'w+b') {|io|

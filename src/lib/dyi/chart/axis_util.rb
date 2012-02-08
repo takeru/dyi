@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -21,9 +21,10 @@
 
 require 'csv'
 
-module DYI #:nodoc:
-  module Chart #:nodoc:
+module DYI
+  module Chart
 
+    # @since 0.0.0
     module AxisUtil
 
       private
@@ -56,11 +57,11 @@ module DYI #:nodoc:
         }
       end
 
-      def top_digit(num, n=1) #:nodoc:
+      def top_digit(num, n=1)
         num.div(10 ** (figures_count(num) - n + 1))
       end
 
-      def suitable_1digit_value(a, b) #:nodoc:
+      def suitable_1digit_value(a, b)
         return a if a == b
         a, b = b, a if a > b
         return 0 if a == 0
@@ -71,11 +72,11 @@ module DYI #:nodoc:
         8
       end
 
-      def figures_count(num) #:nodoc:
+      def figures_count(num)
         Math.log10(num).floor
       end
 
-      def base_value(a, b, allow_under=true, allow_over=true) #:nodoc:
+      def base_value(a, b, allow_under=true, allow_over=true)
         return 0 if a * b <= 0 || a == b
         a, b = -a, -b if negative = (a < 0)
         a, b = b, a if a > b
@@ -83,7 +84,7 @@ module DYI #:nodoc:
         suitable_value_positive(a, b) * (negative ? -1 : 1)
       end
 
-      def suitable_value_positive(a, b) #:nodoc:
+      def suitable_value_positive(a, b)
         if figures_count(a) != (dig = figures_count(b))
           return 10 ** dig
         end
@@ -92,7 +93,7 @@ module DYI #:nodoc:
         (suitable_1digit_value(dig_a - dig_a.div(10) * 10 + (dig_a == dig_a.div(10) * 10 ? 0 : 1), dig_b - dig_b.div(10) * 10) + dig_a.div(10) * 10) * (10 ** (dig - figures_count(dig_a)))
       end
 
-      def scale_interval(base_value, data_min, data_max, scale_count_limit) #:nodoc:
+      def scale_interval(base_value, data_min, data_max, scale_count_limit)
         if base_value - data_min < data_max - base_value
           allocate_scale_count = (data_max - base_value).div((data_max - data_min).quo(scale_count_limit))
           scale_interval_base2edge(base_value, data_max, allocate_scale_count)
@@ -102,7 +103,7 @@ module DYI #:nodoc:
         end
       end
 
-      def scale_interval_base2edge(base_value, edge_value, scale_count_limit) #:nodoc:
+      def scale_interval_base2edge(base_value, edge_value, scale_count_limit)
         raise ArgumentError, 'base_value should not equal edge_value' if edge_value == base_value
         range = (base_value - edge_value).abs
 
@@ -276,12 +277,12 @@ module DYI #:nodoc:
         axis_length * pos + chart_margin
       end
 
-      def round_top_2_digit(max, min) #:nodoc:
+      def round_top_2_digit(max, min)
         digit = Math.log10([max.abs, min.abs].max).floor - 1
         [max.quo(10 ** digit).ceil * (10 ** digit), min.quo(10 ** digit).floor * (10 ** digit)]
       end
 
-      def min_scale_value(max, min, scale_interval) #:nodoc:
+      def min_scale_value(max, min, scale_interval)
         return scale_interval if min == 0
         if (max_digit = Math.log10(max).to_i) != Math.log10(min).to_i
           base_value = 10 ** max_digit

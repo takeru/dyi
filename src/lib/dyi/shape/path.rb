@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -21,9 +21,10 @@
 
 require 'enumerator'
 
-module DYI #:nodoc:
-  module Shape #:nodoc:
+module DYI
+  module Shape
 
+    # @since 0.0.0
     class Path < Base
 
       def initialize(start_point, options={})
@@ -313,7 +314,7 @@ module DYI #:nodoc:
         end
       end
 
-      class PathData #:nodoc:
+      class PathData
         include Enumerable
 
         def initialize(*points)
@@ -428,7 +429,7 @@ module DYI #:nodoc:
         end
       end
 
-      class CommandBase #:nodoc:
+      class CommandBase
         attr_reader :preceding_command, :point
 
         def initialize(relative, preceding_command, point)
@@ -484,7 +485,7 @@ module DYI #:nodoc:
         end
       end
 
-      class MoveCommand < CommandBase #:nodoc:
+      class MoveCommand < CommandBase
 
         def start_point
           last_point
@@ -517,7 +518,7 @@ module DYI #:nodoc:
         end
       end
 
-      class CloseCommand < CommandBase #:nodoc:
+      class CloseCommand < CommandBase
         def initialize(preceding_command)
           raise ArgumentError, 'preceding_command is nil' if preceding_command.nil?
           @relative = nil
@@ -554,7 +555,7 @@ module DYI #:nodoc:
         end
       end
 
-      class LineCommand < CommandBase #:nodoc:
+      class LineCommand < CommandBase
         def initialize(relative, preceding_command, point)
           raise ArgumentError, 'preceding_command is nil' if preceding_command.nil?
           super
@@ -579,7 +580,7 @@ module DYI #:nodoc:
         end
       end
 
-      class HorizontalLineCommand < LineCommand #:nodoc:
+      class HorizontalLineCommand < LineCommand
         def initialize(relative, preceding_command, x)
           super(relative, preceding_command, Coordinate.new(x, relative ? 0 : preceding_command.last_point.y))
         end
@@ -597,7 +598,7 @@ module DYI #:nodoc:
         end
       end
 
-      class VerticalLineCommand < LineCommand #:nodoc:
+      class VerticalLineCommand < LineCommand
         def initialize(relative, preceding_command, y)
           super(relative, preceding_command, Coordinate.new(relative ? 0 : preceding_command.last_point.x, y))
         end
@@ -615,7 +616,7 @@ module DYI #:nodoc:
         end
       end
 
-      class CurveCommandBase < CommandBase #:nodoc:
+      class CurveCommandBase < CommandBase
         def initialize(relative, preceding_command, *points)
           raise ArgumentError, "wrong number of arguments (2 for #{pt_cnt + 2})" if points.size != pt_cnt
           raise ArgumentError, 'preceding_command is nil' if preceding_command.nil?
@@ -656,7 +657,7 @@ module DYI #:nodoc:
         end
       end
 
-      class CurveCommand < CurveCommandBase #:nodoc:
+      class CurveCommand < CurveCommandBase
         def preceding_control_point
           if preceding_command.is_a?(CurveCommand)
             preceding_command.last_control_point
@@ -684,7 +685,7 @@ module DYI #:nodoc:
         end
       end
 
-      class ShorthandCurveCommand < CurveCommand #:nodoc:
+      class ShorthandCurveCommand < CurveCommand
         def control_point1
           if relative?
             preceding_point - preceding_control_point
@@ -712,7 +713,7 @@ module DYI #:nodoc:
         end
       end
 
-      class QuadraticCurveCommand < CurveCommandBase #:nodoc:
+      class QuadraticCurveCommand < CurveCommandBase
         def preceding_control_point
           if preceding_command.is_a?(QuadraticCurveCommand)
             preceding_command.last_control_point
@@ -742,7 +743,7 @@ module DYI #:nodoc:
         end
       end
 
-      class ShorthandQuadraticCurveCommand < QuadraticCurveCommand #:nodoc:
+      class ShorthandQuadraticCurveCommand < QuadraticCurveCommand
         def control_point
           if relative?
             preceding_point - preceding_control_point
@@ -766,7 +767,7 @@ module DYI #:nodoc:
         end
       end
 
-      class ArcCommand < CommandBase #:nodoc:
+      class ArcCommand < CommandBase
         attr_reader :rx, :ry, :rotation
 
         def initialize(relative, preceding_command, rx, ry, rotation, is_large_arc, is_clockwise, point)

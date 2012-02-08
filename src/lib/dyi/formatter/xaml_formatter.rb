@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -19,9 +19,10 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-module DYI #:nodoc:
-  module Formatter #:nodoc:
+module DYI
+  module Formatter
 
+    # @since 0.0.0
     class XamlFormatter < XmlFormatter
 
       FONT_STYLE = {'normal'=>'Normal','italic'=>'Italic'}
@@ -222,7 +223,7 @@ module DYI #:nodoc:
 
       private
 
-      def common_attributes(shape, type=nil) # :nodoc:
+      def common_attributes(shape, type=nil)
         attributes = {}
         font = create_font_attr(shape)
         painting, attr_creator = create_painting_attr(shape, type)
@@ -231,7 +232,7 @@ module DYI #:nodoc:
         [attributes, attr_creator]
       end
 
-      def create_font_attr(shape) # :nodoc:
+      def create_font_attr(shape)
         attr = {}
         if shape.respond_to?(:font) && (font = shape.font) && !font.empty?
           attr[:FontFamily] = font.font_family if font.font_family
@@ -249,7 +250,7 @@ module DYI #:nodoc:
         attr
       end
 
-      def create_painting_attr(shape, type) # :nodoc:
+      def create_painting_attr(shape, type)
         attr = {}
         attr_creator = nil
         if shape.respond_to?(:painting) && (painting = shape.painting) && !painting.empty?
@@ -294,7 +295,7 @@ module DYI #:nodoc:
         [attr, attr_creator]
       end
 
-      def create_transform_node(shape, io) # :nodoc:
+      def create_transform_node(shape, io)
         create_node(io, 'TransformGroup') {
           shape.transform.each do |tr|
             case tr.first

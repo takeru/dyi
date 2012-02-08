@@ -20,12 +20,14 @@
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
 # Root namespace of DYI.
+# @since 0.0.0
 module DYI
 
   # DYI program version
-  VERSION = '1.1.1'
+  VERSION = '1.1.2'
 
   # URL of DYI Project
+  # @since 0.0.2
   URL = 'http://sourceforge.net/projects/dyi/'
 end
 

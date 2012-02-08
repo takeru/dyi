@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -19,9 +19,10 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-module DYI #:nodoc:
-  module Drawing #:nodoc:
+module DYI
+  module Drawing
 
+    # @since 0.0.0
     class CubicPen < Pen
       POSITION_TYPE_VALUES = [:baseline, :center, :backline]
       attr_reader :position_type, :background_color, :background_opacity, :dx, :dy
@@ -93,14 +94,14 @@ module DYI #:nodoc:
 
       private
 
-      def adjust_z_coordinate(shape) #:nodoc:
+      def adjust_z_coordinate(shape)
         case position_type
           when :center then shape.translate(-dx / 2, -dy / 2)
           when :backline then shape.translate(-dx, -dy)
         end
       end
 
-      def draw_background_shape(canvas, start_point, end_point, options={}) #:nodoc:
+      def draw_background_shape(canvas, start_point, end_point, options={})
         brush.draw_polygon(canvas, start_point, options) {|polygon|
           polygon.line_to(end_point)
           polygon.line_to(Coordinate.new(end_point) + Coordinate.new(dx, dy))
@@ -109,6 +110,7 @@ module DYI #:nodoc:
       end
     end
 
+    # @since 0.0.0
     class CylinderBrush < Brush
 
       # @since 1.1.0
@@ -160,7 +162,7 @@ module DYI #:nodoc:
 
       private
 
-      def body_gradient(canvas) #:nodoc:
+      def body_gradient(canvas)
         gradient = ColorEffect::LinearGradient.new([0,0],[1,0])
         gradient.add_color(0, color.merge(Color.white, 0.4))
         gradient.add_color(0.3, color.merge(Color.white, 0.65))
@@ -171,13 +173,15 @@ module DYI #:nodoc:
         gradient
       end
 
-      def top_color #:nodoc:
+      def top_color
         color.merge(Color.white, 0.3)
       end
     end
 
+    # @since 0.0.0
     class ColumnBrush < Brush
 
+      # @since 1.1.0
       def initialize(options={})
         self.flank_color = options.delete(:flank_color)
         self.dy = options.delete(:dy)

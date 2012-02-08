@@ -1,9 +1,8 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
-# Documentation:: Mamoru Yuo
 #
 # This file is part of DYI.
 #
@@ -27,9 +26,8 @@
 #
 # See the documentation to the DYI::Length class for more details and
 # examples of usage.
-#
 
-module DYI #:nodoc:
+module DYI
 
   # Class representing a length.  See documentation for the file
   # dyi/length.rb for an overview.
@@ -77,6 +75,7 @@ module DYI #:nodoc:
   #                             # => Error, 'em' is not comparable unit.
   #   DYI::Length.new('10cm') == DYI::Length.new('100mm')
   #                             # => true
+  # @since 0.0.0
   class Length
     include Comparable
 
@@ -207,11 +206,11 @@ module DYI #:nodoc:
     alias quo /
     alias modulo %
 
-    def clone #:nodoc:
+    def clone
       raise TypeError, "allocator undefined for Length"
     end
 
-    def dup #:nodoc:
+    def dup
       raise TypeError, "allocator undefined for Length"
     end
 
@@ -309,23 +308,23 @@ module DYI #:nodoc:
       (@value * self_ratio.quo(param_ratio)).to_f
     end
 
-    def inspect #:nodoc:
+    def inspect
       @value.to_s + @unit.to_s
     end
 
     protected
 
-    def _num #:nodoc:
+    def _num
       @value
     end
 
-    def _unit #:nodoc:
+    def _unit
       @unit
     end
 
     private
 
-    def new_length(value) #:nodoc:
+    def new_length(value)
       other = self.class.allocate
       other.instance_variable_set(:@value, value)
       other.instance_variable_set(:@unit, @unit)
@@ -336,7 +335,7 @@ module DYI #:nodoc:
 
       public
 
-      def new(*args) #:nodoc:
+      def new(*args)
         return args.first if args.size == 1 && args.first.instance_of?(self)
         super
       end

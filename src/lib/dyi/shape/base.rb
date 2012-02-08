@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -29,14 +29,10 @@ module DYI
     # @since 0.0.0
     class Base < GraphicalElement
 
-      # @attribute painting
       # Returns painting status of the shape.
-      # @return [Painting] painting status
       attr_painting :painting
 
-      # @attribute font
       # Returns font status of the shape.
-      # @return [Font] font status
       attr_font :font
 
       # Returns optional attributes of the shape.
@@ -49,14 +45,17 @@ module DYI
 
       # Returns a parent element of the shape.
       # @return [GraphicalElement] a parent element
+      # @since 1.0.0
       attr_reader :parent
 
       # Returns a location of a reference of a source anchor for the link.
       # @return [String] a location of a reference
+      # @since 1.0.0
       attr_accessor :anchor_href
 
       # Returns a relevant presentation context when the link is activated.
       # @return [String] a relevant presentation context
+      # @since 1.0.0
       attr_accessor :anchor_target
 
       # Draws the shape on a parent element.
@@ -122,7 +121,7 @@ module DYI
       # Scales up (or down) this shape.
       # @param [Numeric] x scaled ratio along x-axis
       # @param [Numeric] y scaled ratio along y-axis. If this parameter is nil,
-      #   uses value that equals to parameter `x' value
+      #   uses value that equals to parameter 'x' value
       # @param [Coordinate] base_point based coordinate of scaling up (or down)
       def scale(x, y=nil, base_point=Coordinate::ZERO)
         y ||= x
@@ -235,7 +234,7 @@ module DYI
       #   animation end, in seconds
       # @option options [Event] :end_event an event that determine the animation
       #   end
-      # @option options [String] :fill `freeze' or `remove'
+      # @option options [String] :fill 'freeze' or 'remove'
       # @since 1.0.0
       def add_painting_animation(options)
         add_animation(Animation::PaintingAnimation.new(self, options))
@@ -255,7 +254,7 @@ module DYI
       #   animation end, in seconds
       # @option options [Event] :end_event an event that determine the animation
       #   end
-      # @option options [String] :fill `freeze' or `remove'
+      # @option options [String] :fill 'freeze' or 'remove'
       # @since 1.0.0
       def add_transform_animation(type, options)
         add_animation(Animation::TransformAnimation.new(self, type, options))
@@ -302,14 +301,10 @@ module DYI
     # @since 0.0.0
     class Rectangle < Base
 
-      # @attribute width
       # Returns width of the rectangle.
-      # @return [Length] width of the rectangle
       attr_length :width
 
-      # @attribute height
       # Returns heigth of the rectangle.
-      # @return [Length] heigth of the rectangle
       attr_length :height
 
       # @param [Coordinate] left_top a coordinate of a corner of the rectangle
@@ -410,14 +405,10 @@ module DYI
     # @since 0.0.0
     class Circle < Base
 
-      # @attribute center
       # Returns a center coordinate of the circle.
-      # @return [Coordinate]  a center coordinate of the circle
       attr_coordinate :center
 
-      # @attribute radius
       # Returns a radius of the circle.
-      # @return [Length]  a radius of the circle
       attr_length :radius
 
       def initialize(center, radius, options={})
@@ -647,7 +638,7 @@ module DYI
 
     class Text < Base
       BASELINE_VALUES = ['baseline', 'top', 'middle', 'bottom']
-      DEFAULT_LINE_HEIGHT = 1
+      DEFAULT_LINE_HEIGHT = 1.0
       attr_coordinate :point
       attr_accessor :line_height
       attr_accessor :text

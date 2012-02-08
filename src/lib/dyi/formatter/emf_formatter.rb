@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -22,9 +22,10 @@
 require 'System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
 require 'System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
 
-module DYI #:nodoc:
-  module Formatter #:nodoc:
+module DYI
+  module Formatter
 
+    # @since 0.0.0
     class EmfFormatter < Base
 
       def save(file_name, options={})
@@ -206,7 +207,7 @@ module DYI #:nodoc:
 
       private
 =begin
-      def pre_render(shape) #:nodoc:
+      def pre_render(shape)
         attributes = {}
         style = create_style(shape)
         transform = create_transform(shape)
@@ -217,7 +218,7 @@ module DYI #:nodoc:
         attributes
       end
 =end
-      def set_transform(shape, graphics, &block) #:nodoc:
+      def set_transform(shape, graphics, &block)
         shape.transform.each do |tr|
           case tr.first
           when :translate

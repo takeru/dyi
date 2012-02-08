@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -19,9 +19,10 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-module DYI #:nodoc:
-  module Drawing #:nodoc:
+module DYI
+  module Drawing
 
+    # @since 0.0.0
     class PenBase
       extend AttributeCreator
       DROP_SHADOW_OPTIONS = [:blur_std, :dx, :dy]
@@ -216,6 +217,7 @@ module DYI #:nodoc:
       end
     end
 
+    # @since 0.0.0
     class Pen < PenBase
       #:stopdoc:
       ALIAS_ATTRIBUTES =
@@ -253,7 +255,7 @@ module DYI #:nodoc:
       end
 
       class << self
-        def method_missing(method_name, *args, &block) #:nodoc:
+        def method_missing(method_name, *args, &block)
           if method_name.to_s =~ /^([a-z]+)_pen$/
             if options = args.first
               self.new(options.merge(:stroke => $1))
@@ -267,6 +269,7 @@ module DYI #:nodoc:
       end
     end
 
+    # @since 0.0.0
     class Brush < PenBase
       #:stopdoc:
       ALIAS_ATTRIBUTES =
@@ -292,7 +295,7 @@ module DYI #:nodoc:
       end
 
       class << self
-        def method_missing(method_name, *args, &block) #:nodoc:
+        def method_missing(method_name, *args, &block)
           if method_name.to_s =~ /([a-z]+)_brush/
             if options = args.first
               self.new(options.merge(:fill => $1))

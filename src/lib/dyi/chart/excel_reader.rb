@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -28,9 +28,10 @@ end
 require 'date'
 require 'nkf'
 
-module DYI #:nodoc:
-  module Chart #:nodoc:
+module DYI
+  module Chart
 
+    # @since 0.0.0
     class ExcelReader < ArrayReader
       OFFSET = DateTime.now.offset
 

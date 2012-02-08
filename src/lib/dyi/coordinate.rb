@@ -1,9 +1,8 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
-# Documentation:: Mamoru Yuo
 #
 # This file is part of DYI.
 #
@@ -30,9 +29,8 @@
 #
 # See the documentation to the DYI::Coordinate class for more details
 # and examples of usage.
-#
 
-module DYI #:nodoc:
+module DYI
 
   # Class representing a coordinate.  See documentation for the file
   # dyi/coordinate.rb for an overview.
@@ -54,6 +52,7 @@ module DYI #:nodoc:
   # then calculate.
   #
   # See the documentation to each operators and methods class for details.
+  # @since 0.0.0
   class Coordinate
     @@default_format = '(x,y)'
 
@@ -159,7 +158,7 @@ module DYI #:nodoc:
       fmts.join('\\')
     end
 
-    def inspect #:nodoc:
+    def inspect
       "(#{@x.inspect}, #{@y.inspect})"
     end
 
@@ -167,7 +166,7 @@ module DYI #:nodoc:
 
       public
 
-      def new(*args) #:nodoc:
+      def new(*args)
         return args.first if args.size == 1 && args.first.instance_of?(self)
         super
       end

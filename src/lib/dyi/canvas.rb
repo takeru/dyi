@@ -29,18 +29,16 @@ module DYI
     # @private
     IMPLEMENT_ATTRIBUTES = [:view_box, :preserve_aspect_ratio]
 
-    # @macro attr_length
     # Returns width of the vector-image on user unit.
     attr_length :width
 
-    # @macro attr_length
     # Returns heigth of the vector-image on user unit.
     attr_length :height
 
     # @attribute view_box
     # Returns the value of the view_box.
     # @return [String]
-
+    #+++
     # @attribute preserve_aspect_ratio
     # Returns the value of the preserve_aspect_ratio.
     # @return [String] the value of preserve_aspect_ratio
@@ -218,7 +216,7 @@ module DYI
     # @param [String, Script::SimpleScript] script_body a string that is a
     #   script body or a script object that is registered
     # @param [String] content_type a content-type of the script. If parameter
-    #   `script_body' is {Script::SimpleScript} object, this parameter is ignored
+    #   'script_body' is {Script::SimpleScript} object, this parameter is ignored
     # @since 1.0.0
     def add_script(script_body, content_type = 'application/ecmascript')
       if script_body.respond_to?(:include_external_file?)

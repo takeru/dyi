@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -19,9 +19,11 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-module DYI #:nodoc:
-  module Drawing #:nodoc:
-    module Filter #:nodoc:
+module DYI
+  module Drawing
+
+    # @since 0.0.0
+    module Filter
 
       class DropShadow
         include DYI::SvgElement
@@ -45,7 +47,7 @@ module DYI #:nodoc:
 
         private
 
-        def attributes #:nodoc:
+        def attributes
           {
             :id => @id,
             :filterUnits => 'userSpaceOnUse',
@@ -56,11 +58,11 @@ module DYI #:nodoc:
           }
         end
 
-        def svg_tag #:nodoc:
+        def svg_tag
            'filter'
         end
 
-        def child_elements_to_svg(xml) #:nodoc:
+        def child_elements_to_svg(xml)
           xml.feGaussianBlur(:in => 'SourceAlpha', :stdDeviation => @blur_std, :result => 'blur')
           xml.feOffset(:in => 'blur', :dx => @dx, :dy => @dy,  :result => 'offsetBlur')
           xml.feMerge {

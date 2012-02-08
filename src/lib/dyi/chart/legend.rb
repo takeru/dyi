@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-# Copyright (c) 2009-2011 Sound-F Co., Ltd. All rights reserved.
+# Copyright (c) 2009-2012 Sound-F Co., Ltd. All rights reserved.
 #
 # Author:: Mamoru Yuo
 #
@@ -19,14 +19,15 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
-module DYI #:nodoc:
-  module Chart #:nodoc:
+module DYI
+  module Chart
 
+    # @since 0.0.0
     module Legend
 
       private
 
-      def draw_legend(names, shapes=nil, records=nil, colors=nil) #:nodoc:
+      def draw_legend(names, shapes=nil, records=nil, colors=nil)
         legend_canvas.translate(legend_point.x, legend_point.y)
         if show_legend?
           pen = Drawing::Pen.black_pen(:font => legend_font)
@@ -53,15 +54,15 @@ module DYI #:nodoc:
         end
       end
 
-      def legend_font_size #:nodoc:
+      def legend_font_size
         legend_font ? legend_font.draw_size : Font::DEFAULT_SIZE
       end
 
-      def default_legend_point #:nodoc:
+      def default_legend_point
         Coordinate.new(0,0)
       end
 
-      def default_legend_format #:nodoc:
+      def default_legend_format
         "{name}"
       end
 
@@ -69,7 +70,7 @@ module DYI #:nodoc:
 
         private
 
-        def included(klass) #:nodoc:
+        def included(klass)
           klass.__send__(:opt_accessor, :show_legend, :type => :boolean, :default => true)
           klass.__send__(:opt_accessor, :legend_font, :type => :font)
           klass.__send__(:opt_accessor, :legend_format, :type => :string, :default_method => :default_legend_format)
