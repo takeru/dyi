@@ -390,7 +390,7 @@ module DYI
           text = Drawing::Pen.black_pen(:font => baloon_font, :opacity => 0.0).draw_text(
               @data_label_canvas,
               center_point + baloon_point,
-              format_string(data_label_format, record, total_value),
+              format_string(baloon_format, record, total_value),
               baloon_options)
           text.add_painting_animation(:to => {:opacity => 1},
                                       :duration => animation_duration,
