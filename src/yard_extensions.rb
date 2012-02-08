@@ -313,8 +313,7 @@ class YARD::Handlers::Ruby::AttributeHandler
     rescue YARD::Parser::UndocumentableError => err
       unless statement.comments.to_s.empty?
         statement.comments.to_s.split(/^[\+]{3,}$/).each do |comment|
-          next unless comment =~ /^@attribute\s+([A-Za-z_][0-9A-Za-z_]*)\s*$/
-          
+          next unless comment =~ /^@attribute(?:\s+\[(?:rw|r|w)\])?\s+([A-Za-z_][0-9A-Za-z_]*)\s*$/
           name = $1
           namespace.attributes[scope][name] ||= SymbolHash[:read => nil, :write => nil]
 
@@ -368,7 +367,7 @@ class YARD::Handlers::Ruby::MacroHandler
       return if IGNORE_METHODS[caller_method]
       return if !statement.comments || statement.comments.empty?
     end
-    statement.comments.split("^[\+]{3,}$").each do |comment|
+    statement.comments.split(/^[\+]{3,}$/).each do |comment|
       @macro, @docstring = nil, YARD::Docstring.new(comment)
       find_or_create_macro(@docstring)
       return if !@macro && !statement.comments_hash_flag && @docstring.tags.size == 0
