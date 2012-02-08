@@ -1,6 +1,6 @@
 def init
   return if object.docstring.blank? && !object.has_tag?(:api)
-  sections :index, [:private, :deprecated, :abstract, :todo, :note, :returns_void, :text], T('tags')
+  sections :index, [:private, :deprecated, :abstract, :todo, :note, :returns_void, :text, :function], T('tags')
 end
 
 def private
@@ -46,4 +46,9 @@ def docstring_text
   end
   
   text.strip
+end
+
+def function
+  return unless object.has_tag?(:function)
+  erb(:function)
 end

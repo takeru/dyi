@@ -18,6 +18,7 @@
     <% if rw[:write] && !rw[:read] %><span class="note title writeonly">writeonly</span><% end %>
   <% end %>
   <% if @item[:chart_option] %><span class="note title chart">chart option</span><% end %>
+  <% if @item.has_tag?(:function) %><span class="note title function">module function</span><% end %>
   <% if @item.visibility != :public %><span class="note title <%= @item.visibility %>"><%= @item.visibility %></span><% end %>
   <% if @item.has_tag?(:abstract) %><span class="abstract note title">Abstract</span><% end %>
   <% if @item.has_tag?(:deprecated) %><span class="deprecated note title">Deprecated</span><% end %>
