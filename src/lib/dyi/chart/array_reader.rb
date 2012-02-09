@@ -22,37 +22,98 @@
 module DYI
   module Chart
 
+    # +ArrayReader+ converts the ruby array into a readable format for the
+    # chart object of DYI.
+    #
+    # If any ruby object or something (file, database, etc...) is used as the
+    # data source of DYI's chart, the object of the inheritance class of
+    # +ArrayReader+ avails. For example, using a CSV data, {CsvReader} class
+    # avails.
+    #
+    #= Basic Usage
+    #
+    # Using +PieChart+ and ArrayReader (or sub class of ArrayReader), you can
+    # create the pie chart as the following:
+    #   require 'rubygems'
+    #   require 'dyi'
+    #   
+    #   # Nominal GDP of Asian Countries (2010)
+    #   chart_data = [['China', 5878],
+    #                 ['Japan', 5459],
+    #                 ['India', 1538],
+    #                 ['South Koria', 1007],
+    #                 ['Other Countries', 2863]]
+    #   reader = DYI::Chart::ArrayReader.read(chart_data, :schema => [:name, :value])
+    #
+    #   # Creates the Pie Chart
+    #   chart = DYI::Chart::PieChart.new(450,250)
+    #   chart.load_data(reader)
+    #   chart.save('asian_gdp.svg')
+    # Creating the instance, you should not call +new+ method but {.read} method.
+    #
+    # The optional argument +:schema+ means a field name. The field name +:value+
+    # is the particular name, that is to say, the chart object generate a chart
+    # using a value of the field named +:value+. If +:schema+ option is not
+    # specified, the +ArrayReader+ object looks upon all feilds as +:vlaue+
+    # field. The field names other than +:name+ are used in the format string
+    # and so on, as following:
+    #   # Nominal GDP of Asian Countries (2010)
+    #   chart_data = [['China',       'People\'s Republic of China', 5878, 'red'],
+    #                 ['Japan',       'Japan',                       5459, 'blue'],
+    #                 ['India',       'Republic of India',           1538, 'yellow'],
+    #                 ['South Koria', 'Republic of Korea',           1007, 'green'],
+    #                 ['Others',      'Other Asian Countries',       2863, 'gray']]
+    #   reader = DYI::Chart::ArrayReader.read(chart_data,
+    #                                         :schema => [:name, :long, :value, :color])
+    #
+    #   # Creates the Pie Chart
+    #   chart = DYI::Chart::PieChart.new(450,250,
+    #                                    :legend_format => '{?long}')
+    #   chart.load_data(reader)
+    #   chart.save('asian_gdp.svg')
+    # See {ArrayReader.read ArrayReader.read} for other optional arguments.
     # @since 0.0.0
     class ArrayReader
-      # @since 0.0.0
       include Enumerable
 
+      # Returns the value at index.
+      # @param [Integer] i the index of records
+      # @param [Integer] j the index of series
+      # @return [Numeric] the value at index
       def [](i, j)
         @records[i].values[j]
       end
 
-      # @return [Array] array of a struct
+      # Returns the array of the records.
+      # @return [Array<Struct>] the array of the records
       # @since 1.0.0
       def records
         @records.clone
       end
 
+      # Returns number of the records.
       # @return [Integer] number of the records
       # @since 1.0.0
       def records_size
         @records.size
       end
 
+      # Returns number of the values in the record
       # @return [Integer] number of the values
       # @since 1.0.0
       def values_size
         @records.first.values.size rescue 0
       end
 
+      # Clears all records
       def clear_data
         @records.clear
       end
 
+      # Calls block once for each record, passing the values that records as a
+      # parameter.
+      # @yield [values] iterator block
+      # @yieldparam [Array<Numeric>] values the values that the record has
       # @since 1.0.0
       def values_each(&block)
         @records.each do |record|
@@ -60,8 +121,9 @@ module DYI
         end
       end
 
-      # @param [Integer] index index of series
-      # @return [Array]
+      # Returns an array of values of the specified series.
+      # @param [Integer] index an index of the series
+      # @return [Array<Numeric>] an array of values
       # @since 1.0.0
       def series(index)
         @records.map do |record|
@@ -69,16 +131,23 @@ module DYI
         end
       end
 
+      # Returns whether the record has the field.
+      # @param [Symbol, String] field_name field name
+      # @return [Bolean] true if the record has the field, false otherwise
       # @since 1.0.0
       def has_field?(field_name)
         @schema.members.include?(RUBY_VERSION >= '1.9' ? field_name.to_sym : field_name.to_s)
       end
 
+      # Calls block once for each record, passing that records as a parameter.
+      # @yield [record] iterator block
+      # @yieldparam [Struct] record the record in self
       # @since 1.0.0
       def each(&block)
         @records.each(&block)
       end
 
+      # @private
       def initialize
         @records = []
       end
@@ -87,8 +156,8 @@ module DYI
       # @param [Array<Array>] array_of_array two dimensional array
       # @option options [Range] :row_range a range of rows
       # @option options [Range] :column_range a range of columns
-      # @option options [Array<Symbol>] :schema array of field names
-      # @option options [Array<Symbol>] :data_types array of field data types
+      # @option options [Array<Symbol>] :schema array of field names. see
+      #   Overview of {ArrayReader}.
       # @option options [Boolean] :transposed whether the array-of-array is
       #   transposed
       def read(array_of_array, options={})
@@ -123,7 +192,8 @@ module DYI
         self
       end
 
-      # @return [Array] a array of a field's name (as Symbol)
+      # Returns an array of the field's name
+      # @return [Array<Symbol>] an array of the field's name
       # @since 1.1.0
       def members
         @schema.members.map{|name| name.to_sym}
@@ -154,6 +224,7 @@ module DYI
 
       # @param [Array] schema of the record
       # @return [Class] subclass of Struct class
+      # @raise [ArgumentError]
       # @since 1.0.0
       def record_schema(schema)
         struct_schema =
@@ -174,7 +245,7 @@ module DYI
         Struct.new(*struct_schema)
       end
 
-      # Makes the instance respond to xxx_values method.
+      # Makes the instance respond to +xxx_values+ method.
       # @example
       #   data = ArrayReader.read([['Smith', 20, 3432], ['Thomas', 25, 9721]],
       #                           :schema => [:name, :age, :value])
@@ -195,6 +266,26 @@ module DYI
         # @param (see #read)
         # @option (see #read)
         # @return [ArrayReader] a new instance of ArrayReader
+        # @example
+        #   # example of using :row_range option
+        #   chart_data = [['Country', 'Nominal GDP'],
+        #                 ['China', 5878],
+        #                 ['Japan', 5459],
+        #                 ['India', 1538],
+        #                 ['South Koria', 1007],
+        #                 ['Other Countries', 2863]]
+        #   # skips the first row
+        #   reader = DYI::Chart::ArrayReader.read(chart_data,
+        #                                         :schema => [:name, :value],
+        #                                         :row_range => (1..-1))
+        # @example
+        #   # example of using :transposed option
+        #   chart_data = [['China', 'Japan', 'India', 'South Koria', 'Other Countries'],
+        #                 [5878, 5459, 1538, 1007, 2863]]
+        #   # transposes the rows and the columns
+        #   reader = DYI::Chart::ArrayReader.read(chart_data,
+        #                                           :schema => [:name, :value],
+        #                                           :transposed => true)
         def read(array_of_array, options={})
           new.read(array_of_array, options)
         end

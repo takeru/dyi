@@ -31,10 +31,25 @@ require 'nkf'
 module DYI
   module Chart
 
+    # +ExcelReader+ class provides a interface to Microsoft Excel file and data
+    # for a chart object. Creating the instance, you should not call +new+
+    # method but {.read} method.
+    #
+    # This class requires that _win32ole_ has been installed your system.
+    # @see ArrayReader
     # @since 0.0.0
     class ExcelReader < ArrayReader
+
+      # @private
       OFFSET = DateTime.now.offset
 
+      # Parses Excel file and sets data.
+      # @param [String] path a path of the Excel file
+      # @option (see ArrayReader#read)
+      # @option options [String, Integer] :sheet sheet name of data source or
+      #   sheet number (starting from 1)
+      # @raise [NotImplementedError] _win32ole_ has not been installed
+      # @see ArrayReader#read
       def read(path, options={})
         if defined? WIN32OLE
           # for Windows
@@ -46,7 +61,7 @@ module DYI
           sheet_values = sheet.range(sheet.cells(1,1), sheet.cells(range.end(4).row, range.end(2).column)).value
         else
           # except Windows
-          raise NotImplementedError, 'win32ole is not installed'
+          raise NotImplementedError, 'win32ole has not been installed'
         end
 
         begin
@@ -92,6 +107,13 @@ module DYI
       end
 
       class << self
+
+        # Parses Excel file and creates instance of ExcelReader.
+        # @param (see #read)
+        # @option (see #read)
+        # @return [ExcelReader] a new instance of ExcelReader
+        # @raise (see #read)
+        # @see ArrayReader.read
         def read(path, options={})
           new.read(path, options)
         end

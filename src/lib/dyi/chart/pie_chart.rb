@@ -26,7 +26,6 @@ module DYI
     #
     #= Basic Usage
     #
-    # Usage for creating the pie chart is:
     # Using +PieChart+ and ArrayReader (or sub class of ArrayReader), you can
     # create the pie chart as the following:
     #   require 'rubygems'
@@ -50,11 +49,12 @@ module DYI
     # <em>Instance Attribute</em> of this class, {Base} and {Legend} for the
     # attributes that can be specified. The specified attributes can be refered
     # and set.
+    #   # Creates the Pie Chart
     #   chart = DYI::Chart::PieChart.new(500,250,
     #             :center_point => [130, 100],
     #             :legend_point => [250, 50],
     #             :represent_3d => true,
-    #             :_3d_settings => {:dy => 10},
+    #             :_3d_settings => {:dy => 20},
     #             :legend_format => "{?name}\t{!e}{?value:#,0}\t{!e}({?percent:0.0%})",
     #             :chart_stroke_color => 'white')
     #   puts chart.represent_3d?    # => true
@@ -67,14 +67,14 @@ module DYI
     #= Adds Custom Elements to Chart
     #
     # Using {#canvas canvas} attribute, you can add arbitrary graphical elements.
+    #   # Creates the Pie Chart
     #   chart = DYI::Chart::PieChart.new(500,250,
     #             :center_point => [130, 100],
     #             :legend_point => [250, 50],
     #             :represent_3d => true,
-    #             :_3d_settings => {:dy => 10},
+    #             :_3d_settings => {:dy => 20},
     #             :legend_format => "{?name}\t{!e}{?value:#,0}\t{!e}({?percent:0.0%})",
-    #             :chart_stroke_color => 'white',
-    #             :show_baloon => false)
+    #             :chart_stroke_color => 'white')
     #
     #   DYI::Drawing::Pen.black_pen.draw_text(chart.canvas,
     #             [250, 20],
@@ -82,6 +82,8 @@ module DYI
     #             :text_anchor => 'middle')
     #   chart.load_data(reader)
     #   chart.save('asian_gdp.svg')
+    # @see LineChart
+    # @see ArrayReader
     # @since 0.0.0
     class PieChart < Base
       include Legend

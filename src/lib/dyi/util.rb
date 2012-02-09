@@ -26,6 +26,7 @@ module DYI
   # All the methods defined by the module are 'module functions', which are
   # called as private instance methods and are also called as public class
   # methods (they are methods of Math Module like).
+  # See also {DYI::Script::EcmaScript::DomLevel2}.
   # @since 1.1.0
   module Util
 
