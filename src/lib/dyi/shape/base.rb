@@ -201,6 +201,15 @@ module DYI
         set_clipping(Drawing::Clipping.new(*shapes))
       end
 
+      # Returns whether this shape has a marker symbol.
+      # @param [Symbol] point_type the type of marker point. Specifies the
+      #   following values: +:start+, +:mid+, +:end+
+      # @return [Boolean] always false
+      # @since 1.2.0
+      def has_marker?(point_type)
+        return false
+      end
+
       # Returns registed animations.
       # @return [Array<Animation::Base>] amination list.
       # since 1.0.0
@@ -511,6 +520,7 @@ module DYI
         @start_point = Coordinate.new(start_point)
         @end_point = Coordinate.new(end_point)
         @attributes = init_attributes(options)
+        @marker = {}
       end
 
       def left
@@ -531,6 +541,33 @@ module DYI
 
       def write_as(formatter, io=$>)
         formatter.write_line(self, io, &(block_given? ? Proc.new : nil))
+      end
+
+      # @since 1.2.0
+      def marker(point_type)
+        @marker[point_type]
+      end
+
+      # @since 1.2.0
+      def set_start_marker(marker)
+        marker.set_canvas(canvas)
+        @marker[:start] = marker
+      end
+
+      # @since 1.2.0
+      def set_end_marker(marker)
+        marker.set_canvas(canvas)
+        @marker[:end] = marker
+      end
+
+      # Returns whether this shape has a marker symbol.
+      # @param [Symbol] point_type the type of marker point. Specifies the
+      #   following values: +:start+, +:mid+, +:end+
+      # @return [Boolean] true if the shape has a marker at the cpecified point,
+      #   false otherwise
+      # @since 1.2.0
+      def has_marker?(point_type)
+        !@marker[point_type].nil?
       end
 
       class << self
@@ -554,6 +591,7 @@ module DYI
       def initialize(start_point, options={})
         @points = [Coordinate.new(start_point)]
         @attributes = init_attributes(options)
+        @marker = {}
       end
 
       def line_to(*points)
@@ -596,6 +634,16 @@ module DYI
 
       def bottom
         @points.max {|a, b| a.y <=> b.y}.y
+      end
+
+      # Returns whether this shape has a marker symbol.
+      # @param [Symbol] point_type the type of marker point. Specifies the
+      #   following values: +:start+, +:mid+, +:end+
+      # @return [Boolean] true if the shape has a marker at the cpecified point,
+      #   false otherwise
+      # @since 1.2.0
+      def has_marker?(point_type)
+        !@marker[point_type].nil?
       end
 
       def write_as(formatter, io=$>)

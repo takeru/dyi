@@ -33,6 +33,7 @@ module DYI
                        else PathData.new(start_point)
                      end
         @attributes = init_attributes(options)
+        @marker = {}
       end
 
       def move_to(*points)
@@ -141,6 +142,16 @@ module DYI
 
       def bottom
         edge_coordinate(:bottom)
+      end
+
+      # Returns whether this shape has a marker symbol.
+      # @param [Symbol] point_type the type of marker point. Specifies the
+      #   following values: +:start+, +:mid+, +:end+
+      # @return [Boolean] true if the shape has a marker at the cpecified point,
+      #   false otherwise
+      # @since 1.2.0
+      def has_marker?(point_type)
+        !@marker[point_type].nil?
       end
 =begin
       def line_bezier_paths

@@ -357,6 +357,23 @@ module DYI
         }
       end
 
+      # @since 1.2.0
+      def write_marker(marker, io)
+        attrs = {:id => marker.id,
+                 :viewBox => marker.view_box,
+                 :refX => marker.ref_point.x,
+                 :refY => marker.ref_point.y,
+                 :markerUnits => marker.marker_units,
+                 :markerWidth => marker.width,
+                 :markerHeight => marker.height}
+        attrs[:orient] = marker.orient.to_s if marker.orient
+        create_node(io, 'marker', attrs) {
+          marker.shapes.each_with_index do |shape, i|
+            shape.write_as(self, io)
+          end
+        }
+      end
+
       # @since 1.0.0
       def write_painting_animation(anim, shape, io)
         anim.animation_attributes.each do |anim_attr, (from_value, to_value)|
@@ -556,6 +573,14 @@ module DYI
         if element.respond_to?(:attributes) && element.attributes[:show_border]
           @text_border_elements << element
         end
+        if element.respond_to?(:has_marker?)
+          [:start, :mid, :end].each do |point_type|
+            if element.has_marker?(point_type) && !@defs.value?(element.marker(point_type))
+              def_id = element.marker(point_type).id
+              @defs[def_id] = element.marker(point_type)
+            end
+          end
+        end
         element.child_elements.each do |child_element|
           examin_descendant_elements(child_element)
         end
@@ -619,6 +644,9 @@ module DYI
         transform = create_transform(shape)
         attributes[:transform] = transform if transform
         attributes[:'clip-path'] = "url(##{shape.clipping.id})" if shape.clipping
+        attributes[:'marker-start'] = "url(##{shape.marker(:start).id})" if shape.has_marker?(:start)
+        attributes[:'marker-mid'] = "url(##{shape.marker(:mid).id})" if shape.has_marker?(:mid)
+        attributes[:'marker-end'] = "url(##{shape.marker(:end).id})" if shape.has_marker?(:end)
         attributes[:id] = shape.id if shape.inner_id
         attributes[:'pointer-events'] = 'all' if shape.event_target?
         attributes
