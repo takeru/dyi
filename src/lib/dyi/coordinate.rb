@@ -30,6 +30,7 @@
 # See the documentation to the DYI::Coordinate class for more details
 # and examples of usage.
 
+#
 module DYI
 
   # Class representing a coordinate.  See documentation for the file

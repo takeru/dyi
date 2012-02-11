@@ -27,6 +27,7 @@
 # See the documentation to the DYI::Length class for more details and
 # examples of usage.
 
+#
 module DYI
 
   # Class representing a event.  The event becomes effective only when it is

@@ -24,6 +24,7 @@
 # This file provides the classes of client side scripting.  The event becomes
 # effective only when it is output by SVG format.
 
+#
 module DYI
 
   # @since 1.0.0

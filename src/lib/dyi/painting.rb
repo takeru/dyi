@@ -19,11 +19,16 @@
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
 
+#
 module DYI
 
-  # @since 1.0.0
+  # @since 0.0.0
   class Painting
-    IMPLEMENT_ATTRIBUTES = [:opacity,:fill,:fill_opacity,:fill_rule,:stroke,:stroke_dasharray,:stroke_dashoffset,:stroke_linecap,:stroke_linejoin,:stroke_miterlimit,:stroke_opacity,:stroke_width,:display,:visibility]
+    IMPLEMENT_ATTRIBUTES = [:opacity, :fill, :fill_opacity, :fill_rule,
+                            :stroke, :stroke_dasharray, :stroke_dashoffset,
+                            :stroke_linecap, :stroke_linejoin, :stroke_miterlimit,
+                            :stroke_opacity, :stroke_width,
+                            :display, :visibility]
     VALID_VALUES = {
       :fill_rule => ['nonzero','evenodd'],
       :stroke_linecap => ['butt','round','square'],
@@ -32,44 +37,74 @@ module DYI
       :visibility => ['visible','hidden']
     }
 
+    # @attribute opacity
+    # Returns or sets opacity of the paiting operation. Opacity of Both +stroke+
+    # and +fill+ is set at the same time by this attribute.
+    # @return [Float] the value of attribute opacity
+    # @since 1.0.0
+    #+++
     # @attribute fill
-    # @return [Color]
+    # Returns or sets the interior painting of the shape.
+    # @return [Color, #write_as] the value of attribute fill
     #+++
     # @attribute fill_opacity
-    # @return [Float]
+    # Returns or sets the opacity of the paiting operation used to paint the
+    # interior of the shape.
+    # @return [Float] the value of attribute fill_opacity
     #+++
     # @attribute fill_rule
-    # @return [String]
+    # Returns or sets the rule which is to be used to detemine what parts of the
+    # canvas are included inside the shape. specifies one of the following
+    # values: <tt>"nonzero"</tt>, <tt>"evenodd"</tt>
+    # @return [String] the value of attribute fill_rule
     #+++
     # @attribute stroke
-    # @return [Color]
+    # Returns or sets the painting along the outline of the shape.
+    # @return [Color, #write_as] the value of attribute stroke
     #+++
     # @attribute stroke_dasharray
-    # @return [Array<Length>]
+    # Returns or sets the pattern of dashes and gaps used to stroke paths.
+    # @return [Array<Length>] the value of attribute stroke_dasharray
     #+++
     # @attribute stroke_dashoffset
-    # @return [Length]
+    # Returns or sets the distance into the dash pattern to start the dash.
+    # @return [Length] the value of attribute stroke_dashoffset
     #+++
     # @attribute stroke_linecap
-    # @return [String]
+    # Returns or sets the shape to be used at the end of open subpaths when they
+    # are stroked. specifies one of the following values: <tt>"butt"</tt>,
+    # <tt>"round"</tt>, <tt>"square"</tt>
+    # @return [String] the value of attribute stroke_linecap
     #+++
     # @attribute stroke_linejoin
-    # @return [String]
+    # Returns or sets the shape to be used at the corners of paths or basic
+    # shapes when they are stroked. specifies one of the following vlaues:
+    # <tt>"miter"</tt>, <tt>"round"</tt>, <tt>"bevel"</tt>
+    # @return [String] the value of attribute stroke_linejoin
     #+++
     # @attribute stroke_miterlimit
-    # @return [String]
+    # Returns or sets the limit value on the ratio of the miter length to the
+    # value of +stroke_width+ attribute. When the ratio exceeds this attribute
+    # value, the join is converted from a _miter_ to a _bevel_.
+    # @return [String] the value of attribute stroke_mitterlimit
     #+++
     # @attribute stroke_opacity
-    # @return [Float]
+    # Returns or sets the opacity of the painting operation used to stroke.
+    # @return [Float] the value of attribute stroke_opacity
     #+++
     # @attribute stroke_width
-    # @return [Length]
+    # Returns or sets the width of the stroke.
+    # @return [Length] the value of attribute stroke_width
     #+++
     # @attribute display
-    # @return [String]
+    # Returns or sets whether the shape is displayed. specifies one of the
+    # following vlaues: <tt>"block"</tt>, <tt>"none"</tt>
+    # @return [String] the value of attribute display
     #+++
     # @attribute visibility
-    # @return [String]
+    # Returns or sets whether the shape is hidden. specifies one of the
+    # following vlaues: <tt>"visible"</tt>, <tt>"hidden"</tt>
+    # @return [String] the value of attribute visibility
     attr_reader *IMPLEMENT_ATTRIBUTES
 
     def initialize(options={})
@@ -88,19 +123,19 @@ module DYI
     end
 
     # @attribute [w] fill_rule
-    # @param [String] value
+    # @param [String] value the value of attribute fill_rule
     #+++
     # @attribute [w] stroke_linecap
-    # @param [String] value
+    # @param [String] value the value of attribute stroke_linecap
     #+++
     # @attribute [w] stroke_linejoin
-    # @param [String] value
+    # @param [String] value the value of attribute stroke_linejoin
     #+++
     # @attribute [w] display
-    # @param [String] value
+    # @param [String] value the value of attribute display
     #+++
     # @attribute [w] visibility
-    # @param [String] value
+    # @param [String] value the value of attribute visibility
     VALID_VALUES.each do |attr, valid_values|
       define_method("#{attr.to_s}=") {|value|
         if (value = value.to_s).size == 0
@@ -173,6 +208,7 @@ module DYI
 
     class << self
 
+      # @return [Painting, nil]
       def new_or_nil(*args)
         (args.size == 1 && args.first.nil?) ? nil : new(*args)
       end

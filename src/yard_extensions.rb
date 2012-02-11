@@ -386,6 +386,93 @@ class YARD::Handlers::Ruby::MacroHandler
   end
 end
 
+class YARD::Handlers::Ruby::MethodHandler
+  def process
+    nobj = namespace
+    mscope = scope
+    if statement.type == :defs
+      if statement[0][0].type == :ident
+        raise YARD::Parser::UndocumentableError, 'method defined on object instance'
+      end
+      meth = statement[2][0]
+      nobj = P(namespace, statement[0].source) if statement[0][0].type == :const
+      args = format_args(statement[3])
+      blk = statement[4]
+      mscope = :class
+    else
+      meth = statement[0][0]
+      args = format_args(statement[1])
+      blk = statement[2]
+    end
+
+    nobj = P(namespace, nobj.value) while nobj.type == :constant
+    obj = register MethodObject.new(nobj, meth, mscope) do |o|
+      o.visibility = visibility
+      o.source = statement.source
+      o.signature = method_signature(meth)
+      o.explicit = true
+      o.parameters = args
+    end
+
+    # delete any aliases referencing old method
+    nobj.aliases.each do |aobj, name|
+      next unless name == obj.name
+      nobj.aliases.delete(aobj)
+    end if nobj.is_a?(NamespaceObject)
+
+    if mscope == :instance && meth == "initialize"
+      unless obj.has_tag?(:return)
+        obj.docstring.add_tag(YARD::Tags::Tag.new(:return,
+          "a new instance of #{namespace.name}", namespace.name.to_s))
+      end
+    elsif mscope == :class && obj.docstring.blank? && %w(inherited included
+        extended method_added method_removed method_undefined).include?(meth)
+      obj.docstring.add_tag(YARD::Tags::Tag.new(:private, nil))
+    elsif meth.to_s =~ /\?$/
+      if obj.tag(:return) && (obj.tag(:return).types || []).empty?
+        obj.tag(:return).types = ['Boolean']
+      elsif obj.tag(:return).nil?
+        unless obj.tags(:overload).any? {|overload| overload.tag(:return) }
+          obj.docstring.add_tag(YARD::Tags::Tag.new(:return, "", "Boolean"))
+        end
+      end
+    end
+
+    if obj.has_tag?(:option)
+      # create the options parameter if its missing
+      obj.tags(:option).each do |option|
+        expected_param = option.name
+        unless obj.tags(:param).find {|x| x.name == expected_param }
+          new_tag = YARD::Tags::Tag.new(:param, "a customizable set of options", "Hash", expected_param)
+          obj.docstring.add_tag(new_tag)
+        end
+      end
+    end
+
+    if info = obj.attr_info
+      if meth.to_s =~ /=$/ # writer
+        info[:write] = obj if info[:read]
+      else
+        info[:read] = obj if info[:write]
+      end
+    end
+
+    parse_block(blk, :owner => obj) # mainly for yield/exceptions
+
+    # BEGIN (YUO: when the method has a attribute tag)
+    if obj.has_tag?(:attribute)
+      if meth.to_s =~ /(.+)=$/ # writer
+        namespace.attributes[scope][$1] ||= SymbolHash[:read => nil, :write => nil]
+        namespace.attributes[scope][$1][:write] = obj
+      elsif args.empty?        # reader
+        namespace.attributes[scope][meth] ||= SymbolHash[:read => nil, :write => nil]
+        namespace.attributes[scope][meth][:read] = obj
+      end
+    end
+    # END
+  end
+end
+
 =begin
 class YARD::Handlers::Processor
       def process(statements)
