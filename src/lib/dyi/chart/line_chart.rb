@@ -180,11 +180,12 @@ module DYI
             second_axis_settings[:min],
             second_axis_settings[:max]) if use_y_second_axis?
 
-        data.values_size.times do |i|
-          draw_chart(i, chart_type(i), chart_color(i), use_y_second_axis?(i) ? sub_settings : settings) if chart_type(i) == :stackedbar
-        end
-        (data.values_size - 1).downto(0) do |i|
-          draw_chart(i, chart_type(i), chart_color(i), use_y_second_axis?(i) ? sub_settings : settings) if chart_type(i) != :stackedbar
+        [:stackedbar, :bar, :area, :line].each do |chart_type|
+          data.values_size.times do |i|
+            if chart_type(i) == chart_type
+              draw_chart(i, chart_type(i), chart_color(i), use_y_second_axis?(i) ? sub_settings : settings)
+            end
+          end
         end
 
         draw_axis(settings, sub_settings)
