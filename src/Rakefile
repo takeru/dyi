@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'rake/gempackagetask'
 require 'yard'
-require 'lib/dyi'
+require './lib/dyi'
 
 task :default => [:package, :yard]
 
@@ -25,7 +25,7 @@ spec = Gem::Specification.new do |s|
 
   s.files = Dir.glob('**/*')
   s.files.delete(File.basename(__FILE__))
-  s.files.delete(".yardopts")
+  s.files.delete("yard_extensions.rb")
   s.files.reject!{|path|
     path =~ /^examples\/output\// || path =~ /^pkg\//
   }
