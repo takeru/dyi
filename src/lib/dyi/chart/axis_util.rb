@@ -218,11 +218,24 @@ module DYI
         base_value = base_value(data_min, data_max, min.nil?, max.nil?)
 
         scale_interval = scale_interval(base_value, data_min, data_max, scale_count)
-        min_scale_value = nil
-        (base_value + scale_interval).step(data_min, -scale_interval) {|n| min_scale_value = n}
-        min ||= (min_scale_value.nil? ? base_value : min_scale_value - scale_interval)
-        min_scale_value ||= min + scale_interval
-        max = scale_interval * scale_count + min
+        scale_ratio = scale_interval.quo(main_axis_settings[:scale_interval])
+        if min
+          min_scale_value = scale_ratio * (main_axis_settings[:min_scale_value] - main_axis_settings[:min]) + min
+          max = scale_ratio * (main_axis_settings[:max] - main_axis_settings[:min_scale_value]) + min_scale_value
+        elsif max
+          min_scale_value = max - scale_ratio * (main_axis_settings[:max] - main_axis_settings[:min_scale_value])
+          min = min_scale_value - scale_ratio * (main_axis_settings[:min_scale_value] - main_axis_settings[:min])
+        else
+          min_scale_value = nil
+          (base_value + scale_interval).step(data_min, -scale_interval) {|n| min_scale_value = n}
+          min_scale_value ||= base_value + scale_interval
+          min = min_scale_value - scale_ratio * (main_axis_settings[:min_scale_value] - main_axis_settings[:min])
+          if data_min < min
+            min_scale_value -= scale_interval
+            min -= scale_interval
+          end
+          max = scale_ratio * (main_axis_settings[:max] - main_axis_settings[:min_scale_value]) + min_scale_value
+        end
 
         {
           :min => min || min_scale_value - scale_interval,
