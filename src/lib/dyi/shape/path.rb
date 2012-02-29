@@ -24,6 +24,35 @@ require 'enumerator'
 module DYI
   module Shape
 
+    # +Path+ represent the outline of a shape.
+    #
+    # +Path+ object has a concept of a current point. In an analogy with drawing
+    # on paper, the current point can be thought of as the location of the pen.
+    # The position of the pen can be changed, and the outline of a shape (open
+    # or closed) can be traced by dragging the pen in either straight lines or
+    # curves.
+    #
+    # = Commands of Drawing Paths
+    #
+    # Lines or curves is drawn using following commad:
+    # * <b>_move_to_ commands</b> -- Method {#move_to} and {#rmove_to} establish
+    #   a new current point. The effect is as if the "pen" were lifted and moved
+    #   to a new location.
+    # * <b>_close_path_ command</b> -- Method {#close_path} ends the current
+    #   subpath and causes an automatic straight line to be drawn from the
+    #   current point to the initial point of the current subpath.
+    # * <b>_line_to_ commands</b> -- Method {#line_to} and {#rline_to} draw
+    #   straight lines from the current point to a new point.
+    # * <b>Cubic Bézier Curve commands</b> -- Method {#curve_to} and {#rcurve_to}
+    #   draw a cubic Bézier curve from the current point.
+    # * <b>Quadratic Bézier Curve commands</b> -- Method {#quadratic_curve_to}
+    #   and {#rquadratic_curve_to} draw a quadratic Bézier curve from the
+    #   current point.
+    # * <b>Elliptical Arc Curve commands</b> -- Method {#arc_to} and {#rarc_to}
+    #   draw an elliptical arc from the current point.
+    #
+    # See the documentation of each method for more infomation.
+    #
     # @since 0.0.0
     class Path < Base
 
@@ -36,18 +65,60 @@ module DYI
         @marker = {}
       end
 
+      # Starts a new sub-path at a given point, which is specified a absolute
+      # coordinate. The new current points become the given point.
+      #
+      # When multiple points is given as arguments, starts a new sub-path at the
+      # first point and draws straight line to the subsequent points. (i.e.
+      # <tt>path.move_to(pt1,pt2,pt3,...)</tt> equals to <tt>path.move_to(pt1);
+      # path.line_to(pt2,pt3,...)</tt>)
+      # @param [Coordinate] point the absolute coordinate of the start point of
+      #   the new sub-path. The second and subsequent arguments are the absolute
+      #   point to which the line is drawn from previous point
+      # @see #rmove_to
       def move_to(*points)
         push_command(:move_to, *points)
       end
 
+      # Starts a new sub-path at a given point, which is specified a relative
+      # coordinate to current point. The new current point becomes the last
+      # given point.
+      #
+      # When multiple points is given as arguments, starts a new sub-path at the
+      # first point and draws straight line to the subsequent points. (i.e.
+      # <tt>path.move_to(pt1,pt2,pt3,...)</tt> equals to <tt>path.move_to(pt1);
+      # path.line_to(pt2,pt3,...)</tt>)
+      # @param [Coordinate] point the relative coordinate of the start point of
+      #   the new sub-path. The second and subsequent arguments are the relative
+      #   point to which the line is drawn from previous point
+      # @see #move_to
       def rmove_to(*points)
         push_command(:rmove_to, *points)
       end
 
+      # Draws straight lines from the current point, which is specified a
+      # absolute coordinate. The new current point becomes the last given point.
+      #
+      # When multiple points is given as argument, draws a polyline. (i.e.
+      # <tt>path.line_to(pt1,pt2,pt3,...)</tt> equals to <tt>path.line_to(pt1);
+      # path.line_to(pt2); path.line_to(pt3); ...</tt>)
+      # @param [Coordinate] point the absolute coordinate which the line is
+      #   drawn from current point to
+      # @see #rline_to
       def line_to(*points)
         push_command(:line_to, *points)
       end
 
+      # Draws straight lines from the current point, which is specified a
+      # relative coordinate to current point. The new current point becomes the
+      # last given point.
+      #
+      # When multiple points is given as arguments, draws a polyline. (i.e.
+      # <tt>path.rline_to(pt1,pt2,pt3,...)</tt> equals to <tt>path.rline_to(pt1);
+      # path.rline_to(pt2); path.rline_to(pt3); ...</tt>)
+      # @param [Coordinate] point the relavive coordinate which the line is
+      #   drawn from current point to
+      # @see #line_to
       def rline_to(*points)
         push_command(:rline_to, *points)
       end

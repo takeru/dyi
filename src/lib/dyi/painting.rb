@@ -22,20 +22,24 @@
 #
 module DYI
 
+  # +Painting+ is used to specify how the drawing of the interior and the
+  # outline of the shape. {Shape::Base} objects (or objects of its subclass)
+  # have +painting+ attribute whose value is instance of this class.
   # @since 0.0.0
   class Painting
+
+    # @private
     IMPLEMENT_ATTRIBUTES = [:opacity, :fill, :fill_opacity, :fill_rule,
                             :stroke, :stroke_dasharray, :stroke_dashoffset,
                             :stroke_linecap, :stroke_linejoin, :stroke_miterlimit,
                             :stroke_opacity, :stroke_width,
                             :display, :visibility]
-    VALID_VALUES = {
-      :fill_rule => ['nonzero','evenodd'],
-      :stroke_linecap => ['butt','round','square'],
-      :stroke_linejoin => ['miter','round','bevel'],
-      :display => ['block','none'],
-      :visibility => ['visible','hidden']
-    }
+    # @private
+    VALID_VALUES = {:fill_rule => ['nonzero','evenodd'],
+                    :stroke_linecap => ['butt','round','square'],
+                    :stroke_linejoin => ['miter','round','bevel'],
+                    :display => ['block','none'],
+                    :visibility => ['visible','hidden']}
 
     # @attribute opacity
     # Returns or sets opacity of the paiting operation. Opacity of Both +stroke+
@@ -86,7 +90,7 @@ module DYI
     # Returns or sets the limit value on the ratio of the miter length to the
     # value of +stroke_width+ attribute. When the ratio exceeds this attribute
     # value, the join is converted from a _miter_ to a _bevel_.
-    # @return [String] the value of attribute stroke_mitterlimit
+    # @return [Float] the value of attribute stroke_mitterlimit
     #+++
     # @attribute stroke_opacity
     # Returns or sets the opacity of the painting operation used to stroke.
@@ -107,6 +111,35 @@ module DYI
     # @return [String] the value of attribute visibility
     attr_reader *IMPLEMENT_ATTRIBUTES
 
+    # Creates and returns a new instace of Paintng. If the argutment is a
+    # instance of Painting, returns a copy of the argument.
+    # @option options [String] :display the value of attribute {#display display};
+    #   one of following values: <tt>"block"</tt>, <tt>"none"</tt>
+    # @option options [Color, #write_as] :fill the value of attribute {#fill fill}
+    # @option options [#to_f] :fill_opacity the value of attribute fill_opacity
+    # @option options [String] :fill_rule the value of attribute {#fill_rule
+    #   fill_rule}; one of following values: <tt>"nonzero"</tt>, <tt>"evenodd"</tt>
+    # @option options [#to_f] :opacity the value of attribute {#opacity opacity}
+    # @option options [Color, #write_as] :stroke the value of attribute {#stroke
+    #   stroke}
+    # @option options [Array<Length>, String] :stroke_dasharray the value of
+    #   attribute {#stroke_dasharray stroke_dasharray}
+    # @option options [Length] :stroke_dashoffset the value of attribute
+    #   {#stroke_dashoffset stroke_dashoffset}
+    # @option options [String] :stroke_linecap the value of attribute
+    #   {#stroke_linecap stroke_linecap}; one of following values:
+    #   <tt>"butt"</tt>, <tt>"round"</tt>, <tt>"square"</tt>
+    # @option options [String] :stroke_linejoin the value of attribute
+    #   {#stroke_linejoin stroke_linejoin}; one of following values:
+    #   <tt>"miter"</tt>, <tt>"round"</tt>, <tt>"bevel"</tt>
+    # @option options [#to_f] :stroke_miterlimit the value of attribute
+    #   {#stroke_miterlimit stroke_miterlimit}
+    # @option options [#to_f] :stroke_opacity the value of attribute
+    #   {#stroke_opacity stroke_opacity}
+    # @option options [Length] :stroke_width the value of attribute
+    #   {#stroke_width stroke_width}
+    # @option options [String] :visible the value of attribute {#visibility
+    #   visibility}; one of following values: <tt>"visible"</tt>, <tt>"hidden"</tt>
     def initialize(options={})
       case options
       when Painting
@@ -147,35 +180,51 @@ module DYI
       }
     end
 
+    # @attribute
+    # @param [Color, #write_as] color the value of attribute fill
     def fill=(color)
       @fill = color.respond_to?(:color?) && color.color? ? color : Color.new_or_nil(color)
     end
 
+    # @attribute
+    # @param [Color, #write_as] color the value of attribute stroke
     def stroke=(color)
       @stroke = color.respond_to?(:color?) && color.color? ? color : Color.new_or_nil(color)
     end
 
+    # @attribute
+    # @param [Float] opacity the value of attribute opacity
     # @since 1.0.0
     def opacity=(opacity)
       @opacity = opacity.nil? ? nil : opacity.to_f
     end
 
+    # @attribute
+    # @param [Float] opacity the value of attribute fill_opacity
     def fill_opacity=(opacity)
       @fill_opacity = opacity.nil? ? nil : opacity.to_f
     end
 
+    # @attribute
+    # @param [Float] opacity the value of attribute stroke_opacity
     def stroke_opacity=(opacity)
       @stroke_opacity = opacity.nil? ? nil : opacity.to_f
     end
 
+    # @attribute
+    # @param [Length] width the value of attribute stroke_width
     def stroke_width=(width)
       @stroke_width = Length.new_or_nil(width)
     end
 
+    # @attribute
+    # @param [Float] miterlimit the value of attribute stroke_miterlimit
     def stroke_miterlimit=(miterlimit)
       @stroke_miterlimit = miterlimit.nil? ? nil : [miterlimit.to_f, 1].max
     end
 
+    # @attribute
+    # @param [Array<Legth>, String] array the value of attribute stroke_dasharray
     def stroke_dasharray=(array)
       if (array.nil? || array.empty?)
         @stroke_dasharray = nil
@@ -186,20 +235,28 @@ module DYI
       end
     end
 
+    # @attribute
+    # @param [Length] offset the value of attribute stroke_dashoffset
     def stroke_dashoffset=(offset)
       @stroke_dashoffset = Length.new_or_nil(offset)
     end
 
+    # Returns the hash of the attribute values. Even if the return value of this
+    # method is modified, the attribute value of the object is not modify.
+    # @return [Hash{Symbol => Object}] the copy of the attribute values
     def attributes
       IMPLEMENT_ATTRIBUTES.inject({}) do |hash, attr|
         value = instance_variable_get("@#{attr}")
         unless value.nil?
-          hash[attr] = value # value.respond_to?(:join) ? value.join(',') : value.to_s
+          hash[attr] = value
         end
         hash
       end
     end
 
+    # Returns whether a value has been set some attribute in this object.
+    # @return [Boolean] true if a value has been set some attribute in this
+    #   object, false otherwise
     def empty?
       IMPLEMENT_ATTRIBUTES.all? do |attr|
         not instance_variable_get("@#{attr}")
@@ -208,7 +265,11 @@ module DYI
 
     class << self
 
-      # @return [Painting, nil]
+      # Returns a new instace of +Painting+ if the argments is not +nil+ (calls
+      # +Painting.new+ method), but returns +nil+ if the argument is +nil+.
+      # @return [Painting, nil] a new instace of Painting if the argments is not
+      #   nil, nil otherwise
+      # @see #initialize
       def new_or_nil(*args)
         (args.size == 1 && args.first.nil?) ? nil : new(*args)
       end

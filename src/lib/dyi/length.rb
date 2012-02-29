@@ -18,27 +18,15 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with DYI.  If not, see <http://www.gnu.org/licenses/>.
-#
-# == Overview
-#
-# This file provides the DYI::Length class, which provides length
-# supports for DYI scripts.  The length is a distance measurement.
-#
-# See the documentation to the DYI::Length class for more details and
-# examples of usage.
 
 #
 module DYI
 
-  # Class representing a length.  See documentation for the file
-  # dyi/length.rb for an overview.
-  #
-  # == Introduction
-  #
-  # This class works with an amount and a unit.  The lists of unit identifiers
-  # matches the list of unit identifiers in CSS: em, ex, px, pt, pc, cm, mm, in
-  # and percentages(%).  When a unit is not given, then the length is assumed
-  # to be in user units (i.e., a value in the current user coordinate sytem).
+  # This class representing a length. Length object holds an amount and a unit.
+  # The lists of unit identifiers matches the list of unit identifiers in CSS:
+  # em, ex, px, pt, pc, cm, mm, in and percentages(%). When a unit is not given,
+  # then the length is assumed to be in user units (i.e., a value in the current
+  # user coordinate sytem).
   #
   # * As in CSS, the _em_ and _ex_ unit identifiers are relative to the current
   #   font's font-size and x-height, respectively.
@@ -51,31 +39,27 @@ module DYI
   # * For percentage values that are defined to be relative to the size of
   #   parent element.
   #
-  # == Ways of comparing and calculating
+  # = Distuptive Change
   #
-  # This class include +Comparable+ module, therefore you can use the
-  # comparative operators.  In the comparison between DYI::Length
-  # objects, the unit of each objects are arranged and it does.  The equality
-  # operator '<tt>==</tt>' does not test equality instance but test equality
-  # value.
+  # Length is not possible to change destructively. +#clone+ method and +#dup+
+  # method raise TypeError.
   #
-  # This class suports following arithmetic operators and methods: <tt>+</tt>,
-  # <tt>-</tt>, <tt>*</tt>, <tt>/</tt>, <tt>%</tt>, <tt>**</tt>, +#div+, +#quo+,
-  # +#modulo+.  The operators '<tt>+</tt>', '<tt>-</tt>' coerced right hand
-  # operand into Length, and then calculate.
+  # = Ways of Comparing and Calculating
   #
-  # See the documentation to each operators and methods class for details.
+  # This class includes +Comparable+ module, therefore you can use the
+  # comparative operators. In the comparison between DYI::Length objects, the
+  # unit of each objects are arranged and it compares. The equality operator
+  # '<tt>==</tt>' does not test equality instance but test equality value.
   #
-  # == Examples of use
+  #   DYI::Length.new('1in') > DYI::Length.new(50)        # => true, 1in equals 90px.
+  #   DYI::Length.new('1in') > DYI::Length.new('2em')     # => Error, 'em' is not comparable unit.
+  #   DYI::Length.new('10cm') == DYI::Length.new('100mm') # => true
   #
-  #   length1 = DYI::Length.new(10)   # 10 user unit (equals to 10px).
-  #   length2 = DYI::Length.new('10') # it is 10px too.
-  #   DYI::Length.new('1in') > DYI::Length.new(50)
-  #                             # => true, 1in equals 90px.
-  #   DYI::Length.new('1in') > DYI::Length.new('2em')
-  #                             # => Error, 'em' is not comparable unit.
-  #   DYI::Length.new('10cm') == DYI::Length.new('100mm')
-  #                             # => true
+  # This class suports following arithmetic operators and methods: {#+ +},
+  # {#- -}, {#* *}, {#/ /}, {#% %}, {#** **}, {#div}, {#quo}, {#modulo}. The
+  # operators '{#+ +}', '{#- -}' coerces a right hand operand into Length, and
+  # then calculates.
+  #
   # @since 0.0.0
   class Length
     include Comparable
@@ -83,13 +67,21 @@ module DYI
     # Array of unit that can be used.
     UNITS = ['px', 'pt', '%', 'cm', 'mm', 'in', 'em', 'ex', 'pc']
 
+    # @private
     @@units = {'px'=>1.0,'pt'=>1.25,'cm'=>35.43307,'mm'=>3.543307,'in'=>90.0,'pc'=>15.0}
+    # @private
     @@default_format = '0.###U'
 
-    # Returns a new DYI::Length object.
-    #
-    # +length+ is instance of +Numeric+, +String+, or
-    # <tt>DYI::Length</tt> class.
+    # @overload initialize(length)
+    #   Returns the argument itself.
+    #   @param [Length] length the source length
+    # @overload initialize(num)
+    #   @param [Numeric] num the user unit value
+    # @overload initialize(str)
+    #   @param [String] str the string that mean the length
+    # @raise [ArgumentError] the argument is a string that could not be understand
+    # @raise [TypeError] the argument can not be coerced into Length
+    # @see .new
     def initialize(length)
       case length
       when Length
@@ -110,20 +102,26 @@ module DYI
       end
     end
 
-    # This constant is zoro length.
+    # Zero length.
     ZERO = new(0)
 
-    # Returns the receiver's value.
+    # Unary Plus -- Returns the receiver's value.
+    # @return [Length] receiver itself
     def +@
       self
     end
 
-    # Returns the receiver's value, negated.
+    # Unary Minus -- Returns the receiver's value, negated.
+    # @return [Length] the negated receiver's value
     def -@
       new_length(-@value)
     end
 
-    # Returns a new length which is the sum of the receiver and +other+.
+    # Returns a new length which is the sum of the receiver and _other_. First,
+    # _other_ is converted into +Length+.
+    # @param [Length, Numeric, String] other the value that can be converted
+    #   into +Length+
+    # @return [Length] a new length which is the sum of the receiver and _other_
     def +(other)
       other = self.class.new(other)
       if @unit == other._unit
@@ -133,7 +131,12 @@ module DYI
       end
     end
 
-    # Returns a new length which is the difference of the receiver and +other+.
+    # Returns a new length which is the difference of the receiver and _other_.
+    # First _other_ is converted into +Length+.
+    # @param [Length, Numeric, String] other the value that can be converted
+    #   into +Length+
+    # @return [Length] a new length which is the difference of the receiver and
+    #   _other_
     def -(other)
       other = self.class.new(other)
       if @unit == other._unit
@@ -143,18 +146,24 @@ module DYI
       end
     end
 
-    # Returns a new muliplicative length of the receiver by +number+.
+    # Returns a new muliplicative length of the receiver by _number_.
+    # @param [Numeric] number the operand value
+    # @return [Length] a new muliplicative length
     def *(number)
       new_length(@value * number)
     end
 
-    # Raises a length the number power.
+    # Raises a length the _number_ power.
+    # @param [Numeric] number the operand value
+    # @return [Length] a length the _number_ power
     def **(number)
       new_length(@value ** number)
     end
 
-    # Returns a new length which is the result of dividing the receiver by
-    # +other+.
+    # Returns a number which is the result of dividing the receiver by _other_.
+    # @param [Length] other the operand length
+    # @return [Number] a number which is the result of dividing
+    # @raise [TypeError] _other_ can't be coerced into Length
     def div(other)
       case other
       when Length
@@ -168,8 +177,11 @@ module DYI
       end
     end
 
-    # Return a new length which is the modulo after division of the receiver by
-    # +other+.
+    # Return a number which is the modulo after division of the receiver by
+    # _other_.
+    # @param [Length] other the operand length
+    # @return [Number] a number which is the modul
+    # @raise [TypeError] _other_ can't be coerced into Length
     def % (other)
       case other
       when Length
@@ -183,12 +195,19 @@ module DYI
       end
     end
 
-    # If argument +number+ is a numeric, returns a new divisional length of the
-    # receiver by +other+.  If argument +number+ is a length, returns a divisional
-    # float of the receiver by +other+.
-    #
-    #   DYI::Length.new(10) / 4                          # => 2.5px
+    # Divisional operator
+    # @overload /(other)
+    #   Returns a divisional float of the receiver by _other_.
+    #   @param [Length] other the operand length
+    #   @return [Float] a divisional value
+    # @overload /(number)
+    #   Returns a new divisional length of the receiver by _number_.
+    #   @param [Numeric] other the operand value
+    #   @return [Length] a new divisional length
+    # @example
+    #   DYI::Length.new(10) / 4                  # => 2.5px
     #   DYI::Length.new(10) / DYI::Length.new(4) # => 2.5
+    # @raise [TypeError] the argument can't be coerced into Length or Numeric
     def /(number)
       case number
       when Numeric
@@ -207,31 +226,39 @@ module DYI
     alias quo /
     alias modulo %
 
+    # @private
     def clone
       raise TypeError, "allocator undefined for Length"
     end
 
+    # @private
     def dup
       raise TypeError, "allocator undefined for Length"
     end
 
-    # Returns +true+ if the receiver has a zero length, +false+ otherwise.
+    # Returns whether the receiver is a zero length.
+    # @return [Boolean] true if the receiver is a zero length, false otherwise
     def zero?
       @value == 0
     end
 
-    # Returns +self+ if the receiver is not zero, +nil+ otherwise.
+    # Returns whether the receiver is a no-zero length.
+    # @return [Length, nil] self if the receiver is not zero, nil otherwise
     def nonzero?
       @value == 0 ? nil : self
     end
 
     # Returns the absolute length of the receiver.
+    # @return [Length] the absolute length
     def abs
       @value >= 0 ? self : -self
     end
 
-    # Returns +-1+, +0+, <tt>+1</tt> or +nil+ depending on whether the receiver
-    # is less than, equal to, greater than real or not comparable.
+    # Comparision -- compares two values. This is the basis for the tests in
+    # +Comparable+.
+    # @return [Fixnum, nil] +-1+, +0+, <tt>+1</tt> or +nil+ depending on whether
+    #   the receiver is less than, equal to, greater than _other_; if is not
+    #   comparable, +nil+.
     def <=>(other)
       return nil unless other.kind_of?(Length)
       if @unit == other._unit
@@ -241,21 +268,28 @@ module DYI
       end
     end
 
-    # Returns the receiver's unit.  If receiver has no unit, returns 'px'.
+    # Returns the receiver's unit. If receiver has no unit, returns 'px'.
+    # @return [String] the receiver's unit
     def unit
       @unit.nil? ? 'px' : @unit
     end
 
-    # :call-seq:
-    # step (limit, step) {|length| ...}
-    # step (limit, step)
-    #
-    # Invokes block with the sequence of length starting at receiver,
-    # incremented by +step+ on each call.  The loop finishes when +length+ to be
-    # passed to the block is greater than +limit+ (if +step+ is positive) or
-    # less than +limit+ (if +step+ is negative).
-    #
-    # If no block is given, an enumerator is returned instead.
+    # Invokes block with the sequence of length starting at receiver.
+    # @overload step (limit, step)
+    #   Invokes block with the sequence of length starting at receiver,
+    #   incremented by _step_ on each call. The loop finishes when _length_ to
+    #   be passed to the block is greater than _limit_ (if _step_ is positive)
+    #   or less than _limit_ (if _step_ is negative).
+    #   @param [Length] limit the limit of iteration continuation
+    #   @param [Length] step an iteration interval
+    #   @yield [len] an iteration block
+    #   @yieldparam [Length] len the length that is created by stepping
+    #   @return [Length] the receiver itself
+    # @overload step (limit, step)
+    #   Returns an enumerator instead of the iteration.
+    #   @param [Length] limit the limit of iteration continuation
+    #   @param [Length] step an iteration interval
+    #   @return [Enumrator] an enumrator for stepping
     def step(limit, step)
       if @unit == limit._unit && @unit == step._unit
         self_value, limit_value, step_value = @value, limit._num, step._num
@@ -275,16 +309,30 @@ module DYI
       end
     end
 
-    # Returns a new length that converted into length of user unit.
+    # Returns a length that converted into length of user unit.
+    # @return [Length] a length that converted into length of user unit
     def to_user_unit
       @unit ? self.class.new(to_f) : self
     end
 
-    # Returns a string representing obj.
+    # Returns a string to represent the receiver.
     #
-    # Format string can be specified for the argument.  If no argument is given,
-    # +default_format+ of this class is used as format string. About format
-    # string, see the documentation to +default_format+ method.
+    # Format string can be specified for the argument. If no argument is given,
+    # {.default_format} is used as format string. About format string, see the
+    # documentation of {.default_format} method.
+    # @param [String] format a format string
+    # @return [Length] a string to represent the receiver
+    # @example
+    #   len1 = DYI::Length.new(1234.56)
+    #   len1.to_s('0.#u')     # => "1234.6px"
+    #   len1.to_s('0.#U')     # => "1234.6"
+    #   len1.to_s('#,#0U')    # => "1,235"
+    #   
+    #   len2 = DYI::Length.new('10pt')
+    #   len2.to_s('0u')       # => "10pt"
+    #   len2.to_s('0U')       # => "10pt"
+    # @see .default_format=
+    # @see .set_default_format
     def to_s(format=nil)
       fmts = (format || @@default_format).split('\\\\')
       fmts = fmts.map do |fmt|
@@ -293,8 +341,12 @@ module DYI
       @value.strfnum(fmts.join('\\\\'))
     end
 
-    # Returns amount part of a length converted into given unit as float.  If
+    # Returns amount part of the length converted into given unit as float. If
     # parameter +unit+ is given, converts into user unit.
+    # @param [String] unit a unit converted into
+    # @return [Float] amout part of the length
+    # @raise [RuntimeError] length can not convert into other unit
+    # @raise [ArgumentError] _unit_ is unknown unit
     def to_f(unit=nil)
       unless self_ratio = @unit ? @@units[@unit] : 1.0
         raise RuntimeError, "unit `#{@unit}' can not convert into user unit"
@@ -309,6 +361,7 @@ module DYI
       (@value * self_ratio.quo(param_ratio)).to_f
     end
 
+    # @private
     def inspect
       @value.to_s + @unit.to_s
     end
@@ -336,33 +389,70 @@ module DYI
 
       public
 
+      # Creates and returns a new instance of Length provided the argument is
+      # not an instace of Length. If the argument is an instace of Length,
+      # returns the argument itself.
+      # @overload new(length)
+      #   Returns the argument itself.
+      #   @param [Length] length the source length
+      #   @return [Length] the argument itself
+      # @overload new(num)
+      #   @param [Numeric] num the user unit value
+      # @overload new(str)
+      #   @param [String] str the string that mean the length
+      # @return [Length] an instace of Length
+      # @raise (see #initialize)
+      # @example
+      #   length1 = DYI::Length.new(10)      # 10 user unit (equals to 10px)
+      #   length2 = DYI::Length.new('10')    # it is 10px too
+      #   length3 = DYI::Length.new('10px')  # it is 10px too
       def new(*args)
         return args.first if args.size == 1 && args.first.instance_of?(self)
         super
       end
 
-      # Returns new instance as +new+ method when an argument is not +nil+.
-      # If an argument is +nil+, returns +nil+.
+      # Returns a new instace of Length if the argments is not +nil+ (calls
+      # +Length.new+ method), but returns +nil+ if the argument is +nil+.
+      # @return [Length, nil] a new instace of Length if the argments is not
+      #   nil, nil otherwise
+      # @see .new
       def new_or_nil(*args)
         (args.size == 1 && args.first.nil?) ? nil : new(*args)
       end
 
-      # Returns a coefficient that is used for conversion from any unit into
-      # user unit. 
+      # Returns a coefficient that is used for conversion from _unit_ into user
+      # unit.
+      # @param [String] unit a unit name
+      # @return [Float] a coefficient that is used for conversion
+      # @raise [ArgumentError] a given unit can not be converted into another
+      #   unit
       def unit_ratio(unit)
-        raise ArgumentError, "unit `#{unit}' can not convert other unit" unless ratio = @@units[unit.to_s]
+        unless ratio = @@units[unit.to_s]
+          raise ArgumentError, "unit `#{unit}' can not be converted into another unit"
+        end
         ratio
       end
 
-      # :call-seq:
-      # set_default_format (format) {...}
-      # set_default_format (format)
-      #
-      # Invokes block with given +format+ string as default format.  After
-      # invokes block, formar format is used.
-      #
-      # If no block is given, sets default format setring as +default_format=+
-      # method.
+      # Invokes block with given format string as default format.
+      # @overload set_default_format(format)
+      #   Invokes block with given _format_ as default format. After invokes the
+      #   block, the original format is used.
+      #   @param [String] format a format string
+      #   @yield a block which the format string is used in
+      #   @return [Coordinate] the receiver itself
+      # @overload set_default_format(format)
+      #   Sets default format setring as {.default_format=} method.
+      #   @param [String] format a format string
+      #   @return [String] the given argument
+      # @example
+      #   # an initial format string is "#.###U"
+      #   len = DYI::Length.new(1234.56)
+      #   len.to_s                      # => "1234.56"
+      #   DYI::Length.set_default_format('#,##0u') {
+      #     len.to_s                    # => "1,235px"
+      #   }
+      #   len.to_s                      # => "1234.56"
+      # @see .default_format=
       def set_default_format(format)
         if block_given?
           org_format = @@default_format
@@ -375,22 +465,31 @@ module DYI
         end
       end
 
-      # Returns format that is used when called to_s. See the documentation to
-      # +default_format=+ method too.
+      # Returns a format that is used when called {#to_s} without an argument.
+      # @return [String] a format string
+      # @see .default_format=
       def default_format
         @@default_format
       end
 
-      # Sets format that is used when called to_s.
+      # Sets a format string that is used when called {#to_s}. The format string
+      # that is set at this method is used permanently. Use {.set_default_format}
+      # with a block when you want to use a format string
+      # temporarily.
       #
-      # The format string is same as <tt>Numeric#strfnum</tt> format.  See the
-      # documentation to <tt>Numeric#strfnum</tt> method.  In addition to
-      # place-holder of +strfnum+, following placeholder can be used.
-      #
-      # +u+:: (unit placeholder) Placeholder '+u+' is replaced as a unit. If
-      #       the unit is user unit, '+u+' is repleced as 'px'.
-      # +U+:: (unit placeholder) Placeholder '+U+' is replaced as a unit. If
-      #       the unit is user unit, '+U+' is replece as empty string.
+      # The format string is same as {Numeric#strfnum} format. In addition to
+      # place-holder of {Numeric#strfnum}, following placeholder can be used.
+      # [<tt>"u"</tt> (unit placeholder)] Placeholder '+u+' is replaced as a
+      #                                   unit. If the unit is user unit, '+u+'
+      #                                   is repleced as 'px'.
+      # [<tt>"U"</tt> (unit placeholder)] Placeholder '+U+' is replaced as a
+      #                                   unit. If the unit is user unit, '+U+'
+      #                                   is replece as empty string.
+      # [<tt>"\\"</tt> (Escape Character)] Causes the next character to be
+      #                                    interpreted as a literal.
+      # @see #to_s
+      # @see .set_default_format
+      # @see Numeric#strfnum
       def default_format=(fromat)
         @@default_format = fromat.clone
       end

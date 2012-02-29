@@ -113,7 +113,7 @@ module DYI
 
       # Calls block once for each record, passing the values that records as a
       # parameter.
-      # @yield [values] iterator block
+      # @yield [values] iteration block
       # @yieldparam [Array<Numeric>] values the values that the record has
       # @since 1.0.0
       def values_each(&block)
@@ -141,7 +141,7 @@ module DYI
       end
 
       # Calls block once for each record, passing that records as a parameter.
-      # @yield [record] iterator block
+      # @yield [record] iteration block
       # @yieldparam [Struct] record the record in self
       # @since 1.0.0
       def each(&block)
