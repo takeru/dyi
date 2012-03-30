@@ -330,11 +330,19 @@ EOS
       # Class representing a function of ECMAScript.  The scripting becomes
       # effective only when it is output by SVG format.
       class Function < SimpleScript
-        attr_reader :name, :arguments
 
-        # @param [String] body body of client scripting
-        # @param [String] name a function name
-        # @param [Array] arguments a list of argument's name
+        # Returns a function identifier on ECMAScript.
+        # @return [String, nil] a function identifier if the function has a
+        #   identifier on ECMAScript, nil otherwise
+        attr_reader :name
+        # Returns an array of formal parameter identifiers on ECMAScript.
+        # @return [Array<String>] an array of formal parameter identifiers
+        attr_reader :arguments
+
+        # @param [String] body function body on ECMAScript
+        # @param [String] name a function identifier on ECMAScript
+        # @param [Array<String>] arguments a list of formal parameter
+        #   identifiers on ECMAScript
         def initialize(body, name=nil, *arguments)
           super(body)
           if name && name !~ /\A[\$A-Z_a-z][\$0-9A-Z_a-z]*\z/
@@ -349,6 +357,8 @@ EOS
           end
         end
 
+        # Returns string expression of this function in ECMAScript
+        # @return [String] expression in ECMAScript
         # @since 1.0.3
         def contents
           parts = []
@@ -356,9 +366,9 @@ EOS
           parts << " #{name}" if name
           parts << '('
           parts << arguments.join(', ')
-          parts << ") {\n"
+          parts << "){\n"
           parts << @body
-          parts << "}\n"
+          parts << "\n}"
           parts.join
         end
       end
@@ -389,17 +399,19 @@ EOS
           @events.delete(event)
         end
 
+        # Returns string expression of this function in ECMAScript
+        # @return [String] expression in ECMAScript
         # @since 1.0.3
         def contents
           if name
             super
           else
             parts = []
-            parts << "addEventListener(\"load\", function(evt) {\n"
+            parts << "document.addEventListener(\"DOMContentLoaded\", function(evt){\n"
             @events.each do |event|
               if event.event_name == :load
                 parts << @body
-              elsif
+              else
                 if event.target.root_element?
                   parts << '  document.documentElement.addEventListener("'
                 else
@@ -408,14 +420,12 @@ EOS
                   parts << '").addEventListener("'
                 end
                 parts << event.event_name
-                parts << '", function('
-                parts << arguments.join(', ')
-                parts << ") {\n"
-                parts << @body
-                parts << "  }, false);\n"
+                parts << '", '
+                parts << super
+                parts << ", false);\n"
               end
             end
-            parts << "}, false);\n"
+            parts << "\n}, false);\n"
             parts.join
           end
         end
