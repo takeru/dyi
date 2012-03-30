@@ -259,7 +259,7 @@ module DYI
       if @init_script
         @init_script.append_body(script_body)
       else
-        @init_script = Script::EcmaScript::EventListener.new(script_body, 'init')
+        @init_script = Script::EcmaScript::EventListener.new(script_body)
         add_event_listener(:load, @init_script)
       end
     end

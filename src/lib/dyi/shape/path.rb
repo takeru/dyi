@@ -69,66 +69,156 @@ module DYI
       # coordinate. The new current points become the given point.
       #
       # When multiple points is given as arguments, starts a new sub-path at the
-      # first point and draws straight line to the subsequent points. (i.e.
-      # <tt>path.move_to(pt1,pt2,pt3,...)</tt> equals to <tt>path.move_to(pt1);
-      # path.line_to(pt2,pt3,...)</tt>)
+      # first point and draws straight line to the subsequent points. see
+      # example.
       # @param [Coordinate] point the absolute coordinate of the start point of
       #   the new sub-path. The second and subsequent arguments are the absolute
       #   point to which the line is drawn from previous point
+      # @example
+      #   canvas = DYI::Canvas.new(100,100)
+      #   pen = DYI::Drawing::Pen.black_pen
+      #   pen.draw_path(canvas, [20, 20]) {|path|
+      #     path.line_to([20, 50])
+      #     path.move_to([30, 20], [30, 50], [40, 50])
+      #     # The last expression equals to following expressions
+      #     # path.move_to([30, 20])
+      #     # path.line_to([30, 50])
+      #     # path.line_to([40, 50])
+      #   }
       # @see #rmove_to
       def move_to(*points)
         push_command(:move_to, *points)
       end
 
       # Starts a new sub-path at a given point, which is specified a relative
-      # coordinate to current point. The new current point becomes the last
+      # coordinate to current point. The new current point becomes the finally
       # given point.
       #
       # When multiple points is given as arguments, starts a new sub-path at the
-      # first point and draws straight line to the subsequent points. (i.e.
-      # <tt>path.move_to(pt1,pt2,pt3,...)</tt> equals to <tt>path.move_to(pt1);
-      # path.line_to(pt2,pt3,...)</tt>)
+      # first point and draws straight line to the subsequent points. see
+      # example.
       # @param [Coordinate] point the relative coordinate of the start point of
       #   the new sub-path. The second and subsequent arguments are the relative
       #   point to which the line is drawn from previous point
+      # @example
+      #   canvas = DYI::Canvas.new(100,100)
+      #   pen = DYI::Drawing::Pen.black_pen
+      #   pen.draw_path(canvas, [20, 20]) {|path|
+      #     path.rline_to([0, 30])
+      #     path.rmove_to([10, -30], [0, 30], [10, 0])
+      #     # The last expression equals to following expressions
+      #     # path.rmove_to([10, -30])
+      #     # path.rline_to([0, 30])
+      #     # path.rline_to([10, 0])
+      #   }
       # @see #move_to
       def rmove_to(*points)
         push_command(:rmove_to, *points)
       end
 
-      # Draws straight lines from the current point, which is specified a
-      # absolute coordinate. The new current point becomes the last given point.
+      # Draws straight lines from the current point to a given point, which is
+      # specified a absolute coordinate. The new current point becomes the
+      # finally given point.
       #
-      # When multiple points is given as argument, draws a polyline. (i.e.
-      # <tt>path.line_to(pt1,pt2,pt3,...)</tt> equals to <tt>path.line_to(pt1);
-      # path.line_to(pt2); path.line_to(pt3); ...</tt>)
+      # When multiple points is given as argument, draws a polyline. see
+      # example.
       # @param [Coordinate] point the absolute coordinate which the line is
       #   drawn from current point to
+      # @example
+      #   canvas = DYI::Canvas.new(100,100)
+      #   pen = DYI::Drawing::Pen.black_pen
+      #   pen.draw_path(canvas, [20, 20]) {|path|
+      #     path.line_to([20, 50], [30, 20], [30, 50])
+      #     # The last expression equals to following expressions
+      #     # path.line_to([20, 50])
+      #     # path.line_to([30, 20])
+      #     # path.line_to([30, 50])
+      #   }
       # @see #rline_to
       def line_to(*points)
         push_command(:line_to, *points)
       end
 
-      # Draws straight lines from the current point, which is specified a
-      # relative coordinate to current point. The new current point becomes the
-      # last given point.
+      # Draws straight lines from the current point to a given point, which is
+      # specified a relative coordinate to current point. The new current point
+      # becomes the finally given point.
       #
-      # When multiple points is given as arguments, draws a polyline. (i.e.
-      # <tt>path.rline_to(pt1,pt2,pt3,...)</tt> equals to <tt>path.rline_to(pt1);
-      # path.rline_to(pt2); path.rline_to(pt3); ...</tt>)
+      # When multiple points is given as arguments, draws a polyline. see
+      # example.
       # @param [Coordinate] point the relavive coordinate which the line is
       #   drawn from current point to
+      # @example
+      #   canvas = DYI::Canvas.new(100,100)
+      #   pen = DYI::Drawing::Pen.black_pen
+      #   pen.draw_path(canvas, [20, 20]) {|path|
+      #     path.rline_to([0, 30], [10, -30], [0, 30])
+      #     # The last expression equals to following expressions
+      #     # path.rline_to([0, 30])
+      #     # path.rline_to([10, -30])
+      #     # path.rline_to([0, 30])
+      #   }
       # @see #line_to
       def rline_to(*points)
         push_command(:rline_to, *points)
       end
 
+      # Draws quadratic Bézier curves from the current point to the second
+      # argument point using first argument point as control-point. The
+      # control-point and pass-point are specified a absolute coordinate. The
+      # new current point becomes the point to specify in second argument.
+      #
+      # When three or more points is given as the argument, draws
+      # polybézier-curves. In this case, the control-point is assumed to be the
+      # reflection of the control-point on the previouse quadratic Bézier curve
+      # relative to the current point. see example.
+      # @param [Coordinate] point0 the absolute coordinate of the control-point
+      #   of the quadratic Bézier curve
+      # @param [Coordinate] point1 the absolute coordinate which the curve is
+      #   drawn from current point to
+      # @example
+      #   canvas = DYI::Canvas.new(100,100)
+      #   pen = DYI::Drawing::Pen.black_pen
+      #   pen.draw_path(canvas, [20, 20]) {|path|
+      #     path.quadratic_curve_to([40, 20], [60, 50], [60, 80])
+      #     # The last expression equals to following expressions
+      #     # path.quadratic_curve_to([40, 20], [60, 50])
+      #     # path.quadratic_curve_to([80, 80], [60, 80])
+      #     #     control-point [80,80] is reflection of first curve's control-point [40, 20]
+      #     #     across current point [60, 50].
+      #   }
+      # @see #rquadratic_curve_to
       def quadratic_curve_to(*points)
         raise ArgumentError, "number of points must be 2 or more" if points.size < 2
         push_command(:quadratic_curve_to, points[0], points[1])
         push_command(:shorthand_quadratic_curve_to, *points[2..-1]) if points.size > 2
       end
 
+      # Draws quadratic Bézier curves from the current point to the second
+      # argument point using first argument point as control-point. The
+      # control-point and pass-point are specified a relative coordinate to
+      # current point. The new current point becomes the point to specify in
+      # second argument.
+      #
+      # When three or more points is given as the argument, draws
+      # polybézier-curves. In this case, the control-point is assumed to be the
+      # reflection of the control-point on the previouse quadratic Bézier curve
+      # relative to the current point. see example.
+      # @param [Coordinate] point0 the relative coordinate of the control-point
+      #   of the quadratic Bézier curve
+      # @param [Coordinate] point1 the relative coordinate which the curve is
+      #   drawn from current point to
+      # @example
+      #   canvas = DYI::Canvas.new(100,100)
+      #   pen = DYI::Drawing::Pen.black_pen
+      #   pen.draw_path(canvas, [20, 20]) {|path|
+      #     path.rquadratic_curve_to([20, 0], [40, 30], [0, 30])
+      #     # The last expression equals to following expressions
+      #     # path.quadratic_curve_to([20, 0], [40, 30])
+      #     # path.quadratic_curve_to([20, 30], [0, 30])
+      #     #     control-point [20, 30] is reflection of first curve's control-point [-20, -30].
+      #     #     (that is relative coordinate to current point. i.e. [20, 0] - [40, 30])
+      #   }
+      # @see #rquadratic_curve_to
       def rquadratic_curve_to(*points)
         raise ArgumentError, "number of points must be 2 or more" if points.size < 2
         push_command(:rquadratic_curve_to, points[0], points[1])

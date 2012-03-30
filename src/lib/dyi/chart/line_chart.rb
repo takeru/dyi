@@ -30,6 +30,8 @@ module DYI
       include Legend
       CHART_TYPES = [:line, :area, :bar, :stackedbar]
       attr_reader :axis_back_canvas, :chart_back_canvas, :scale_canvas, :chart_front_canvas, :axis_front_canvas, :legend_canvas
+      # @since 1.2.0
+      attr_reader :x_scale_canvas, :y_scale_canvas, :guid_front_canvas, :chart_region
 
       opt_accessor :chart_margins, {:type => :hash, :default => {}, :keys => [:top,:right,:bottom,:left], :item_type => :length}
       opt_accessor :chart_colors, {:type => :array, :item_type => :color}
@@ -196,18 +198,30 @@ module DYI
       def init_container
 #        mask = Drawing::ColorEffect::Mask.new(@canvas)
 #        mask.add_shapes(Shape::Rectangle.new(Drawing::Brush.new(:color => '#FFFFFF'), [margin_left, margin_top], chart_width, chart_height))
-        @axis_back_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @axis_back_canvas
+        @back_canvas = Shape::ShapeGroup.draw_on(@canvas)
+        @axis_back_canvas = Shape::ShapeGroup.draw_on(@canvas)
 #        @chart_front_canvas = Shape::ShapeGroup.draw_on(@canvas, :mask => "url(##{mask.id})") unless @chart_front_canvas
-        @chart_back_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @chart_back_canvas
+        chart_clip = Drawing::Clipping.new(Shape::Rectangle.new([margin_left, margin_top], width - margin_left - margin_right, height - margin_top - margin_bottom))
+        unless @chart_back_canvas
+          clip_container = Shape::ShapeGroup.draw_on(@canvas)
+          @chart_back_canvas = Shape::ShapeGroup.draw_on(clip_container)
+          clip_container.set_clipping(chart_clip)
+        end
         @scale_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @scale_canvas
-        @chart_front_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @chart_front_canvas
+        unless @chart_front_canvas
+          clip_container = Shape::ShapeGroup.draw_on(@canvas)
+          @chart_front_canvas = Shape::ShapeGroup.draw_on(clip_container)
+          clip_container.set_clipping(chart_clip)
+          @chart_region = Shape::Rectangle.new([margin_left, margin_top], width - margin_left - margin_right, height - margin_top - margin_bottom, :painting => {:stroke_width => 0})
+          @chart_region.draw_on(clip_container)
+          @guid_front_canvas = Shape::ShapeGroup.draw_on(clip_container)
+        end
+        @x_scale_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @x_scale_canvas
+        @y_scale_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @y_scale_canvas
         @axis_front_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @axis_front_canvas
         @legend_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @legend_canvas
         @chart_options = {}
 #        @chart_options[:filter] = "url(##{Drawing::Filter::DropShadow.new(@canvas, dropshadow_blur_std, dropshadow_dx, dropshadow_dy).id})" if show_dropshadow?
-        chart_clip = Drawing::Clipping.new(Shape::Rectangle.new([margin_left, margin_top], width - margin_left - margin_right, height - margin_top - margin_bottom))
-        @chart_back_canvas.set_clipping(chart_clip)
-        @chart_front_canvas.set_clipping(chart_clip)
       end
 
       def draw_axis(settings, sub_settings)
@@ -241,7 +255,7 @@ module DYI
           y = value_position_on_chart(margin_top, settings, settings[:min], true)
           if use_y_second_axis? || main_y_axis == :left
             text_pen.draw_text(
-              @axis_front_canvas,
+              @y_scale_canvas,
               [margin_left - text_margin, y],
               main_y_axis == :left ? settings[:min] : sub_settings[:min],
               :text_anchor=>'end',
@@ -249,7 +263,7 @@ module DYI
           end
           if use_y_second_axis? || main_y_axis == :right
             text_pen.draw_text(
-              @axis_front_canvas,
+              @y_scale_canvas,
               [width - margin_right + text_margin, y],
               main_y_axis == :right ? settings[:min] : sub_settings[:min],
               :format => (main_y_axis == :right ? axis_format : second_axis_format))
@@ -294,7 +308,7 @@ module DYI
 
           if use_y_second_axis? || main_y_axis == :left
             text_pen.draw_text(
-              @axis_back_canvas,
+              @y_scale_canvas,
               [margin_left - text_margin, y],
               main_y_axis == :left ? value : sub_axis_value,
               :alignment_baseline=>'middle',
@@ -305,7 +319,7 @@ module DYI
 
           if use_y_second_axis? || main_y_axis == :right
             text_pen.draw_text(
-              @axis_front_canvas,
+              @y_scale_canvas,
               [width - margin_right + text_margin, y],
               main_y_axis == :right ? value : sub_axis_value,
               :alignment_baseline=>'middle',
@@ -333,13 +347,13 @@ module DYI
           text_x = order_position_on_chart(margin_left, chart_width, data.records_size, i, x_axis_type)
           scale_x = x_axis_type == :range ? order_position_on_chart(margin_left, chart_width, data.records_size + 1, i) : text_x
           text_pen.draw_text(
-            @axis_front_canvas,
+            @x_scale_canvas,
             [text_x, height - margin_bottom + text_margin],
             format_x_label(data.name_values[i]),
             :text_anchor => 'middle', :alignment_baseline => 'top') if show_x_labels?
 
           sub_pen.draw_line_on_direction(
-            @axis_front_canvas,
+            @guid_front_canvas,
             [scale_x, height - margin_bottom],
             0,
             -(axis_font ? axis_font.draw_size : Font::DEFAULT_SIZE) * 0.5) if i > 0 && i < data.records_size - (x_axis_type == :range ? 0 : 1)

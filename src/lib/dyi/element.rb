@@ -163,7 +163,7 @@ module DYI
       @event_listeners ||= {}
     end
 
-    # Adds a animation of painting to the element.
+    # Sets an event to this element.
     # @param [Event] event an event that is set to the element
     # @return [String] id for this element
     def set_event(event)
@@ -172,34 +172,43 @@ module DYI
       publish_id
     end
 
+    # Registers event listeners on this element.
+    # @param [String] event_name an event name for which the user is registering
+    # @param [Script::EcmaScript::EventListener, ] event_listener an event name for which the user is registering
+    # @return [String] id for this element
+    def add_event_listener(event_name, event_listener)
+      
+    end
+
     # Returns whether an event is set to the element.
     # @return [Boolean] true if an event is set to the element, false otherwise
     def event_target?
       !(@events.nil? || @events.empty?)
     end
 
-    # Associates the element with a event listener.
-    # @param [Symbol] event_name a event name
-    # @param [Script::SimpleScript] event_listener a event listener
-    def add_event_listener(event_name, event_listener)
-      event_listener.related_to(DYI::Event.new(event_name, self))
+    # Registers event listeners on this element.
+    # @param [Symbol] event_name an event name for which the user is registering
+    # @param [Script::SimpleScript] listener an event listener which contains
+    #   the methods to be called when the event occurs.
+    def add_event_listener(event_name, listener)
+      listener.related_to(DYI::Event.new(event_name, self))
       if event_listeners.key?(event_name)
-        unless event_listeners[event_name].include?(event_listener)
-          event_listeners[event_name] << event_listener
-          canvas.add_script(event_listener)
+        unless event_listeners[event_name].include?(listener)
+          event_listeners[event_name] << listener
+          canvas.add_script(listener)
         end
       else
-        event_listeners[event_name] = [event_listener]
-        canvas.add_script(event_listener)
+        event_listeners[event_name] = [listener]
+        canvas.add_script(listener)
       end
     end
 
-    # Removes asociation with given event listener
-    # @param [Symbol] event_name a event name
-    # @param [Script::SimpleScript] event_listener a event listener
-    def remove_event_listener(event_name, event_listener)
+    # Removes event listeners from this element.
+    # @param [Symbol] event_name an event name for which the user is registering
+    # @param [Script::SimpleScript] listener an event listener to be removed
+    def remove_event_listener(event_name, listener)
       if event_listeners.key?(event_name)
-        event_listeners[event_name].delete(event_listener)
+        event_listeners[event_name].delete(listener)
       end
     end
   end

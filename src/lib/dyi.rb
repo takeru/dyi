@@ -47,7 +47,6 @@ dyi/element
 dyi/canvas
 dyi/shape
 dyi/drawing
-dyi/marker
 dyi/event
 dyi/animation
 dyi/script

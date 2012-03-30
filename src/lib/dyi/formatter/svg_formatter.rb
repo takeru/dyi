@@ -648,7 +648,7 @@ module DYI
         attributes[:'marker-mid'] = "url(##{shape.marker(:mid).id})" if shape.has_marker?(:mid)
         attributes[:'marker-end'] = "url(##{shape.marker(:end).id})" if shape.has_marker?(:end)
         attributes[:id] = shape.id if shape.inner_id
-        attributes[:'pointer-events'] = 'all' if shape.event_target?
+        attributes[:'pointer-events'] = 'visible' if shape.event_target?
         attributes
       end
 
