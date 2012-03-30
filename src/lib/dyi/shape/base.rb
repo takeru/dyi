@@ -548,16 +548,105 @@ module DYI
         @marker[point_type]
       end
 
+      # @overload set_start_marker(marker)
+      # @overload set_start_marker(marker_type, options = {})
       # @since 1.2.0
-      def set_start_marker(marker)
+      def set_start_marker(*args)
+        case args.first
+        when Symbol
+          opts = args[1].clone || {}
+          opts[:painting] ||= Painting.new(:fill => painting.stroke,
+                                           :fill_opacity => painting.stroke_opacity,
+                                           :opacity => painting.opacity)
+          opts[:direction] = :to_start if opts[:orient] == 'auto'
+          marker = Marker.new(args.first, opts)
+        when Marker
+          marker = args.first
+        else
+          raise ArgumentError
+        end
+        marker.set_canvas(canvas)
+        @marker[:start] = marker
+      end
+
+      # @overload set_start_marker(marker)
+      # @overload set_start_marker(marker_type, options = {})
+      # @since 1.2.0
+      def set_end_marker(*args)
+        case args.first
+        when Symbol
+          opts = args[1].clone || {}
+          opts[:painting] ||= Painting.new(:fill => painting.stroke,
+                                           :fill_opacity => painting.stroke_opacity,
+                                           :opacity => painting.opacity)
+          opts[:direction] = :to_start if opts[:orient] == 'auto'
+          marker = Marker.new(args.first, opts)
+        when Marker
+          marker = args.first
+        else
+          raise ArgumentError
+        end
+        marker.set_canvas(canvas)
+        @marker[:end] = marker
+      end
+
+      # @since 1.2.0
+      def set_start_arrow(arrow_type, options={})
+        opts = options.clone
+        opts[:painting] ||= Painting.new(:fill => painting.stroke,
+                                         :fill_opacity => painting.stroke_opacity,
+                                         :opacity => painting.opacity)
+        opts[:direction] = :to_start
+        marker = Marker.new_arrow(arrow_type, opts)
         marker.set_canvas(canvas)
         @marker[:start] = marker
       end
 
       # @since 1.2.0
-      def set_end_marker(marker)
+      def set_end_arrow(arrow_type, options={})
+        opts = options.clone
+        opts[:painting] ||= Painting.new(:fill => painting.stroke,
+                                         :fill_opacity => painting.stroke_opacity,
+                                         :opacity => painting.opacity)
+        opts[:direction] = :to_end
+        marker = Marker.new_arrow(arrow_type, opts)
         marker.set_canvas(canvas)
         @marker[:end] = marker
+      end
+
+      # @since 1.2.0
+      def set_both_side_marker(*args)
+        case args.first
+        when Symbol
+          opts = args[1].clone || {}
+          opts[:painting] ||= Painting.new(:fill => painting.stroke,
+                                           :fill_opacity => painting.stroke_opacity,
+                                           :opacity => painting.opacity)
+          opts[:direction] = :to_start if opts[:orient] == 'auto'
+          marker = Marker.new(args.first, opts)
+          marker.set_canvas(canvas)
+          @marker[:start] = marker
+
+          if opts[:orient] == 'auto'
+            opts = args[1].clone || {}
+            opts[:painting] ||= Painting.new(:fill => painting.stroke,
+                                             :fill_opacity => painting.stroke_opacity,
+                                             :opacity => painting.opacity)
+            opts[:direction] = :to_end
+
+            marker = Marker.new(args.first, opts)
+            marker.set_canvas(canvas)
+          end
+
+          @marker[:end] = marker
+        when Marker
+          marker = args.first
+          marker.set_canvas(canvas)
+          @marker[:start] = marker
+          @marker[:end] = marker
+        else
+          raise ArgumentError
+        end
       end
 
       # Returns whether this shape has a marker symbol.
@@ -568,6 +657,31 @@ module DYI
       # @since 1.2.0
       def has_marker?(point_type)
         !@marker[point_type].nil?
+      end
+
+      private
+
+      def set_marker(point_type, *args)
+        case args.first
+        when Symbol
+          opts = args[1] || {}
+          opts[:painting] ||= Painting.new(:fill => painting.stroke,
+                                           :fill_opacity => painting.stroke_opacity,
+                                           :opacity => painting.opacity)
+          marker = Marker.new(args.first, opts)
+        when Marker
+          marker = args.first
+        else
+          raise ArgumentError
+        end
+        marker.set_canvas(canvas)
+        case point_type
+        when :start, :end
+          @marker[point_type] = marker
+        when :both_side
+          @marker[:start] = marker
+          @marker[:end] = marker
+        end
       end
 
       class << self

@@ -23,6 +23,7 @@
 
 base
 path
+marker
 
 ).each do |file_name|
   require File.join(File.dirname(__FILE__), 'shape', file_name)
