@@ -243,6 +243,10 @@ module DYI
       # Returns or sets the CSS class of the image body of the chart.
       opt_accessor :canvas_css_class, :type => :string
 
+      # Returns or sets whether to output chart's data as metadata in a SVG file.
+      # @since 1.2.0
+      opt_accessor :output_chart_data, :type => :boolean, :default => false
+
       # @param [Length] width width of the chart image
       # @param [Length] height height of the chart image
       # @param [Hash{Symbol => Object}] options the options to creat the chart
@@ -373,7 +377,7 @@ module DYI
         @canvas.add_css_class(canvas_css_class) if canvas_css_class && !canvas_css_class.empty?
         @canvas.add_script(script_body) if script_body && !script_body.empty?
         @canvas.add_stylesheet(css_body) if css_body && !css_body.empty?
-        @canvas.metadata = data
+        @canvas.metadata = data if output_chart_data?
         script_files && script_files.each do |script_file|
           @canvas.reference_script_file(script_file)
         end

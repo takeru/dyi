@@ -29,6 +29,10 @@ module DYI
       include AxisUtil
       include Legend
       CHART_TYPES = [:line, :area, :bar, :stackedbar]
+
+      # @since 1.2.0
+      DEFAULT_MARKERS = [:circle, :square, :traiangle, :pentagon, :rhombus, :inverted_triangle]
+
       attr_reader :axis_back_canvas, :chart_back_canvas, :scale_canvas, :chart_front_canvas, :axis_front_canvas, :legend_canvas
       # @since 1.2.0
       attr_reader :x_scale_canvas, :y_scale_canvas, :guid_front_canvas, :chart_region
@@ -58,7 +62,19 @@ module DYI
       opt_accessor :use_effect, {:type => :boolean, :default => true}
       opt_accessor :bar_seriese_interval, {:type => :float, :default => 0.3}
       opt_accessor :color_columns, {:type => :array, :item_type => :integer}
-      
+
+      # Returns or sets whether to show marker on the line chart.
+      # @since 1.2.0
+      opt_accessor :show_markers, :type => :boolean
+
+      # Returns or sets marker types on the line-chart.
+      # @since 1.2.0
+      opt_accessor :markers, {:type => :array, :item_type => :symbol}
+
+      # Returns or sets a marker size on the line-chart.
+      # @since 1.2.0
+      opt_accessor :marker_size, {:type => :float, :default => 2.5}
+
       def margin_top
         chart_margins[:top] || Length.new(16)
       end
@@ -379,13 +395,17 @@ module DYI
         x = order_position_on_chart(margin_left, chart_width, values.size, first_index, x_axis_type)
         y = value_position_on_chart(margin_top, settings, values[first_index], true)
         pen.linejoin = 'bevel'
-        pen.draw_polyline(@chart_front_canvas, [x, y], @chart_options) {|polyline|
-          ((first_index + 1)...values.size).each do |i|
-            x = order_position_on_chart(margin_left, chart_width, values.size, i, x_axis_type)
-            y = value_position_on_chart(margin_top, settings, values[i], true)
-            polyline.line_to([x, y])
-          end
-        }
+        polyline = pen.draw_polyline(@chart_front_canvas, [x, y], @chart_options) {|polyline|
+                     ((first_index + 1)...values.size).each do |i|
+                       x = order_position_on_chart(margin_left, chart_width, values.size, i, x_axis_type)
+                       y = value_position_on_chart(margin_top, settings, values[i], true)
+                       polyline.line_to([x, y])
+                     end
+                   }
+        if show_markers?
+          marker_type = (markers && markers[id % markers.size]) || DEFAULT_MARKERS[id % DEFAULT_MARKERS.size]
+          polyline.set_marker(:all, marker_type, :size => marker_size)
+        end
         pen.linejoin = 'bevel'
       end
 
