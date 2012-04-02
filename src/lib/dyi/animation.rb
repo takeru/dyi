@@ -243,15 +243,15 @@ module DYI
           new(shape, :scale, options)
         end
 
-        def scale(rotate, options)
+        def rotate(shape, options)
           new(shape, :rotate, options)
         end
 
-        def skew_x(rotate, options)
+        def skew_x(shape, options)
           new(shape, :skewX, options)
         end
 
-        def skew_y(rotate, options)
+        def skew_y(shape, options)
           new(shape, :skewY, options)
         end
       end
