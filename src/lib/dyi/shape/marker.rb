@@ -34,7 +34,6 @@ module DYI
           :circle => {
             :view_box => "-1 -1 2 2",
             :magnify => 1.0,
-            :orient => 0,
             :creator => proc{|painting, direction|
               Shape::Circle.new([0, 0], 1, :painting => painting)
             }},
@@ -58,14 +57,12 @@ module DYI
           :square => {
             :view_box => "-1 -1 2 2",
             :magnify => 0.8862269255,
-            :orient => 0,
             :creator => proc{|painting, direction|
               Shape::Rectangle.new([-1, -1], 2, 2, :painting => painting)
             }},
           :rhombus => {
             :view_box => "-1 -1 2 2",
             :magnify => 1.2533141373,
-            :orient => 0,
             :creator => proc{|painting, direction|
               shape = Shape::Polygon.new([1, 0], :painting => painting)
               shape.line_to([0, 1], [-1, 0], [0, -1])
@@ -119,6 +116,7 @@ module DYI
               end
               shape
             }}}
+=begin
       @@predefined_arrows = {
           :triangle => {
             :view_box => {:to_end => "0 -3 8 6", :to_start => "-8 -3 8 6"},
@@ -168,6 +166,7 @@ module DYI
             :ref_point_getter => proc{|size, direction|
               Coordinate.new(direction == :to_start ? (1 - size) : (size - 1), 0)
             }}}
+=end
 
       # @overload initialize(marker_type, options = {})
       #   Creates a new pre-defined marker.
@@ -198,20 +197,21 @@ module DYI
       def initialize(shape, options={})
         case shape
         when Symbol
-          inverted = (shape.to_s =~ /^inverted_/)
+          inverted = !!(shape.to_s =~ /^inverted_/)
           marker_source = @@predefined_markers[inverted ? $'.to_sym : shape]
           raise ArgumentError, "`#{shape}' is unknown marker" unless marker_source
           @ref_point = Coordinate::ZERO
           if options[:orient] == 'auto'
             direction = (inverted ^ (options[:direction] == :to_start)) ? :to_start : :to_end
+            @orient = 'auto'
           else
             direction = nil
+            @orient = (options[:orient] || 0) + (inverted ? 180 : 0)
           end
           @shapes = [marker_source[:creator].call(options[:painting] || {}, direction)]
           @view_box = marker_source[:view_box]
           @marker_units = 'strokeWidth'
           @width = @height = Length.new(options[:size] || 3) * marker_source[:magnify]
-          @orient = options[:orient] || marker_source[:orient]
         when Shape::Base, Array
           @ref_point = options[:ref_point] || Coordinate::ZERO
           @shapes = shape.is_a?(Shape::Base) ? [shape] : shape
@@ -242,7 +242,7 @@ module DYI
       end
 
       class << self
-
+=begin
         # @overload new_arrow(options = {})
         #   Creates a new pre-defined triangle-arrow-marker.
         #   @option options [Number] :size size of the marker. Specifies the
@@ -289,6 +289,7 @@ module DYI
               :height => Length.new(marker_source[:magnify][:height]) * size,
               :orient => 'auto')
         end
+=end
       end
     end
   end

@@ -24,7 +24,7 @@
 module DYI
 
   # DYI program version
-  VERSION = '1.1.2'
+  VERSION = '1.2.0'
 
   # URL of DYI Project
   # @since 0.0.2

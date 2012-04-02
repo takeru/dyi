@@ -55,6 +55,7 @@ module DYI
     #
     # @since 0.0.0
     class Path < Base
+      include Markable
 
       def initialize(start_point, options={})
         @path_data = case start_point

@@ -24,6 +24,95 @@ require 'enumerator'
 module DYI
   module Shape
 
+    # This module defines the method to attach a marker symbol to the lines,
+    # the polylines, the polygons or the paths.
+    # @since 1.2.0
+    module Markable
+
+      # Returns a marker symbol at the specified position.
+      # @param [Symbol] position the position where a marker symbol is drawn.
+      #   Specifies the following values: +:start+, +:mid+, +:end+
+      # @return [Marker] a marker symbol at the specified position
+      def marker(position)
+        @marker[position]
+      end
+
+      # Attaches a marker symbol to the shape.
+      # @overload set_marker(position, marker)
+      #   Attaches the specified marker symbol at the specified position.
+      #   @param [Symbol] position the position where a marker symbol is drawn.
+      #     Specifies the following values: +:start+, +:mid+, +:end+,
+      #     +:start_end+, +:start_mid+, +:mid_end+, +:all+
+      #   @param [Marker] marker the marker symbol that is attached
+      # @overload set_marker(position, marker_type, options = {})
+      #   Attaches a pre-defined marker symbol at the specified position.
+      #   @param [Symbol] position the position where a marker symbol is drawn.
+      #     Specifies the following values: +:start+, +:mid+, +:end+,
+      #     +:start_end+, +:start_mid+, +:mid_end+, +:all+
+      #   @param [Symbol] marker_type the type of pre-defined marker symbol that
+      #     +:square+ is attached. Specifies the following values: +:circle+,
+      #     +:triangle+, +:rhombus+, +:pentagon+, +:hexagon+
+      #   @param [Hash] options a customizable set of options
+      #   @option options [Number] :size size of the marker symbol. Specifies
+      #     the relative size to line width
+      #   @option options [Painting] :painting painting of the marker symbol
+      #   @option options [Number, "auto"] :orient how the marker is rotated.
+      #     Specifies a rotated angle or <tt>"auto"</tt>. <tt>"auto"</tt> means
+      #     the marker symbol rotate the orientation of the line
+      def set_marker(position, *args)
+        pos = case position
+                when :start then 0x1
+                when :mid then 0x2
+                when :end then 0x4
+                when :start_mid then 0x3
+                when :start_end then 0x5
+                when :mid_end then 0x6
+                when :all then 0x7
+                else raise ArgumentError, "illegal argument: #{position.inspect}"
+              end
+        case args.first
+        when Symbol
+          opts = args[1].clone || {}
+          opts[:painting] ||= Painting.new(:fill => painting.stroke,
+                                           :fill_opacity => painting.stroke_opacity,
+                                           :opacity => painting.opacity)
+          if opts[:orient] == 'auto'
+            opts[:direction] = position == :end ? :to_end : :to_start
+          end
+          marker = Marker.new(args.first, opts)
+        when Marker
+          marker = args.first
+        else
+          raise TypeError, "illegal argument: #{value}"
+        end
+        marker.set_canvas(canvas)
+        @marker[:start] = marker if pos & 0x01 != 0
+        @marker[:mid] = marker if pos & 0x02 != 0
+        if pos & 0x04 != 0
+          if pos & 0x01 != 0 && args.first.is_a?(Symbol) && opts[:orient] == 'auto'
+            opts[:painting] ||= Painting.new(:fill => painting.stroke,
+                                             :fill_opacity => painting.stroke_opacity,
+                                             :opacity => painting.opacity)
+            opts[:direction] = :to_end
+            marker = Marker.new(args.first, opts)
+            marker.set_canvas(canvas)
+            @marker[:end] = marker
+          else
+            @marker[:end] = marker
+          end
+        end
+      end
+
+      # Returns whether this shape has a marker symbol.
+      # @param [Symbol] position the position where a marker symbol is drawn.
+      #   Specifies the following values: +:start+, +:mid+, +:end+
+      # @return [Boolean] true if the shape has a marker at the cpecified point,
+      #   false otherwise
+      def has_marker?(position)
+        !@marker[position].nil?
+      end
+    end
+
     # Base class of all graphical shapes.
     # @abstract
     # @since 0.0.0
@@ -202,11 +291,10 @@ module DYI
       end
 
       # Returns whether this shape has a marker symbol.
-      # @param [Symbol] point_type the type of marker point. Specifies the
-      #   following values: +:start+, +:mid+, +:end+
+      # @param [Symbol] position the position where a marker symbol is drawn.
+      #   Specifies the following values: +:start+, +:mid+, +:end+
       # @return [Boolean] always false
-      # @since 1.2.0
-      def has_marker?(point_type)
+      def has_marker?(position)
         return false
       end
 
@@ -514,6 +602,7 @@ module DYI
     end
 
     class Line < Base
+      include Markable
       attr_coordinate :start_point, :end_point
 
       def initialize(start_point, end_point, options={})
@@ -543,147 +632,6 @@ module DYI
         formatter.write_line(self, io, &(block_given? ? Proc.new : nil))
       end
 
-      # @since 1.2.0
-      def marker(point_type)
-        @marker[point_type]
-      end
-
-      # @overload set_start_marker(marker)
-      # @overload set_start_marker(marker_type, options = {})
-      # @since 1.2.0
-      def set_start_marker(*args)
-        case args.first
-        when Symbol
-          opts = args[1].clone || {}
-          opts[:painting] ||= Painting.new(:fill => painting.stroke,
-                                           :fill_opacity => painting.stroke_opacity,
-                                           :opacity => painting.opacity)
-          opts[:direction] = :to_start if opts[:orient] == 'auto'
-          marker = Marker.new(args.first, opts)
-        when Marker
-          marker = args.first
-        else
-          raise ArgumentError
-        end
-        marker.set_canvas(canvas)
-        @marker[:start] = marker
-      end
-
-      # @overload set_start_marker(marker)
-      # @overload set_start_marker(marker_type, options = {})
-      # @since 1.2.0
-      def set_end_marker(*args)
-        case args.first
-        when Symbol
-          opts = args[1].clone || {}
-          opts[:painting] ||= Painting.new(:fill => painting.stroke,
-                                           :fill_opacity => painting.stroke_opacity,
-                                           :opacity => painting.opacity)
-          opts[:direction] = :to_start if opts[:orient] == 'auto'
-          marker = Marker.new(args.first, opts)
-        when Marker
-          marker = args.first
-        else
-          raise ArgumentError
-        end
-        marker.set_canvas(canvas)
-        @marker[:end] = marker
-      end
-
-      # @since 1.2.0
-      def set_start_arrow(arrow_type, options={})
-        opts = options.clone
-        opts[:painting] ||= Painting.new(:fill => painting.stroke,
-                                         :fill_opacity => painting.stroke_opacity,
-                                         :opacity => painting.opacity)
-        opts[:direction] = :to_start
-        marker = Marker.new_arrow(arrow_type, opts)
-        marker.set_canvas(canvas)
-        @marker[:start] = marker
-      end
-
-      # @since 1.2.0
-      def set_end_arrow(arrow_type, options={})
-        opts = options.clone
-        opts[:painting] ||= Painting.new(:fill => painting.stroke,
-                                         :fill_opacity => painting.stroke_opacity,
-                                         :opacity => painting.opacity)
-        opts[:direction] = :to_end
-        marker = Marker.new_arrow(arrow_type, opts)
-        marker.set_canvas(canvas)
-        @marker[:end] = marker
-      end
-
-      # @since 1.2.0
-      def set_both_side_marker(*args)
-        case args.first
-        when Symbol
-          opts = args[1].clone || {}
-          opts[:painting] ||= Painting.new(:fill => painting.stroke,
-                                           :fill_opacity => painting.stroke_opacity,
-                                           :opacity => painting.opacity)
-          opts[:direction] = :to_start if opts[:orient] == 'auto'
-          marker = Marker.new(args.first, opts)
-          marker.set_canvas(canvas)
-          @marker[:start] = marker
-
-          if opts[:orient] == 'auto'
-            opts = args[1].clone || {}
-            opts[:painting] ||= Painting.new(:fill => painting.stroke,
-                                             :fill_opacity => painting.stroke_opacity,
-                                             :opacity => painting.opacity)
-            opts[:direction] = :to_end
-
-            marker = Marker.new(args.first, opts)
-            marker.set_canvas(canvas)
-          end
-
-          @marker[:end] = marker
-        when Marker
-          marker = args.first
-          marker.set_canvas(canvas)
-          @marker[:start] = marker
-          @marker[:end] = marker
-        else
-          raise ArgumentError
-        end
-      end
-
-      # Returns whether this shape has a marker symbol.
-      # @param [Symbol] point_type the type of marker point. Specifies the
-      #   following values: +:start+, +:mid+, +:end+
-      # @return [Boolean] true if the shape has a marker at the cpecified point,
-      #   false otherwise
-      # @since 1.2.0
-      def has_marker?(point_type)
-        !@marker[point_type].nil?
-      end
-
-      private
-
-      def set_marker(point_type, *args)
-        case args.first
-        when Symbol
-          opts = args[1] || {}
-          opts[:painting] ||= Painting.new(:fill => painting.stroke,
-                                           :fill_opacity => painting.stroke_opacity,
-                                           :opacity => painting.opacity)
-          marker = Marker.new(args.first, opts)
-        when Marker
-          marker = args.first
-        else
-          raise ArgumentError
-        end
-        marker.set_canvas(canvas)
-        case point_type
-        when :start, :end
-          @marker[point_type] = marker
-        when :both_side
-          @marker[:start] = marker
-          @marker[:end] = marker
-        end
-      end
-
       class << self
 
         public
@@ -701,6 +649,7 @@ module DYI
     end
 
     class Polyline < Base
+      include Markable
 
       def initialize(start_point, options={})
         @points = [Coordinate.new(start_point)]
@@ -748,16 +697,6 @@ module DYI
 
       def bottom
         @points.max {|a, b| a.y <=> b.y}.y
-      end
-
-      # Returns whether this shape has a marker symbol.
-      # @param [Symbol] point_type the type of marker point. Specifies the
-      #   following values: +:start+, +:mid+, +:end+
-      # @return [Boolean] true if the shape has a marker at the cpecified point,
-      #   false otherwise
-      # @since 1.2.0
-      def has_marker?(point_type)
-        !@marker[point_type].nil?
       end
 
       def write_as(formatter, io=$>)
