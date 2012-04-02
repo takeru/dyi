@@ -75,7 +75,8 @@ module DYI
                           "#{listener.name}(evt)"
                         end
                       end
-            attrs["on#{event_name}"] = methods.compact.join(';')
+            methods.compact!
+            attrs["on#{event_name}"] = methods.join(';') unless methods.empty?
           end
         end
         sio = StringIO.new
