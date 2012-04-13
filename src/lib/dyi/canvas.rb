@@ -213,7 +213,7 @@ module DYI
       @receive_event
     end
 
-    # Registers a script with the image.
+    # Registers a script.
     # @param [String, Script::SimpleScript] script_body a string that is a
     #   script body or a script object that is registered
     # @param [String] content_type a content-type of the script. If parameter
