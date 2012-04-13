@@ -172,14 +172,6 @@ module DYI
       publish_id
     end
 
-    # Registers event listeners on this element.
-    # @param [String] event_name an event name for which the user is registering
-    # @param [Script::EcmaScript::EventListener, ] event_listener an event name for which the user is registering
-    # @return [String] id for this element
-    def add_event_listener(event_name, event_listener)
-      
-    end
-
     # Returns whether an event is set to the element.
     # @return [Boolean] true if an event is set to the element, false otherwise
     def event_target?
@@ -188,9 +180,12 @@ module DYI
 
     # Registers event listeners on this element.
     # @param [Symbol] event_name an event name for which the user is registering
-    # @param [Script::SimpleScript] listener an event listener which contains
+    # @param [Script::EcmaScript::EventListener, #to_s] listener an event listener which contains
     #   the methods to be called when the event occurs.
     def add_event_listener(event_name, listener)
+      unless listener.respond_to?(:related_to)
+        listener = DYI::Script::EcmaScript::EventListener.new(listener.to_s)
+      end
       listener.related_to(DYI::Event.new(event_name, self))
       if event_listeners.key?(event_name)
         unless event_listeners[event_name].include?(listener)
