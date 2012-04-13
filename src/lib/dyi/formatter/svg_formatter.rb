@@ -100,7 +100,6 @@ module DYI
                                :'xlink:href' => script.href,
                                :type => script.content_type)
               break if length <= (i += 1)
-              script = canvas.scripts[i]
             else
               content_type = script.content_type
               create_cdata_node(sio, 'script',
@@ -395,6 +394,7 @@ module DYI
       def write_transform_animation(anim, shape, io)
         attrs = {:attributeName => 'transform',
                  :attributeType => 'XML',
+                 :additive => 'sum',
                  :type => anim.type}
         if anim.from.is_a?(Array)
           attrs[:from] = anim.from.join(',')
