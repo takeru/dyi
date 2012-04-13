@@ -312,7 +312,9 @@ module DYI
       # @return [Shape::Path] a drawn path
       # @see Shape::Path
       def draw_path(canvas, point, options={}, &block)
-        Shape::Path.draw(point, merge_option(options), &block).draw_on(canvas)
+        path = Shape::Path.new(point, merge_option(options)).draw_on(canvas)
+        yield path
+        path
       end
 
       # Draws a free-form line or curve, and closes path finally. See methods of
@@ -324,7 +326,9 @@ module DYI
       # @return (see #draw_path)
       # @see (see #draw_path)
       def draw_closed_path(canvas, point, options={}, &block)
-        Shape::Path.draw_and_close(point, merge_option(options), &block).draw_on(canvas)
+        path = draw_path(canvas, point, options={}, &block)
+        path.close_path unless path.close?
+        path
       end
 
       # Draws a circle to specify the center point and the radius.
