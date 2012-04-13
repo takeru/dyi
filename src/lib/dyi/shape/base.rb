@@ -390,6 +390,8 @@ module DYI
         @anchor_target = options.delete(:anchor_target)
         self.css_class = options.delete(:css_class)
         self.id = options.delete(:id) if options[:id]
+        self.description = options.delete(:description) if options[:description]
+        self.title = options.delete(:title) if options[:title]
         options
       end
     end
@@ -404,14 +406,16 @@ module DYI
       # Returns heigth of the rectangle.
       attr_length :height
 
-      # @param [Coordinate] left_top a coordinate of a corner of the rectangle
+      # @param [Coordinate] left_top a left-top coordinate of the rectangle
       # @param [Length] width width of the rectangle
       # @param [Length] heigth heigth of the rectangle
-      # @option options [Painting] :painting painting status of the rectangle
+      # @option options [Painting] :painting painting status of this shape
       # @option options [Length] :rx the x-axis radius of the ellipse for
       #   rounded the rectangle
       # @option options [Length] :ry the y-axis radius of the ellipse for
       #   rounded the rectangle
+      # @option options [String] :description the description of this shape
+      # @option options [String] :title the title of this shape
       def initialize(left_top, width, height, options={})
         width = Length.new(width)
         height = Length.new(height)
@@ -468,7 +472,7 @@ module DYI
         # @param [Coordinate] left_top a coordinate of a corner of the rectangle
         # @param [Length] width width of the rectangle
         # @param [Length] heigth heigth of the rectangle
-        # @option options [Painting] :painting painting status of the rectangle
+        # @option options [Painting] :painting painting status of the shape
         # @option options [Length] :rx the x-axis radius of the ellipse for
         #   rounded the rectangle
         # @option options [Length] :ry the y-axis radius of the ellipse for
@@ -508,6 +512,11 @@ module DYI
       # Returns a radius of the circle.
       attr_length :radius
 
+      # @param [Coordinate] center a center coordinate of the circle
+      # @param [Length] radius a radius length of the circle
+      # @option options [Painting] :painting painting status of this shape
+      # @option options [String] :description the description of this shape
+      # @option options [String] :title the title of this shape
       def initialize(center, radius, options={})
         @center = Coordinate.new(center)
         @radius = Length.new(radius).abs
@@ -556,6 +565,12 @@ module DYI
       attr_coordinate :center
       attr_length :radius_x, :radius_y
 
+      # @param [Coordinate] center a center coordinate of the ellipse
+      # @param [Length] radius_x an x-axis radius of the ellipse
+      # @param [Length] radius_y a y-axis radius of the ellipse
+      # @option options [Painting] :painting painting status of this shape
+      # @option options [String] :description the description of this shape
+      # @option options [String] :title the title of this shape
       def initialize(center, radius_x, radius_y, options={})
         @center = Coordinate.new(center)
         @radius_x = Length.new(radius_x).abs
@@ -605,6 +620,11 @@ module DYI
       include Markable
       attr_coordinate :start_point, :end_point
 
+      # @param [Coordinate] start_point a start coordinate of the line
+      # @param [Coordinate] end_point an end coordinate of the line
+      # @option options [Painting] :painting painting status of this shape
+      # @option options [String] :description the description of this shape
+      # @option options [String] :title the title of this shape
       def initialize(start_point, end_point, options={})
         @start_point = Coordinate.new(start_point)
         @end_point = Coordinate.new(end_point)
@@ -651,6 +671,10 @@ module DYI
     class Polyline < Base
       include Markable
 
+      # @param [Coordinate] start_point a start coordinate of the shape
+      # @option options [Painting] :painting painting status of this shape
+      # @option options [String] :description the description of this shape
+      # @option options [String] :title the title of this shape
       def initialize(start_point, options={})
         @points = [Coordinate.new(start_point)]
         @attributes = init_attributes(options)
@@ -715,6 +739,13 @@ module DYI
     class Image < Rectangle
       attr_reader :file_path
 
+      # @param [Coordinate] left_top a left-top coordinate of the image
+      # @param [Length] width width of the image
+      # @param [Length] heigth heigth of the image
+      # @param [String] file_path a file path of the image
+      # @option options [Painting] :painting painting status of this shape
+      # @option options [String] :description the description of this shape
+      # @option options [String] :title the title of this shape
       def initialize(left_top, width, height, file_path, options={})
         super(left_top, width, height, options)
         @file_path = file_path
@@ -745,6 +776,12 @@ module DYI
       attr_accessor :text
       attr_reader :format
 
+      # @param [Coordinate] point a start coordinate of the text
+      # @param [String] text a text that is displayed
+      # @option options [Painting] :painting painting status of the shape
+      # @option options [Font] :font font status of the text
+      # @option options [String] :description the description of this shape
+      # @option options [String] :title the title of this shape
       def initialize(point, text=nil, options={})
         @point = Coordinate.new(point || [0,0])
         @text = text
@@ -796,6 +833,8 @@ module DYI
     class ShapeGroup < Base
       attr_reader :child_elements
 
+      # @option options [String] :description the description of this group
+      # @option options [String] :title the title of this group
       def initialize(options={})
         @attributes = init_attributes(options)
         @child_elements = []
