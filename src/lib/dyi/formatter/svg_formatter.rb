@@ -376,11 +376,24 @@ module DYI
 
       # @since 1.0.0
       def write_painting_animation(anim, shape, io)
-        anim.animation_attributes.each do |anim_attr, (from_value, to_value)|
+        anim.animation_attributes.each do |anim_attr, values|
           attrs = {:attributeName => name_to_attribute(anim_attr),
                    :attributeType => 'CSS'}
-          attrs[:from] = from_value if from_value
-          attrs[:to] = to_value
+          if values.size == 2
+            attrs[:from] = values[0] if values[0]
+            attrs[:to] = values[1]
+          else
+            attrs[:values] = values.join(';')
+            key_times = [0].push(*anim.relay_times[0, anim.relays.size])
+            if anim.relay_times.size < anim.relays.size
+              step = (1.0 - key_times.last) / (anim.relays.size - anim.relay_times.size + 1)
+              (anim.relays.size - anim.relay_times.size).times do |i|
+                key_times << key_times.last + step
+              end
+            end
+            key_times << 1
+            attrs[:keyTimes] = key_times.map{|num| num.strfnum('0.###')}.join(';')
+          end
           merge_anim_attributes(anim, shape, attrs)
           if anim.duration && anim.duration != 0
             create_leaf_node(io, 'animate', attrs)
@@ -394,14 +407,27 @@ module DYI
       def write_transform_animation(anim, shape, io)
         attrs = {:attributeName => 'transform',
                  :attributeType => 'XML',
-                 :additive => 'sum',
                  :type => anim.type}
-        if anim.from.is_a?(Array)
-          attrs[:from] = anim.from.join(',')
-        elsif anim.from
-          attrs[:from] = anim.from.to_s
+        if anim.relays.empty?
+          if anim.from.is_a?(Array)
+            attrs[:from] = anim.from.join(',')
+          elsif anim.from
+            attrs[:from] = anim.from.to_s
+          end
+          attrs[:to] = anim.to.is_a?(Array) ? anim.to.join(',') : anim.to.to_s
+        else
+          values = [anim.from].push(*anim.relays).push(anim.to)
+          attrs[:values] = values.map{|v| v.is_a?(Array) ? v.join(',') : v.to_s}.join(';')
+          key_times = [0].push(*anim.relay_times[0, anim.relays.size])
+          if anim.relay_times.size < anim.relays.size
+            step = (1.0 - key_times.last) / (anim.relays.size - anim.relay_times.size + 1)
+            (anim.relays.size - anim.relay_times.size).times do |i|
+              key_times << key_times.last + step
+            end
+          end
+          key_times << 1
+          attrs[:keyTimes] = key_times.map{|num| num.strfnum('0.###')}.join(';')
         end
-        attrs[:to] = anim.to.is_a?(Array) ? anim.to.join(',') : anim.to.to_s
         merge_anim_attributes(anim, shape, attrs)
         if anim.duration && anim.duration != 0
           create_leaf_node(io, 'animateTransform', attrs)
@@ -632,6 +658,19 @@ module DYI
         attrs[:fill] = anim.fill if anim.fill
         attrs[:additive] = anim.additive if anim.additive
         attrs[:restart] = anim.restart if anim.restart
+        attrs[:calcMode] = anim.calc_mode if anim.calc_mode
+        if anim.repeat_count
+          count = anim.repeat_count
+          attrs[:repeatCount] =
+              if count.zero? || count.infinite?
+                'indefinite'
+              else
+                anim.repeat_count
+              end
+        end
+        if anim.key_splines && !anim.key_splines.empty?
+          attrs[:keySplines] = anim.key_splines.each_slice(4).map{|nums| nums.join(' ')}.join(';')
+        end
       end
 
       def name_to_attribute(name)
