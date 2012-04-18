@@ -326,7 +326,7 @@ module DYI
       # @return (see #draw_path)
       # @see (see #draw_path)
       def draw_closed_path(canvas, point, options={}, &block)
-        path = draw_path(canvas, point, options={}, &block)
+        path = draw_path(canvas, point, options, &block)
         path.close_path unless path.close?
         path
       end
