@@ -264,6 +264,15 @@ module DYI
       end
     end
 
+    # @since 1.3.0
+    def to_reused_source
+      options = {}
+      options[:css_class] = css_class
+      template = Shape::GraphicalTemplate.new(width, height, preserve_aspect_ratio, options)
+      template.instance_variable_set('@child_elements', child_elements)
+      template
+    end
+
     private
 
     def get_formatter(format=nil, options={})

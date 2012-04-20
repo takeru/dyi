@@ -62,13 +62,13 @@ module DYI
           @canvas.add_initialize_script(Script::EcmaScript::DomLevel2.draw_text_border(*@text_border_elements))
         end
         attrs = @xmlns.merge(:version => @version,
-                             :width => canvas.real_width,
-                             :height => canvas.real_height,
-                             :viewBox => canvas.view_box,
-                             :preserveAspectRatio => canvas.preserve_aspect_ratio)
-        attrs[:'pointer-events'] = 'none' if canvas.receive_event?
-        attrs[:class] = canvas.css_class if canvas.css_class
-        canvas.event_listeners.each do |event_name, listeners|
+                             :width => @canvas.real_width,
+                             :height => @canvas.real_height,
+                             :viewBox => @canvas.view_box,
+                             :preserveAspectRatio => @canvas.preserve_aspect_ratio)
+        attrs[:'pointer-events'] = 'none' if @canvas.receive_event?
+        attrs[:class] = @canvas.css_class if @canvas.css_class
+        @canvas.event_listeners.each do |event_name, listeners|
           unless listeners.empty?
             methods = listeners.map do |listener|
                         if listener.name
@@ -81,20 +81,20 @@ module DYI
         end
         sio = StringIO.new
         create_node(sio, 'svg', attrs) {
-          create_leaf_node(sio, 'title', canvas.title) if canvas.title
-          create_leaf_node(sio, 'desc', canvas.description) if canvas.description
-          if canvas.metadata
+          create_leaf_node(sio, 'title', @canvas.title) if @canvas.title
+          create_leaf_node(sio, 'desc', @canvas.description) if @canvas.description
+          if @canvas.metadata
             create_cdata_node(sio, 'metadata'){
               puts_line(sio) {
-                write_metadata(canvas.metadata, sio)
+                write_metadata(@canvas.metadata, sio)
               }
             }
           end
           @root_info = [sio.pos, @level]
           i = 0
-          length = canvas.scripts.size
+          length = @canvas.scripts.size
           while i < length
-            script = canvas.scripts[i]
+            script = @canvas.scripts[i]
             if script.include_external_file?
               create_leaf_node(sio, 'script',
                                :'xlink:href' => script.href,
@@ -106,17 +106,17 @@ module DYI
                                 :type => content_type) {
                 sio << script.contents
                 if (i += 1) < length
-                  script = canvas.scripts[i]
+                  script = @canvas.scripts[i]
                   while !script.has_uri_reference? && content_type == script.content_type
                     sio << script.contents
                     break if length <= (i += 1)
-                    script = canvas.scripts[i]
+                    script = @canvas.scripts[i]
                   end
                 end
               }
             end
           end
-          canvas.child_elements.each do |element|
+          @canvas.child_elements.each do |element|
             element.write_as(self, sio)
           end
         }
@@ -324,6 +324,31 @@ module DYI
             end
           }
         end
+      end
+
+      # @since 1.3.0
+      def write_template(shape, io)
+        unless shape.child_elements.empty?
+          attrs = {:viewBox => shape.view_box,
+                   :preserveAspectRatio => shape.preserve_aspect_ratio}
+          attrs.merge!(common_attributes(shape))
+          write_node(shape, io, attrs, 'symbol') {
+            shape.child_elements.each do |element|
+              element.write_as(self, io)
+            end
+          }
+        end
+      end
+
+      # @since 1.3.0
+      def write_reused_shape(shape, io)
+        attrs = {:x=>shape.left,
+                 :y=>shape.top,
+                 :'xlink:href'=>"##{shape.source_element.id}"}
+        attrs[:width] = shape.width if shape.width
+        attrs[:height] = shape.height if shape.height
+        attrs.merge!(common_attributes(shape))
+        write_node(shape, io, attrs, 'use')
       end
 
       def write_linear_gradient(shape, io)
@@ -606,6 +631,13 @@ module DYI
               def_id = element.marker(point_type).id
               @defs[def_id] = element.marker(point_type)
             end
+          end
+        end
+        if element.respond_to?(:source_element) && element.source_element
+          source_element = element.source_element
+          unless source_element.canvas == @canvas || @defs.value?(source_element)
+            def_id = source_element.id || (source_element.id = @canvas.publish_shape_id)
+            @defs[def_id] = source_element
           end
         end
         element.child_elements.each do |child_element|

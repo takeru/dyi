@@ -206,5 +206,11 @@ module DYI
         event_listeners[event_name].delete(listener)
       end
     end
+
+    # @since 1.3.0
+    def to_reused_source
+      publish_id
+      self
+    end
   end
 end
