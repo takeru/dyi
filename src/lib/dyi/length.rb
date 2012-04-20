@@ -336,7 +336,7 @@ module DYI
     def to_s(format=nil)
       fmts = (format || @@default_format).split('\\\\')
       fmts = fmts.map do |fmt|
-        fmt.gsub(/(?!\\U)(.|\G)U/, '\\1' + @unit.to_s).gsub(/(?!\\u)(.|\G)u/, '\\1' + unit)
+        fmt.gsub(/(?!\\U)(.|\G)U/, '\\1' + (@unit == '%' ? '\\%' : @unit.to_s)).gsub(/(?!\\u)(.|\G)u/, '\\1' + (@unit == '%' ? '\\%' : unit))
       end
       @value.strfnum(fmts.join('\\\\'))
     end
