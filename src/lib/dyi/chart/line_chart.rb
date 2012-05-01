@@ -31,7 +31,7 @@ module DYI
       CHART_TYPES = [:line, :area, :bar, :stackedbar]
 
       # @since 1.2.0
-      DEFAULT_MARKERS = [:circle, :square, :traiangle, :pentagon, :rhombus, :inverted_triangle]
+      DEFAULT_MARKERS = [:circle, :square, :triangle, :pentagon, :rhombus, :inverted_triangle]
 
       attr_reader :axis_back_canvas, :chart_back_canvas, :scale_canvas, :chart_front_canvas, :axis_front_canvas, :legend_canvas
       # @since 1.2.0

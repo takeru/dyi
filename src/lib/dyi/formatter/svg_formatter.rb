@@ -243,6 +243,7 @@ module DYI
 
       def write_text(shape, io)
         attrs = common_attributes(shape)
+        txt_attrs = {}
         if shape.attributes[:text_decoration]
           attrs[:"text-decoration"] = shape.attributes[:text_decoration]
         end
@@ -252,11 +253,11 @@ module DYI
         if shape.attributes[:writing_mode]
           attrs[:"writing-mode"] = shape.attributes[:writing_mode]
         end
-        if shape.attributes[:textLength]
-          attrs[:textLength] = shape.attributes[:textLength]
+        if shape.attributes[:text_length]
+          txt_attrs[:textLength] = shape.attributes[:text_length]
         end
-        if shape.attributes[:lengthAdjust]
-          attrs[:lengthAdjust] = shape.attributes[:lengthAdjust]
+        if shape.attributes[:length_adjust]
+          txt_attrs[:lengthAdjust] = shape.attributes[:length_adjust]
         end
 
         text = shape.formated_text
@@ -266,7 +267,7 @@ module DYI
             create_node(io, tag_name, attrs) {
               create_border_node(shape, io)
               line_number = 0
-              txt_attrs = {:x => shape.point.x, :y => shape.point.y}
+              txt_attrs.merge!(:x => shape.point.x, :y => shape.point.y)
               # FIXME: Implementation of baseline attribute are not suitable
               case shape.attributes[:alignment_baseline]
                 when 'top' then txt_attrs[:y] += shape.font_height * 0.85
@@ -288,6 +289,7 @@ module DYI
           if shape.anchor_href
             attrs[:'xlink:href'] = shape.anchor_href
             attrs[:target] = shape.anchor_target if shape.anchor_target
+            attrs[:'pointer-events'] = 'visiblePainted'
             create_text_group.call('a', attrs)
           else
             create_text_group.call('g', attrs)
@@ -301,11 +303,12 @@ module DYI
               when 'middle' then attrs[:y] += shape.font_height * 0.35
               when 'bottom' then attrs[:y] -= shape.font_height * 0.15
             end
-            create_leaf_node(io, 'text', text, attrs)
+            create_leaf_node(io, 'text', text, attrs.merge(txt_attrs))
           }
           if shape.anchor_href
             link_attrs = {:'xlink:href' => shape.anchor_href}
             link_attrs[:target] = shape.anchor_target if shape.anchor_target
+            link_attrs[:'pointer-events'] = 'visiblePainted'
             create_node(io, 'a', link_attrs) {
               create_text_group.call
             }
@@ -502,6 +505,7 @@ module DYI
         if shape.anchor_href
           link_attrs = {:'xlink:href' => shape.anchor_href}
           link_attrs[:target] = shape.anchor_target if shape.anchor_target
+          link_attrs[:'pointer-events'] = 'visiblePainted'
           create_node(io, 'a', link_attrs) {
              write_shape_node(shape, io, attrs, tag_name, &create_child_node)
           }

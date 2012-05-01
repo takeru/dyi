@@ -473,7 +473,7 @@ module DYI
       #   text relative to _point_ argument. specifies one of the following
       #   vlaues: <tt>"start"</tt>, <tt>"middle"</tt>, <tt>"end"</tt>
       # @option options [Length] :text_length the length of the displayed text
-      # @option options [String] :text_adjust the way of adjustments to make the
+      # @option options [String] :length_adjust the way of adjustments to make the
       #   rendered length of the text match _text_length_ option. specifies one
       #   of the following vlaues: <tt>"spacing"</tt>, <tt>"spacingAndGlyphs"</tt>
       # @option options [String] :text_decoration the decorations that are
@@ -488,6 +488,10 @@ module DYI
       # @option options [Length] :border_rx the x-axis radius of the ellipse
       #   used to round off the corners of the rectangle when the rounded border
       #   is shown
+      # @option options [Length] :vertical_padding the interval of vertical
+      #   border line and text area
+      # @option options [Length] :horizontal_padding the interval of horizontal
+      #   border line and text area
       # @option options [Length] :border_ry the y-axis radius of the ellipse
       #   used to round off the corners of the rectangle when the rounded border
       #   is shown
