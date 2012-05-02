@@ -79,6 +79,10 @@ module DYI
         width && height && (@lt_pt + Coordinate.new(width.quo(2), height.quo(2)))
       end
 
+      def child_elements
+        source_element.child_elements
+      end
+
       # @return [Boolean] whether the element has a URI reference
       def has_uri_reference?
         true
