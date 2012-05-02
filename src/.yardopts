@@ -2,7 +2,6 @@
 --template dyi
 --template-path ../yard-template
 --no-private
---title "DYI Documents"
 --output-dir ../doc
 --exclude lib/ironruby.rb
 --default-return ""

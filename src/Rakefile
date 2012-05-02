@@ -5,7 +5,7 @@ require './lib/dyi'
 
 task :default => [:package, :yard]
 
-spec = Gem::Specification.new do |s|
+spec = Gem::Specification.new{|s|
   s.name = 'dyi'
   s.version = DYI::VERSION
   s.date = Gem::Specification::TODAY
@@ -30,13 +30,16 @@ spec = Gem::Specification.new do |s|
     path =~ /^examples\/output\// || path =~ /^pkg\//
   }
   s.test_files = Dir.glob('test/*.rb')
-end
+}
 
 # Defines `package' task
-Rake::GemPackageTask.new(spec) do |pkg|
+Rake::GemPackageTask.new(spec){|pkg|
   pkg.need_zip = true
   pkg.need_tar_gz = true
-end
+}
 
 # Defines `yard' task
-YARD::Rake::YardocTask.new
+YARD::Rake::YardocTask.new{|yard|
+  yard.options << "--title"
+  yard.options << "DYI #{DYI::VERSION} Documents"
+}
