@@ -139,7 +139,7 @@ module DYI
       if css_classes.include?(css_class.to_s)
         return nil
       end
-      @css_class = css_classes.push(scc_class).join(' ')
+      @css_class = css_classes.push(css_class).join(' ')
       css_class
     end
 
