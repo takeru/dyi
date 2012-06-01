@@ -34,8 +34,11 @@ module DYI
   # output by SVG format.
   # @since 1.0.0
   class Event
+=begin
+    # IMPLEMENT_EVENTS abolished at version 1.3.0
     IMPLEMENT_EVENTS = [:focusin,:focusout,:click,:mousedown,:mouseup,
                         :mouseover,:mousemove,:mouseout,:load]
+=end
 
     # @return [Symbol] event name
     attr_reader :event_name
@@ -50,9 +53,6 @@ module DYI
     # @raise [ArgumentError] unknown event name is given
     def initialize(event_name, target)
       event_name = event_name.to_sym
-      unless IMPLEMENT_EVENTS.include?(event_name)
-        raise ArgumentError, "`#{event_name}' is unknown event"
-      end
       @event_name = event_name
       (@target = target).set_event(self)
     end
