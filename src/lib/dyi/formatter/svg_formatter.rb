@@ -369,6 +369,23 @@ module DYI
         }
       end
 
+      # @since 1.3.0
+      def write_radial_gradient(shape, io)
+        attrs = {:id => @defs.find{|key, value| value==shape}[0],
+                 :gradientUnit => 'objectBoundingBox',
+                 :cx => shape.center_point.x,
+                 :cy => shape.center_point.y,
+                 :r => shape.radius,
+                 :fx => shape.focal_point.x,
+                 :fy => shape.focal_point.y}
+        attrs[:"spreadMethod"] = shape.spread_method if shape.spread_method
+        create_node(io, 'radialGradient', attrs) {
+          shape.child_elements.each do |element|
+            element.write_as(self, io)
+          end
+        }
+      end
+
       def write_gradient_stop(shape, io)
         attrs = {:offset=>shape.offset}
         attrs[:"stop-color"] = shape.color if shape.color
