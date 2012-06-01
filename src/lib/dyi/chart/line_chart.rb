@@ -36,6 +36,8 @@ module DYI
       attr_reader :axis_back_canvas, :chart_back_canvas, :scale_canvas, :chart_front_canvas, :axis_front_canvas, :legend_canvas
       # @since 1.2.0
       attr_reader :x_scale_canvas, :y_scale_canvas, :guid_front_canvas, :chart_region
+      # @since 1.3.0
+      attr_reader :back_canvas, :data_label_canvas
 
       opt_accessor :chart_margins, {:type => :hash, :default => {}, :keys => [:top,:right,:bottom,:left], :item_type => :length}
       opt_accessor :chart_colors, {:type => :array, :item_type => :color}
@@ -74,6 +76,16 @@ module DYI
       # Returns or sets a marker size on the line-chart.
       # @since 1.2.0
       opt_accessor :marker_size, {:type => :float, :default => 2.5}
+
+      # @since 1.3.0
+      opt_accessor :display_range, :type => :range, :default => (0..-1)
+
+      # @since 1.3.0
+      opt_accessor :show_data_label, :type => :boolean
+      # @since 1.3.0
+      opt_accessor :data_label_font, :type => :font
+      # @since 1.3.0
+      opt_accessor :data_label_format, :type => :string
 
       def margin_top
         chart_margins[:top] || Length.new(16)
@@ -180,8 +192,8 @@ module DYI
         sub_series_data = []
         @bar_series = []
         data.values_size.times do |i|
-          main_series_data.push(*data.series(i)) unless use_y_second_axis?(i)
-          sub_series_data.push(*data.series(i)) if use_y_second_axis?(i)
+          main_series_data.push(*data.series(i)[display_range]) unless use_y_second_axis?(i)
+          sub_series_data.push(*data.series(i)[display_range]) if use_y_second_axis?(i)
           @bar_series.push(i) if chart_type(i) == :bar
         end
         settings =
@@ -218,6 +230,8 @@ module DYI
         @axis_back_canvas = Shape::ShapeGroup.draw_on(@canvas)
 #        @chart_front_canvas = Shape::ShapeGroup.draw_on(@canvas, :mask => "url(##{mask.id})") unless @chart_front_canvas
         chart_clip = Drawing::Clipping.new(Shape::Rectangle.new([margin_left, margin_top], width - margin_left - margin_right, height - margin_top - margin_bottom))
+        @chart_region = Shape::Rectangle.new([margin_left, margin_top], width - margin_left - margin_right, height - margin_top - margin_bottom, :painting => {:stroke_width => 0})
+        @chart_region.draw_on(canvas)
         unless @chart_back_canvas
           clip_container = Shape::ShapeGroup.draw_on(@canvas)
           @chart_back_canvas = Shape::ShapeGroup.draw_on(clip_container)
@@ -226,12 +240,12 @@ module DYI
         @scale_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @scale_canvas
         unless @chart_front_canvas
           clip_container = Shape::ShapeGroup.draw_on(@canvas)
-          @chart_front_canvas = Shape::ShapeGroup.draw_on(clip_container)
           clip_container.set_clipping(chart_clip)
-          @chart_region = Shape::Rectangle.new([margin_left, margin_top], width - margin_left - margin_right, height - margin_top - margin_bottom, :painting => {:stroke_width => 0})
-          @chart_region.draw_on(clip_container)
-          @guid_front_canvas = Shape::ShapeGroup.draw_on(clip_container)
+          @chart_front_canvas = Shape::ShapeGroup.draw_on(clip_container)
         end
+        @guid_front_canvas = Shape::ShapeGroup.draw_on(@canvas)
+        @guid_front_canvas.set_clipping(chart_clip)
+        @data_label_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @data_label_canvas
         @x_scale_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @x_scale_canvas
         @y_scale_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @y_scale_canvas
         @axis_front_canvas = Shape::ShapeGroup.draw_on(@canvas) unless @axis_front_canvas
@@ -350,29 +364,33 @@ module DYI
         pen.draw_line(@scale_canvas, left_point, right_point)
       end
 
-      def needs_x_scale?(i)
-        return true if data.records_size < max_x_label_count
-        i % ((data.records_size - 1) / [max_x_label_count - 1, 1].max) == 0
+      def needs_x_scale?(i, display_records_size)
+        return true if display_records_size <= max_x_label_count
+        i % ((display_records_size - 1) / [max_x_label_count - 1, 1].max) == 0
       end
 
       def draw_x_axis(main_pen, sub_pen, text_pen, text_margin)
         main_pen.draw_line(represent_3d? ? @axis_back_canvas : @axis_front_canvas, [margin_left, height - margin_bottom], [width - margin_right, height - margin_bottom])
+        display_records_size = data.records[display_range].size
+        non_display_size = display_range.begin + (display_range.begin >= 0 ? 0 : data.records_size)
 
-        data.records_size.times do |i|
-          next unless needs_x_scale?(i)
-          text_x = order_position_on_chart(margin_left, chart_width, data.records_size, i, x_axis_type)
-          scale_x = x_axis_type == :range ? order_position_on_chart(margin_left, chart_width, data.records_size + 1, i) : text_x
+        display_records_size.times do |i|
+          next unless needs_x_scale?(i, display_records_size)
+          text_x = order_position_on_chart(margin_left, chart_width, display_records_size, i, x_axis_type)
+          scale_x = x_axis_type == :range ? order_position_on_chart(margin_left, chart_width, display_records_size + 1, i) : text_x
           text_pen.draw_text(
             @x_scale_canvas,
             [text_x, height - margin_bottom + text_margin],
-            format_x_label(data.name_values[i]),
+            format_x_label(data.name_values[i + non_display_size]),
             :text_anchor => 'middle', :alignment_baseline => 'top') if show_x_labels?
 
-          sub_pen.draw_line_on_direction(
-            @guid_front_canvas,
-            [scale_x, height - margin_bottom],
-            0,
-            -(axis_font ? axis_font.draw_size : Font::DEFAULT_SIZE) * 0.5) if i > 0 && i < data.records_size - (x_axis_type == :range ? 0 : 1)
+          if x_axis_type == :point || display_records_size <= max_x_label_count
+            sub_pen.draw_line_on_direction(
+              @guid_front_canvas,
+              [scale_x, height - margin_bottom],
+              0,
+              -(axis_font ? axis_font.draw_size : Font::DEFAULT_SIZE) * 0.5) if i > 0 && i < display_records_size - (x_axis_type == :range ? 0 : 1)
+          end
         end
       end
 
@@ -388,18 +406,28 @@ module DYI
       def draw_line(id, color, settings)
         values = data.series(id)
         return if values.compact.size == 0
+        display_records_size = values[display_range].size
+        non_display_size = display_range.begin + (display_range.begin >= 0 ? 0 : values.size)
         first_index = values.each_with_index {|value, i| break i if value}
         pen_options = {:color => color, :width => line_width}
         pen = line_chart_pen(color)
 
-        x = order_position_on_chart(margin_left, chart_width, values.size, first_index, x_axis_type)
+        x = order_position_on_chart(margin_left, chart_width, display_records_size, first_index - non_display_size, x_axis_type)
         y = value_position_on_chart(margin_top, settings, values[first_index], true)
+        if show_data_label?
+          label_pen = Drawing::Pen.black_pen(:font => data_label_font)
+          font_size = label_pen.font ? label_pen.font.draw_size : Font::DEFAULT_SIZE
+          label_pen.draw_text(data_label_canvas, [x, y - font_size * 0.25], data_label_format ? values[first_index].strfnum(data_label_format) : values[first_index].to_s, :text_anchor => 'middle')
+        end
         pen.linejoin = 'bevel'
         polyline = pen.draw_polyline(@chart_front_canvas, [x, y], @chart_options) {|polyline|
                      ((first_index + 1)...values.size).each do |i|
-                       x = order_position_on_chart(margin_left, chart_width, values.size, i, x_axis_type)
+                       x = order_position_on_chart(margin_left, chart_width, display_records_size, i - non_display_size, x_axis_type)
                        y = value_position_on_chart(margin_top, settings, values[i], true)
                        polyline.line_to([x, y])
+                     end
+                     if show_data_label?
+                       label_pen.draw_text(data_label_canvas, [x, y - font_size * 0.25], data_label_format ? values[i].strfnum(data_label_format) : values[i].to_s, :text_anchor => 'middle')
                      end
                    }
         if show_markers?
@@ -412,16 +440,25 @@ module DYI
       def draw_area(id, color, settings)
         values = data.series(id)
         return if values.compact.size == 0
+        display_records_size = values[display_range].size
+        non_display_size = display_range.begin + (display_range.begin >= 0 ? 0 : values.size)
         first_index = values.each_with_index {|value, i| break i if value}
         brush = area_chart_brush(color)
 
-        x = order_position_on_chart(margin_left, chart_width, values.size, first_index, x_axis_type)
+        x = order_position_on_chart(margin_left, chart_width, display_records_size, first_index - non_display_size, x_axis_type)
         y = value_position_on_chart(margin_top, settings, settings[:min], true)
+        if show_data_label?
+          label_pen = Drawing::Pen.black_pen(:font => data_label_font)
+          font_size = label_pen.font ? label_pen.font.draw_size : Font::DEFAULT_SIZE
+        end
         polygone = brush.draw_polygon(@chart_front_canvas, [x, y], @chart_options) {|polygon|
           (first_index...values.size).each do |i|
-            x = order_position_on_chart(margin_left, chart_width, values.size, i, x_axis_type)
+            x = order_position_on_chart(margin_left, chart_width, display_records_size, i - non_display_size, x_axis_type)
             y = value_position_on_chart(margin_top, settings, values[i], true)
             polygon.line_to([x, y])
+            if show_data_label?
+              label_pen.draw_text(data_label_canvas, [x, y - font_size * 0.25], data_label_format ? values[i].strfnum(data_label_format) : values[i].to_s, :text_anchor => 'middle')
+            end
           end
           y = value_position_on_chart(margin_top, settings, settings[:min], true)
           polygon.line_to([x, y])
@@ -433,16 +470,25 @@ module DYI
         bar_group = Shape::ShapeGroup.new(@chart_options).draw_on(@chart_front_canvas)
         values = data.series(id)
         return if values.compact.size == 0
-        bar_width = chart_width * bar_width_ratio / values.size / (@bar_series.size + (@bar_series.size - 1) * bar_seriese_interval)
+        display_records_size = values[display_range].size
+        non_display_size = display_range.begin + (display_range.begin >= 0 ? 0 : values.size)
+        bar_width = chart_width * bar_width_ratio / display_records_size / (@bar_series.size + (@bar_series.size - 1) * bar_seriese_interval)
 
         brush = bar_chart_brush(color, bar_width)
 
+        if show_data_label?
+          label_pen = Drawing::Pen.black_pen(:font => data_label_font)
+          font_size = label_pen.font ? label_pen.font.draw_size : Font::DEFAULT_SIZE
+        end
         values.each_with_index do |value, i|
           next if value.nil?
-          x = order_position_on_chart(margin_left, chart_width, values.size, i, x_axis_type, bar_width_ratio) + bar_width * (1 + bar_seriese_interval) * @bar_series.index(id)
+          x = order_position_on_chart(margin_left, chart_width, display_records_size, i - non_display_size, x_axis_type, bar_width_ratio) + bar_width * (1 + bar_seriese_interval) * @bar_series.index(id)
           y = value_position_on_chart(margin_top, settings, value, true)
           brush = bar_chart_brush(data.has_field?(:color) ? data.records[i].color : color, bar_width) if data.has_field?(:color)
           brush.draw_rectangle(bar_group, [x, y], bar_width, height - margin_bottom - y)
+          if show_data_label?
+            label_pen.draw_text(data_label_canvas, [x + bar_width * 0.5, y - font_size * 0.4], data_label_format ? value.strfnum(data_label_format) : value.to_s, :text_anchor => 'middle')
+          end
         end
         bar_group.translate(back_translate_value[:dx] / 2, back_translate_value[:dy] / 2) if represent_3d?
       end
@@ -452,7 +498,9 @@ module DYI
 
         values = data.series(id)
         return if values.compact.size == 0
-        bar_width = chart_width * bar_width_ratio / values.size
+        display_records_size = values[display_range].size
+        non_display_size = display_range.begin + (display_range.begin >= 0 ? 0 : values.size)
+        bar_width = chart_width * bar_width_ratio / display_records_size
 
         brush = bar_chart_brush(color, bar_width)
 
@@ -461,7 +509,7 @@ module DYI
         values.each_with_index do |value, i|
           @stacked_values[i] ||= 0
           next if value.nil?
-          x = order_position_on_chart(margin_left, chart_width, values.size, i, x_axis_type, bar_width_ratio)
+          x = order_position_on_chart(margin_left, chart_width, display_records_size, i - non_display_size, x_axis_type, bar_width_ratio)
           y = value_position_on_chart(margin_top, settings, (@stacked_values[i] += value), true)
           bar_height = value_position_on_chart(margin_top, settings, (@stacked_values[i] - value), true) - y
 #          brush.color = data[:$color][i] if data[:$color]
