@@ -24,11 +24,11 @@
 module DYI
 
   # DYI program version
-  VERSION = '1.2.0'
+  VERSION = '1.3.0'
 
   # URL of DYI Project
   # @since 0.0.2
-  URL = 'http://sourceforge.net/projects/dyi/'
+  URL = 'http://open-dyi.org/'
 
   class << self
 
